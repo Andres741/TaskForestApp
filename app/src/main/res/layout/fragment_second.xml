@@ -8,13 +8,13 @@
         <import type="android.view.View" />
         <variable
             name="viewModel"
-            type="com.example.taskscheduler.activities.main.second.SecondViewModel" />
+            type="com.example.taskscheduler.ui.main.second.SecondViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.main.second.SecondFragment">
+        tools:context=".ui.main.second.SecondFragment">
 
         <TextView
             android:id="@+id/textview_second"

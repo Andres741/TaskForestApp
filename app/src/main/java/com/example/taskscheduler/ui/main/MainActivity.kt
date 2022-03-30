@@ -1,4 +1,4 @@
-package com.example.taskscheduler.activities.main
+package com.example.taskscheduler.ui.main
 
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -11,7 +11,9 @@ import android.view.Menu
 import android.view.MenuItem
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration

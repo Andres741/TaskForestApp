@@ -1,4 +1,4 @@
-package com.example.taskscheduler.activities.main.second
+package com.example.taskscheduler.ui.main.second
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -23,9 +23,7 @@ class SecondFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: SecondViewModel
-    private lateinit var viewModelFactory: SecondViewModelFactory
-
-
+    private lateinit var viewModelFactory: SecondViewModel.Factory
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +36,7 @@ class SecondFragment : Fragment() {
             inflater, R.layout.fragment_second, container, false
         )
 
-        viewModelFactory = SecondViewModelFactory()
+        viewModelFactory = SecondViewModel.Factory()
         viewModel = ViewModelProvider(
             this, viewModelFactory
         )[SecondViewModel::class.java]

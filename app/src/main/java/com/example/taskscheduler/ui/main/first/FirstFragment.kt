@@ -1,12 +1,14 @@
-package com.example.taskscheduler.activities.main.first
+package com.example.taskscheduler.ui.main.first
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.databinding.FragmentFirstBinding
+import com.example.taskscheduler.ui.main.second.SecondViewModel
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -14,10 +16,11 @@ import com.example.taskscheduler.databinding.FragmentFirstBinding
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var viewModel: FirstViewModel
+    private lateinit var viewModelFactory: FirstViewModel.Factory
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,6 +28,12 @@ class FirstFragment : Fragment() {
     ): View? {
 
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
+
+        viewModelFactory = FirstViewModel.Factory()
+        viewModel = ViewModelProvider(
+            this, viewModelFactory
+        )[FirstViewModel::class.java]
+
         return binding.root
 
     }
