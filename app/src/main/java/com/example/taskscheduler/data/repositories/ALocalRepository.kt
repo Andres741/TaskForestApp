@@ -18,7 +18,6 @@ class ALocalRepository @Inject constructor(
     override fun getAllLive() = Transformations.map(aDao.getAllLive()) {
         it?.toModel()
     }
-
     override suspend fun insert(data: AModel) = aDao.insert(data.toEntity())
 
     override suspend fun insertAll(data: List<AModel>) = aDao.insertAll(data.toEntity())
@@ -32,21 +31,3 @@ class ALocalRepository @Inject constructor(
     override suspend fun refresh(data: List<AModel>) = aDao.refresh(data.toEntity())
 }
 
-interface ALocalRepositoryIF {
-
-    suspend fun get(key: Int): AModel
-
-    suspend fun getAll(): List<AModel>
-
-    fun getAllLive(): LiveData<List<AModel>?>
-
-    suspend fun insert(data: AModel)
-
-    suspend fun insertAll(data: List<AModel>)
-
-    suspend fun delete(key: Int)
-
-    suspend fun deleteAll()
-
-    suspend fun refresh(data: List<AModel>)
-}
