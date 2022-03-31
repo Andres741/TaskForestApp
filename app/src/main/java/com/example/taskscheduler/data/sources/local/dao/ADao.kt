@@ -10,33 +10,33 @@ import com.example.taskscheduler.data.models.AModel
 import com.example.taskscheduler.data.sources.local.entities.AEntity
 
 @Dao
-interface ADao : ALocalRepositoryIF<AEntity, AEntity>
-{
+abstract class ADao : ALocalRepositoryIF {
     // Get
     @Query("SELECT * FROM a_table WHERE id = :key")
-    override suspend fun get(key: Int): AEntity
+    abstract override suspend fun get(key: Int): AEntity
 
     @Query("SELECT * FROM a_table")
-    override suspend fun getAll(): List<AEntity>
+    abstract override suspend fun getAll(): List<AEntity>
 
     @Query("SELECT * FROM a_table")
-    override fun getAllLive(): LiveData<List<AEntity>?>
+    abstract override fun getAllLive(): LiveData<List<AEntity>>
 
     //Insert
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    override suspend fun insert(data: AEntity)
+    abstract suspend fun insert(data: AEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    override suspend fun insertAll(list: List<AEntity>)
+    abstract override suspend fun insertAll(list: List<AEntity>)
 
     //Delete
     @Query("DELETE FROM a_table WHERE id = :key")
-    override suspend fun delete(key: Int)
+    abstract override suspend fun delete(key: Int)
 
     @Query("DELETE FROM a_table")
-    override suspend fun deleteAll()
+    abstract override suspend fun deleteAll()
 
-    override suspend fun refresh(data: List<AEntity>) {
+    //Other
+    override suspend fun refresh(data: List<AModel>) {
         deleteAll()
         insertAll(data)
     }
