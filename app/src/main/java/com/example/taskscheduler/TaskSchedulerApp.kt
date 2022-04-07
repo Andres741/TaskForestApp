@@ -11,6 +11,7 @@ import timber.log.Timber
 class TaskSchedulerApp: Application() {
     override fun onCreate() {
         super.onCreate()
+        _INSTANCE = this
 
         //if (BuildConfig.DEBUG)
         Timber.plant(Timber.DebugTree())
@@ -20,5 +21,11 @@ class TaskSchedulerApp: Application() {
 //            "Aplicación iniciada",
 //            Toast.LENGTH_LONG
 //        ).show()
+    }
+
+    companion object {
+        private lateinit var _INSTANCE: TaskSchedulerApp
+        val INSTANCE: TaskSchedulerApp
+            get() = _INSTANCE
     }
 }

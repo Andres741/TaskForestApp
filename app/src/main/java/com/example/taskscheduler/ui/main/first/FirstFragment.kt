@@ -5,46 +5,45 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.databinding.FragmentFirstBinding
 import com.example.taskscheduler.ui.main.second.SecondViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
+@AndroidEntryPoint
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: FirstViewModel
-    private lateinit var viewModelFactory: FirstViewModel.Factory
+    private val viewModel: FirstViewModel by viewModels()
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
+    ): View {
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
 
-        viewModelFactory = FirstViewModel.Factory()
-        viewModel = ViewModelProvider(
-            this, viewModelFactory
-        )[FirstViewModel::class.java]
-
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(
-                FirstFragmentDirections.actionFirstFragmentToSecondFragment()
-            )
+        binding.apply {
+            viewModel = viewModel
+            lifecycleOwner = viewLifecycleOwner
+            buttonFirst.setOnClickListener {
+                findNavController().navigate(
+                    FirstFragmentDirections.actionFirstFragmentToSecondFragment()
+                )
+            }
         }
     }
 

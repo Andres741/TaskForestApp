@@ -7,7 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AService @Inject constructor(private val api: AApiClient) {
 
     suspend fun getAll(): AJsonArray {

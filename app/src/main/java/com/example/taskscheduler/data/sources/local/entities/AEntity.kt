@@ -1,5 +1,7 @@
 package com.example.taskscheduler.data.sources.local.entities
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -19,4 +21,5 @@ data class AEntity(
 }
 
 fun List<AEntity>.toModel() = map { it.toModel() }
+fun LiveData<List<AEntity>?>.toModel() = Transformations.map(this){ it?.toModel() }
 //fun List<AEntity>.toJSonArray() = AJsonArray( map { it.toJson() } )

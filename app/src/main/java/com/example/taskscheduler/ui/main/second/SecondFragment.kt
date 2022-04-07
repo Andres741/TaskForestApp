@@ -10,11 +10,14 @@ import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.FragmentSecondBinding
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+@AndroidEntryPoint
 class SecondFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
@@ -22,24 +25,18 @@ class SecondFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: SecondViewModel
-    private lateinit var viewModelFactory: SecondViewModel.Factory
+    private val viewModel: SecondViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 //        _binding = FragmentSecondBinding.inflate(
 //            inflater,  container, false
 //        )
         _binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_second, container, false
         )
-
-        viewModelFactory = SecondViewModel.Factory()
-        viewModel = ViewModelProvider(
-            this, viewModelFactory
-        )[SecondViewModel::class.java]
 
         return binding.root
     }

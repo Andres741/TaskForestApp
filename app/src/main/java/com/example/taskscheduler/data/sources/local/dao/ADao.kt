@@ -5,38 +5,109 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.taskscheduler.data.ALocalRepositoryIF
-import com.example.taskscheduler.data.models.AModel
 import com.example.taskscheduler.data.sources.local.entities.AEntity
 
+//@Dao
+//interface ADao: IALocalRepository<AEntity> {
+//    // Get
+//    @Query("SELECT * FROM a_table WHERE id = :key")
+//    override suspend fun get(key: Int): AEntity
+//
+//    @Query("SELECT * FROM a_table")
+//    override suspend fun getAll(): List<AEntity>
+//
+//    @Query("SELECT * FROM a_table")
+//    override fun getAllLive(): LiveData<List<AEntity>?>
+//
+//
+//    @Query("SELECT COUNT(id) FROM a_table")
+//    override suspend fun size(): Int
+//
+//    //    suspend fun isEmpty() = size() == 0
+//    @Query("SELECT EXISTS(SELECT id FROM a_table LIMIT 1)")
+//    override suspend fun isEmpty(): Boolean
+//
+//
+//    //Insert
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    override suspend fun insert(data: AEntity)
+//
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    override suspend fun insertAll(data: List<AEntity>)
+//
+//    //Delete
+//    @Query("DELETE FROM a_table WHERE id = :key")
+//    override suspend fun delete(key: Int)
+//
+//    @Query("DELETE FROM a_table")
+//    override suspend fun deleteAll()
+//
+//}
+
+interface IALocalRepository<T> {
+
+    suspend fun get(key: Int): T
+
+    suspend fun getAll(): List<T>  //?
+
+    fun getAllLive(): LiveData<List<T>?>
+
+    suspend fun size(): Int
+
+    suspend fun isEmpty(): Boolean
+
+    suspend fun insert(data: T)  //?
+
+    suspend fun insertAll(data: List<T>)  //?
+
+    suspend fun delete(key: Int)  //?
+
+    suspend fun deleteAll()  //?
+
+
+    suspend fun refresh(data: List<T>) {  //?
+        deleteAll()
+        insertAll(data)
+    }
+}
+
+
 @Dao
-abstract class ADao : ALocalRepositoryIF {
+interface ADao {
     // Get
     @Query("SELECT * FROM a_table WHERE id = :key")
-    abstract override suspend fun get(key: Int): AEntity
+    suspend fun get(key: Int): AEntity
 
     @Query("SELECT * FROM a_table")
-    abstract override suspend fun getAll(): List<AEntity>
+    suspend fun getAll(): List<AEntity>
 
     @Query("SELECT * FROM a_table")
-    abstract override fun getAllLive(): LiveData<List<AEntity>>
+    fun getAllLive(): LiveData<List<AEntity>?>
+
+
+    @Query("SELECT COUNT(id) FROM a_table")
+    suspend fun size(): Int
+
+    //    suspend fun isEmpty() = size() == 0
+    @Query("SELECT EXISTS(SELECT id FROM a_table LIMIT 1)")
+    suspend fun isEmpty(): Boolean
+
 
     //Insert
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insert(data: AEntity)
+    suspend fun insert(data: AEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract override suspend fun insertAll(list: List<AEntity>)
+    suspend fun insertAll(list: List<AEntity>)
 
     //Delete
     @Query("DELETE FROM a_table WHERE id = :key")
-    abstract override suspend fun delete(key: Int)
+    suspend fun delete(key: Int)
 
     @Query("DELETE FROM a_table")
-    abstract override suspend fun deleteAll()
+    suspend fun deleteAll()
 
-    //Other
-    override suspend fun refresh(data: List<AModel>) {
+    suspend fun refresh(data: List<AEntity>) {
         deleteAll()
         insertAll(data)
     }

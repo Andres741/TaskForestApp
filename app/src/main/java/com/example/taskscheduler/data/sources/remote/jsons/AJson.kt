@@ -14,7 +14,6 @@ data class AJsonArray(
     constructor(): this(videos = emptyList())
 
     fun toModel() = videos.map { it.toModel() }
-//    fun toEntity() = videos.map { it.toEntity() }
 }
 
 //@JsonClass(generateAdapter = true)
@@ -23,5 +22,4 @@ data class AJson(
     val data: String,
 ) {
     fun toModel() = AModel(data = data)
-//    fun toEntity() = AEntity(data = data)
 }

@@ -11,12 +11,4 @@ import javax.inject.Inject
 class SecondViewModel @Inject constructor(): ViewModel() {
 
 
-    class Factory(): ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(SecondViewModel::class.java)) {
-                return SecondViewModel() as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
-    }
 }

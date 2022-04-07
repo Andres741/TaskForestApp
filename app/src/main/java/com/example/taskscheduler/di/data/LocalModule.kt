@@ -1,8 +1,9 @@
-package com.example.taskscheduler.data.sources.local
+package com.example.taskscheduler.di.data
 
 import android.content.Context
 import androidx.room.Room
-import com.example.taskscheduler.data.sources.local.dao.ADao
+import com.example.taskscheduler.data.ALocalRepository
+import com.example.taskscheduler.data.sources.local.LocalDataBase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
