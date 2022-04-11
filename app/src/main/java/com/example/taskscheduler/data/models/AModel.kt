@@ -4,9 +4,6 @@ import com.example.taskscheduler.data.sources.local.entities.AEntity
 import com.example.taskscheduler.data.sources.remote.jsons.AJson
 import com.example.taskscheduler.data.sources.remote.jsons.AJsonArray
 
-//import com.example.taskscheduler.data.sources.remote.jsons.AJson
-//import com.example.taskscheduler.data.sources.remote.jsons.AJsonArray
-
 data class AModel (
     val data: String,
 ) {
@@ -14,5 +11,5 @@ data class AModel (
     fun toJson() = AJson(data = data)
 }
 
-fun List<AModel>.toEntity() = map { it.toEntity() }
-fun List<AModel>.toJSonArray() = AJsonArray( map { it.toJson() } )
+fun List<AModel>.toEntity() = map( AModel::toEntity )
+fun List<AModel>.toJSonArray() = AJsonArray( map( AModel::toJson ) )

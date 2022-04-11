@@ -13,7 +13,7 @@ data class AJsonArray(
      */
     constructor(): this(videos = emptyList())
 
-    fun toModel() = videos.map { it.toModel() }
+    fun toModel() = videos.map(AJson::toModel)
 }
 
 //@JsonClass(generateAdapter = true)

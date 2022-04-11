@@ -17,7 +17,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RemoteModule {
 
-
     @Singleton
     @Provides
     fun provideRetrofit() = AApiClient.getRetrofit()

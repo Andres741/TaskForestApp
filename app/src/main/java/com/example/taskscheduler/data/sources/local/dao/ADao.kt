@@ -78,14 +78,14 @@ interface ADao {
     @Query("SELECT * FROM a_table WHERE id = :key")
     suspend fun get(key: Int): AEntity
 
-    @Query("SELECT * FROM a_table")
+    @Query("SELECT * FROM a_table ORDER BY id DESC")
     suspend fun getAll(): List<AEntity>
 
     @Query("SELECT * FROM a_table")
     fun getAllLive(): LiveData<List<AEntity>?>
 
 
-    @Query("SELECT COUNT(id) FROM a_table")
+    @Query("SELECT COUNT(*) FROM a_table")
     suspend fun size(): Int
 
     //    suspend fun isEmpty() = size() == 0

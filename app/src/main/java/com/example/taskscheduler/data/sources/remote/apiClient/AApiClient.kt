@@ -12,11 +12,12 @@ import javax.inject.Singleton
 @Singleton
 interface AApiClient {
     @GET("/.json")
-    suspend fun getAll(): Response<AJsonArray>
+    suspend fun getAll(): AJsonArray?
 
     companion object {
         private const val BASE_URL =
             ""
+
         fun getRetrofit(): Retrofit {
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)

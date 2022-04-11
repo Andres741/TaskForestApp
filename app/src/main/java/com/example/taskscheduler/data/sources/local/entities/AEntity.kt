@@ -20,6 +20,6 @@ data class AEntity(
 //    fun toJson() = AJson(data = data)
 }
 
-fun List<AEntity>.toModel() = map { it.toModel() }
+fun List<AEntity>.toModel() = map( AEntity::toModel )
+//fun LiveData<List<AEntity>?>.toModel() = Transformations.map(this, List<AEntity>::toModel)
 fun LiveData<List<AEntity>?>.toModel() = Transformations.map(this){ it?.toModel() }
-//fun List<AEntity>.toJSonArray() = AJsonArray( map { it.toJson() } )
