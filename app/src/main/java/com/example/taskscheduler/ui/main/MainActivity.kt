@@ -1,5 +1,7 @@
 package com.example.taskscheduler.ui.main
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -9,8 +11,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.ActivityMainBinding
+import com.example.taskscheduler.ui.logIn.LogInActivity
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -48,7 +54,10 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                logOut()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -57,5 +66,12 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+    private fun logOut() {
+        Toast.makeText(this, "Adios!!!", Toast.LENGTH_LONG).show()
+        Firebase.auth.signOut()
+        startActivity(Intent(this, LogInActivity::class.java))
+        finish()
     }
 }
