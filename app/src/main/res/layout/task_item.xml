@@ -1,6 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <data>
+        <import type="android.view.View"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <variable
+            name="task"
+            type="com.example.taskscheduler.data.models.TaskModel"
+        />
+
+        <!--
+        TODO: Implement the classes of the following two variables:
+
+        <variable
+            name="doneCallBack"
+            type="com.example.taskscheduler..."
+        />
+        <variable
+            name="goToSubTaskCallBack"
+            type="com.example.taskscheduler..."
+        />
+
+        -->
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        >
+
+        <!--
+            TODO: put an image and an on click listener.
+        "android:onClick = "@{() -> doneCallBack() )}"
+        -->
+        <ImageButton
+            android:id="@+id/checkButton"
+            android:layout_width="@dimen/checkButtonSize"
+            android:layout_height="@dimen/checkButtonSize"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:src=""
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/titleTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/titleTaskMarginStart"
+            android:layout_marginTop="@dimen/titleTaskMarginTop"
+            app:layout_constraintStart_toEndOf="@+id/checkButton"
+            app:layout_constraintTop_toTopOf="parent"
+
+            android:text="@{task.title}"
+
+            tools:text="My task"
+            />
+
+        <TextView
+            android:id="@+id/descriptionTask"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="@dimen/zero"
+            android:layout_marginEnd="18dp"
+            android:layout_marginTop="@dimen/descriptionTaskMarginTop"
+
+            app:layout_constraintEnd_toStartOf="@+id/goToSubtaskButton"
+            app:layout_constraintStart_toStartOf="@id/titleTask"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleTask"
+
+            android:text="@{task.description}"
+            android:visibility="@{task.hasDescription ? View.VISIBLE : View.GONE}"
+
+            tools:text="My task consist in create this application, I can do it.\nI do not know what to put extra here, but I need a long text."
+            tools:visibility="visible"
+            />
+
+        <!--
+            TODO: put an on click listener.
+        "android:onClick = "@{() -> goToSubTaskCallBack())}"
+        -->
+        <Button
+            android:id="@+id/goToSubtaskButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="10dp"
+
+            android:textSize="@dimen/goToSubtaskButtonTextSize"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            android:text="@{(task.numSubTasks > 1) ? @string/go_to_sub_tasks : @string/go_to_sub_task }"
+            android:visibility="@{task.hasSubTasks ? View.VISIBLE : View.GONE}"
+
+            tools:text="@string/go_to_sub_task"
+            tools:visibility="visible"
+        />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+
+<!--    "@{property.imgSrcUrl}"-->
+<!--    "@{property.rental ? View.GONE : View.VISIBLE}"-->
+<!--    "app:isGone="@{!viewModel.hasValidUnsplashKey()}"-->
+<!--    "android:onClick="@{() -> callback.add(viewModel.plant)}"-->

@@ -61,7 +61,8 @@ class LogInActivity : AppCompatActivity() {
             Toast.makeText(
                 this,
                 "There was an error signing in",
-                Toast.LENGTH_LONG).show()
+                Toast.LENGTH_LONG
+            ).show()
 
             val response = result.idpResponse
             if (response == null) {

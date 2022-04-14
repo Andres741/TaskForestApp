@@ -18,4 +18,6 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="go_to_sub_task">go to\nsubtask</string>
+    <string name="go_to_sub_tasks">go to\nsubtasks</string>
 </resources>
