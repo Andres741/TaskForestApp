@@ -1,4 +1,4 @@
-package com.example.taskscheduler.ui.main.first
+package com.example.taskscheduler.ui.main.tasks
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,42 +6,51 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.taskscheduler.databinding.FragmentFirstBinding
-import com.example.taskscheduler.ui.main.second.SecondViewModel
+import com.example.taskscheduler.R
+import com.example.taskscheduler.databinding.FragmentTasksBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 @AndroidEntryPoint
-class FirstFragment : Fragment() {
+class TasksFragment : Fragment() {
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentTasksBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: FirstViewModel by viewModels()
+    private val viewModel: TasksViewModel by viewModels()
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
 
-        return binding.root
+//        _binding = FragmentTasksBinding.inflate(inflater, container, false)
+//        binding.viewmodel = viewModel
+//        binding.lifecycleOwner = viewLifecycleOwner
+//        return binding.root
+
+        val root = inflater.inflate(R.layout.fragment_tasks, container, false)
+
+        return FragmentTasksBinding.bind(root).let {
+            _binding = it
+            it.viewmodel = viewModel
+            it.lifecycleOwner = viewLifecycleOwner
+            it.root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            viewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
-            buttonFirst.setOnClickListener {
+            newTaskButton.setOnClickListener {
                 findNavController().navigate(
-                    FirstFragmentDirections.actionFirstFragmentToSecondFragment()
+                    TasksFragmentDirections.actionFirstFragmentToSecondFragment()
                 )
             }
         }

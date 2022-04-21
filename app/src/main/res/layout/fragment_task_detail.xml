@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="viewmodel"
+            type="com.example.taskscheduler.ui.main.taskDetail.TaskDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.main.taskDetail.TaskDetailFragment">
+
+        <TextView
+            android:id="@+id/textview_second"
+
+            android:text="@string/task_detail"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            style="@style/fragments_title"
+
+        />
+
+        <EditText
+            android:id="@+id/task_title_cont"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="@dimen/attributes_marginVertical"
+
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toEndOf="@id/task_description"
+            app:layout_constraintTop_toBottomOf="@id/textview_second"
+            app:layout_constraintHorizontal_bias="0.1"
+
+
+            android:hint="@{@string/enter_tour_x_here(@string/title)}"
+            android:text="@{viewmodel.task.title}"
+
+            tools:text="value 0"
+
+            style="@style/task_value"
+            />
+
+        <EditText
+            android:id="@+id/task_type_cont"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintBottom_toTopOf="@id/task_done_cont"
+
+            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
+            app:layout_constraintTop_toBottomOf="@id/task_title_cont"
+
+            android:hint="@{@string/enter_tour_x_here(@string/type)}"
+            android:text="@{viewmodel.task.type}"
+
+            tools:text="value 1"
+
+            style="@style/task_value"
+            />
+
+        <!--
+        TODO: add the following when implemented
+
+        android:onClick = "@{() -> viewModel.changeStatus() )}"
+        -->
+        <TextView
+            android:id="@+id/task_done_cont"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
+
+            app:layout_constraintTop_toBottomOf="@id/task_type_cont"
+            app:layout_constraintBottom_toTopOf="@id/task_description_cont"
+
+            android:textColor="@{viewmodel.task.isDone ? @color/done : @color/undone}"
+            android:text="@{viewmodel.task.isDone ? @string/completed : @string/uncompleted}"
+
+            tools:textColor="@color/done"
+            tools:text="completed"
+
+            style="@style/task_value"
+            />
+
+        <EditText
+            android:id="@+id/task_description_cont"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="@dimen/attributes_marginVertical"
+
+
+            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintBottom_toTopOf="@id/subtasksRcy"
+
+            android:hint="@{@string/enter_tour_x_here(@string/description)}"
+            android:text="@{viewmodel.task.description}"
+
+            tools:text="@string/mucho_texto_1"
+
+            tools:visibility="visible"
+
+            style="@style/task_value"
+            />
+        <!--visible gone-->
+<!--        tools:text="textView3"-->
+<!--        tools:text="@string/mucho_texto"-->
+
+        <!--
+        TODO: add the following when implemented
+
+        android:onClick = "@{() -> viewModel.addSubTask() )}"
+        -->
+        <Button
+            android:id="@+id/previous_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/marginBottomButton"
+
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            android:text="@string/add_subtask"
+            />
+
+
+        <!--
+        The following TextView may be changed by images.
+        -->
+        <TextView
+            android:id="@+id/task_title"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@id/task_title_cont"
+
+            android:layout_marginStart="32dp"
+
+            android:text="@string/title_att"
+
+            />
+
+        <TextView
+            android:id="@+id/task_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/type_att"
+
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+            app:layout_constraintBaseline_toBaselineOf="@id/task_type_cont"
+
+        />
+
+        <TextView
+            android:id="@+id/task_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status_att"
+
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+            app:layout_constraintBaseline_toBaselineOf="@id/task_done_cont"
+
+        />
+
+        <TextView
+            android:id="@+id/task_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/description_att"
+
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+
+            app:layout_constraintBaseline_toBaselineOf="@id/task_description_cont"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subtasksRcy"
+
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxHeight="@dimen/subtasksRcyMaxHeight"
+            tools:layout_height="@dimen/subtasksRcyMaxHeight"
+
+            android:layout_marginHorizontal="@dimen/rcy_marginHorizontal"
+            android:layout_marginVertical="@dimen/rcy_marginVertical"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintBottom_toTopOf="@id/previous_button"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

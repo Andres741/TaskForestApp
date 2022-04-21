@@ -1,12 +1,8 @@
-package com.example.taskscheduler.ui.main.first
+package com.example.taskscheduler.ui.main.tasks
 
-import android.R.string
 import android.content.Context
-import androidx.core.content.res.TypedArrayUtils.getString
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.taskscheduler.R
 import com.example.taskscheduler.TaskSchedulerApp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +11,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class FirstViewModel @Inject constructor(
+class TasksViewModel @Inject constructor(
     @ApplicationContext context: Context
 ): ViewModel() {
 

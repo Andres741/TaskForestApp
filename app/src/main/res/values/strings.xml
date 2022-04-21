@@ -1,4 +1,8 @@
 <resources>
+    <string name="mucho_texto">My task consist in create this application, I can do it because I am the best.\nI do not know what to put extra here, but I need a long text.</string>
+    <string name="mucho_texto_1">Object oriented programming (OOP):\nIs a programming paradigm based on the concept of objects, which can contain data and code: data in data in the form of fields (often known as attributes or properties), and code, in the form of procedures (often known as methods).</string>
+
+
     <string name="app_name">Task scheduler</string>
     <string name="action_logOut">Log out</string>
     <!-- Strings used for fragments for navigation -->
@@ -14,10 +18,64 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
+    <string name="welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="go_to_sub_task">go to\nsubtask</string>
-    <string name="go_to_sub_tasks">go to\nsubtasks</string>
+
+    <plurals name="go_to_sub_task_s">
+        <item quantity="one">
+            @string/go_to_subtask
+        </item>
+
+        <item quantity="other">
+            @string/go_to_subtasks
+        </item>
+    </plurals>
+
+    <string name="go_to_subtask">go to\nsubtask</string>
+    <string name="go_to_subtasks">go to\nsubtasks</string>
+
+    <string name="add_new_task">Add new task</string>
+    <string name="your_tasks">Your tasks</string>
+    <string name="task_detail">Task detail</string>
+
+    <string name="attribute_value_format">%1s: %2s</string><!--This will work with Int ?-->
+    <string name="attribute_amount_format">%1s: %2d</string>
+
+    <plurals name="subtask_s">
+        <item quantity="zero">
+            Without subtasks
+        </item>
+        <item quantity="one">
+            One subtask
+        </item>
+        <item quantity="other">
+            Subtasks: %d
+        </item>
+    </plurals>
+
+    <string name="type_att">Type:</string>
+    <string name="done">Done:</string>
+    <string name="description_att">Description:</string>
+    <string name="title_att">Title:</string>
+
+    <string name="status_att">Status:</string>
+    <string name="completed">completed</string>
+    <string name="uncompleted">uncompleted</string>
+    <string name="change_status">Change status</string>
+    <string name="add_subtask">add subtask</string>
+
+    <string name="enter_tour_x_here">Enter your %s here</string>
+
+    <string name="enter_tour_title_here">Enter your title here</string>
+    <string name="enter_tour_description_here">Enter your description here</string>
+    <string name="enter_tour_type_here">Enter your type here</string>
+
+
+    <string name="title">title</string>
+    <string name="description">description</string>
+    <string name="type">type</string>
+    <string name="add_task">Add task</string>
+
 </resources>

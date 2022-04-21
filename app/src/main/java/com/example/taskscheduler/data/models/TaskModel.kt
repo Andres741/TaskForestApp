@@ -4,6 +4,7 @@ package com.example.taskscheduler.data.models
 
 data class TaskModel(
     val title: String,
+    val type: String,
     val description: String = "",
     val subTasks: MutableList<TaskModel> = mutableListOf(),
 ) {

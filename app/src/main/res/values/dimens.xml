@@ -6,8 +6,17 @@
     <dimen name="checkButtonSize">48dp</dimen>
     <dimen name="titleTaskMarginTop">4dp</dimen>
     <dimen name="titleTaskMarginStart">26dp</dimen>
-    <dimen name="descriptionTaskMarginTop">4dp</dimen>
+    <dimen name="descriptionTaskMarginVertical">4dp</dimen>
     <dimen name="zero">0dp</dimen>
     <dimen name="goToSubtaskButtonTextSize">12sp</dimen>
+    <dimen name="marginCheckButton">4dp</dimen>
+    <dimen name="marginItem">10dp</dimen>
+    <dimen name="marginTopTitle">32dp</dimen>
+    <dimen name="marginBottomButton">10dp</dimen>
+    <dimen name="rcy_marginHorizontal">14dp</dimen>
+    <dimen name="rcy_marginVertical">10dp</dimen>
+    <dimen name="subtasksRcyMaxHeight">350dp</dimen>
+    <dimen name="add_task_fab">12dp</dimen>
+    <dimen name="attributes_marginVertical">20dp</dimen>
     <!--    <dimen name="titleTask">(@dimen/checkButton)/2</dimen>-->
 </resources>
