@@ -77,5 +77,6 @@
     <string name="description">description</string>
     <string name="type">type</string>
     <string name="add_task">Add task</string>
+    <string name="save">save</string>
 
 </resources>

@@ -128,9 +128,6 @@
         -->
         <Button
             android:id="@+id/previous_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/marginBottomButton"
 
 
             app:layout_constraintStart_toStartOf="parent"
@@ -139,7 +136,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
 
             android:text="@string/add_subtask"
-            />
+            style="@style/lower_button"
+        />
 
 
         <!--
