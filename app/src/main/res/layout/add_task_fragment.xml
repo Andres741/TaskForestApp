@@ -37,7 +37,7 @@
 
             app:layout_constraintTop_toBottomOf="@id/title_add_task"
 
-            android:hint="@{@string/enter_tour_x_here(@string/title)}"
+            android:hint="@{@string/enter_your_x_here(@string/title)}"
             tools:hint="Enter your title here"
 
             android:autofillHints=""
@@ -55,7 +55,7 @@
 
             app:layout_constraintTop_toBottomOf="@id/title"
 
-            android:hint="@{@string/enter_tour_x_here(@string/type)}"
+            android:hint="@{@string/enter_your_x_here(@string/type)}"
             tools:hint="Enter your type here"
 
             android:autofillHints=""
@@ -73,7 +73,7 @@
 
             app:layout_constraintTop_toBottomOf="@id/type"
 
-            android:hint="@{@string/enter_tour_x_here(@string/description)}"
+            android:hint="@{@string/enter_your_x_here(@string/description)}"
             tools:hint="Enter your description here"
 
             android:autofillHints=""

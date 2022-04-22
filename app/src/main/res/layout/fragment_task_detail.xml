@@ -44,7 +44,7 @@
             app:layout_constraintHorizontal_bias="0.1"
 
 
-            android:hint="@{@string/enter_tour_x_here(@string/title)}"
+            android:hint="@{@string/enter_your_x_here(@string/title)}"
             android:text="@{viewmodel.task.title}"
 
             tools:text="value 0"
@@ -62,7 +62,7 @@
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
             app:layout_constraintTop_toBottomOf="@id/task_title_cont"
 
-            android:hint="@{@string/enter_tour_x_here(@string/type)}"
+            android:hint="@{@string/enter_your_x_here(@string/type)}"
             android:text="@{viewmodel.task.type}"
 
             tools:text="value 1"
@@ -108,7 +108,7 @@
 
             app:layout_constraintBottom_toTopOf="@id/subtasksRcy"
 
-            android:hint="@{@string/enter_tour_x_here(@string/description)}"
+            android:hint="@{@string/enter_your_x_here(@string/description)}"
             android:text="@{viewmodel.task.description}"
 
             tools:text="@string/mucho_texto_1"
