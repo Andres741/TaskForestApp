@@ -1,7 +1,7 @@
 package com.example.taskscheduler.data
 
 import com.example.taskscheduler.data.models.AModel
-import com.example.taskscheduler.data.models.toEntity
+import com.example.taskscheduler.data.models.toEntityWithSubTasks
 import com.example.taskscheduler.data.sources.local.dao.ADao
 import com.example.taskscheduler.data.sources.local.dao.IALocalRepository
 import com.example.taskscheduler.data.sources.local.entities.toModel
@@ -26,7 +26,7 @@ class ALocalRepository @Inject constructor(
 
     override suspend fun insert(data: AModel) = aDao.insert(data.toEntity())
 
-    override suspend fun insertAll(data: List<AModel>) = aDao.insertAll(data.toEntity())
+    override suspend fun insertAll(data: List<AModel>) = aDao.insertAll(data.toEntityWithSubTasks())
 
 
     override suspend fun delete(key: Int) = aDao.delete(key)
@@ -34,7 +34,7 @@ class ALocalRepository @Inject constructor(
     override suspend fun deleteAll() = aDao.deleteAll()
 
 
-    override suspend fun refresh(data: List<AModel>) = aDao.refresh(data.toEntity())
+    override suspend fun refresh(data: List<AModel>) = aDao.refresh(data.toEntityWithSubTasks())
 }
 
 

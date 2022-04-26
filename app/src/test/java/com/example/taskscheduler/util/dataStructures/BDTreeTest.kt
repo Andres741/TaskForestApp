@@ -4,65 +4,177 @@ import junit.framework.TestCase
 
 class BDTreeTest : TestCase() {
 
-    public override fun setUp() {
-        super.setUp()
+    /**Main tree*/
+    lateinit var bdTree: BDTree<String>
+
+    lateinit var subTree: BDTree<String>
+    lateinit var subSubTree: BDTree<String>
+
+    /**List with the same elements as bdTree*/
+    lateinit var list: MutableList<String>
+    /**Sub trees of the main tree*/
+    val numSub = 3
+    /**Subtrees of subtrees of the main tree*/
+    val numSubSub = 3
+
+    fun printNumSub() = println("numSub: $numSub, numSubSub: $numSubSub ")
+
+    val sub = 1
+    val subSub = 1
+
+    fun printSub() = println("sub: $sub, subSub: $subSub ")
+
+
+    val putInPL: String.()-> String = {
+        list.add(this)
+        this
     }
 
-    public override fun tearDown() {}
+    fun buildTree() {
+        list = mutableListOf()
 
-    fun testGet_children() {}
+        bdTree = BDTree("top".putInPL())
+        for (i in 0 until numSub) {
+            bdTree.addChild("sub $i".putInPL())
+        }
+        for (i in 0 until numSubSub) {
+            for (j in 0 until 3) {
+                bdTree[i].addChild("sub $i-$j".putInPL())
+            }
+        }
+        subTree = bdTree[sub]
+        subSubTree = subTree[subSub]
 
-    fun testGetChildren() {}
+    }
+    public override fun setUp() {
+        super.setUp()
+        println("\n/-----------------------------------------\\\n")
+        buildTree()
+    }
 
-    fun testGetNumChildren() {}
+    public override fun tearDown() {
+        println("\n\\-----------------------------------------/\n")
 
-    fun testGetNumAllChildren() {}
+    }
 
-    fun testGetHasChildren() {}
 
-    fun testGet() {}
 
-    fun testRemove() {}
 
-    fun testSetChild() {}
 
-    fun testAddChild() {}
+    fun testGetNumChildren() {
+        assertEquals(3, bdTree.numChildren)
+    }
 
-    fun testAddChildren() {}
+    fun testGetNumAllChildren() {
+        assertEquals(list.size-1, bdTree.numAllChildren)
+    }
 
-    fun testContains() {}
+    fun testGetHasChildren() {
+        assert(bdTree.hasChildren)
+    }
 
-    fun testTestContains() {}
+    fun testRemoveAt() {
+        bdTree.removeChildAt(1)
 
-    fun testIterator() {}
+        bdTree.toLinkedListAll().apply(::println)
+    }
 
-    fun testToLinkedList() {}
+    fun testRemove() {
+        printSub()
+        bdTree.removeChild()
+        bdTree.toLinkedListAll().apply(::println)
+        buildTree()
+        subTree.removeChild()
+        subTree.toLinkedListAll().apply(::println)
+        buildTree()
+        subSubTree.removeChild()
+        bdTree.toLinkedListAll().apply(::println)
+    }
 
-    fun testToList() {}
+    fun testSetChild() {
+        bdTree[0].setChild(2, "NEW 0-2")
+        bdTree[1].setChild(1, "NEW 1-1")
 
-    fun testPreorder() {}
+        bdTree.toLinkedListAll().apply(::println)
+    }
 
-    fun testPostorder() {}
+    fun testAddChild() {
+        Tree("top")
+        bdTree.addChild("sub 0")
+        bdTree.addChild("sub 1")
+        bdTree.addChild("sub 2")
 
-    fun testBuildSelf() {}
+        for (i in 0 until numSub) {
+            for (j in 0 until numSubSub) {
+                bdTree[i].addChild("sub $i-$j")
+            }
+        }
+    }
 
-    fun testGetValue() {}
+    fun testAddChildren() {
+        bdTree = BDTree("top")
+        bdTree.addChildren(listOf("sub 1" ,"sub 2" ,"sub 3"))
+    }
 
-    fun testSetValue() {}
+    fun testTestContains() {
+        assert(bdTree.contains("top"))
+        assert(bdTree.contains("sub 0"))
+        assert(bdTree.contains("sub 1-2"))
+        assert(bdTree.contains("sub 0-0"))
+        assert(bdTree.contains("sub 1"))
+        assert(bdTree.contains("sub 2-2"))
+        assertEquals(bdTree.contains("bj"), false)
+        assertEquals(bdTree.contains("vgyuvcgy"), false)
+    }
 
-    fun testGetFather() {}
+    fun testIterator() {
+        val iterator = bdTree.iterator()
 
-    fun testSetFather() {}
+        var expected = 0
+        var actual = 0
+        while (iterator.hasNext()) {
+            print("${iterator.next()}, ")
+            actual++
+        }
+        println("\n------------------------------")
+        for (elem in list) {
+            print("$elem, ")
+            expected++
+        }
 
-    fun testIsSuperFather() {}
+        assertEquals(expected, actual)
+    }
 
-    fun testGetLevel() {}
+    fun testGetLevel() {
+        assertEquals("bdTree.level: ",0, bdTree.level)
+        assertEquals("subTree.level: ",1, subTree.level)
+        assertEquals("subSubTree.level: ",2, subSubTree.level)
+    }
 
-    fun testGetSuperFather() {}
+    fun testTestGetChildren() {
+        assertEquals(bdTree.value, "top")
+        for (i in 0 until numSub) {
+            assertEquals(bdTree.children[i].value, "sub $i".also(::println))
+        }
+        println("----------------------------------------")
+        for (i in 0 until numSubSub) {
+            for (j in 0 until 3) {
+                assertEquals(bdTree.children[i].children[j].value, "sub $i-$j".apply(::println))
+            }
+        }
+    }
 
-    fun testTestGetChildren() {}
+    /**This test indirectly also test the attribute superFather.*/
+    fun testToLinkedListAll() {
+        println("Expected:")
+        val expected = bdTree.toLinkedList().apply(::println)
+        println("--------------------------------------")
+        println("Actual")
+        val actual = subSubTree.toLinkedListAll().apply(::println)
+        println("--------------------------------------")
+        println("toLinkedList()")
+        subSubTree.toLinkedList().apply(::println)
 
-    fun testTestBuildSelf() {}
-
-    fun testToLinkedListAll() {}
+        assertEquals(expected, actual)
+    }
 }

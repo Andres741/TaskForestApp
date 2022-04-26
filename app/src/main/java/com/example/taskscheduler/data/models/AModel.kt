@@ -11,5 +11,5 @@ data class AModel (
     fun toJson() = AJson(data = data)
 }
 
-fun List<AModel>.toEntity() = map( AModel::toEntity )
+fun List<AModel>.toEntityWithSubTasks() = map( AModel::toEntity )
 fun List<AModel>.toJSonArray() = AJsonArray( map( AModel::toJson ) )
