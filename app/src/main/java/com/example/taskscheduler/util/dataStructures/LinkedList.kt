@@ -2,7 +2,10 @@ package com.example.taskscheduler.util.dataStructures
 
 import com.example.taskscheduler.util.errors.outOfBoundsOf
 
-
+/**
+ * A implementation of the data structure linked list. The new elements are added by default at the end,
+ * and removed at the beginning like in the queues.
+ */
 class LinkedList<T>(): List<T> {
     /**
      * First node of the list, it will be null only when the list is empty
@@ -28,6 +31,7 @@ class LinkedList<T>(): List<T> {
 
 
     override operator fun get(index: Int): T {
+        if (index == size-1) return last!!.elem
         return getNode(index).elem
     }
 
@@ -55,6 +59,9 @@ class LinkedList<T>(): List<T> {
         return getNodeOrNull(index)?.elem
     }
 
+    /**
+     * Adds an element at the end of the list.
+     */
     fun add(value: T) {
         if (isEmpty()) {
             Node(value).apply {
@@ -115,6 +122,9 @@ class LinkedList<T>(): List<T> {
         size--
     }
 
+    /**
+     * Deletes the first element.
+     */
     fun remove() {
 //        if (last === first) { // The list is empty, or only are one node.
 //            last = null
@@ -209,6 +219,9 @@ class LinkedList<T>(): List<T> {
         return LinkedList(first, last)
     }
 
+    /**
+     * Returns a HashMap where the keys are numbers, like an array.
+     */
     fun toHashMap() = HashMap<Int, T>().also { map ->
         forEachIndexed { index, elem ->
             map[index] = elem

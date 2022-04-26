@@ -1,12 +1,13 @@
 package com.example.taskscheduler.util.dataStructures
 
-import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther
-import timber.log.Timber
-
+/**
+ * An implementation of the data structure general tree with an indeterminate number of children.
+ */
 open class Tree<T>(
     var value: T
 ) {
     protected open val _children = LinkedList<Tree<T>>()
+    /**A list with the children of the list.*/
     open val children: List<Tree<T>> get() = _children
 //    val childrenIterator: Iterator<ITree<T>>
 
