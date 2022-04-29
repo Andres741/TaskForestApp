@@ -259,16 +259,16 @@ class LinkedList<T>(): List<T> {
             }
             return it
         }
-        fun getNode(index: Int): Node = getNodeOrNull(index) ?: throw IndexOutOfBoundsException()
+        fun getNode(index: Int): Node = getNodeOrNull(index) ?: throw size outOfBoundsOf index
     }
 
     private fun getNode(index: Int): Node {
         if(index == size-1) {
-            return last ?: throw IndexOutOfBoundsException(size.outOfBoundsOf(index))
+            return last ?: throw size outOfBoundsOf index
         }
-        var currentNode = first ?: throw IndexOutOfBoundsException(size.outOfBoundsOf(index))
+        var currentNode = first ?: throw size outOfBoundsOf index
         for (i in 0 until index) {
-            currentNode = currentNode.next ?: throw IndexOutOfBoundsException(size.outOfBoundsOf(index))
+            currentNode = currentNode.next ?: throw size outOfBoundsOf index
         }
         return currentNode
     }

@@ -1,10 +1,8 @@
 package com.example.taskscheduler.data.sources.local.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+import androidx.room.*
 import com.example.taskscheduler.data.sources.local.entities.AEntity
 
 //@Dao
@@ -74,22 +72,26 @@ interface IALocalRepository<T> {
 
 @Dao
 interface ADao {
+    private companion object {
+        const val table = "a_table"
+    }
+
     // Get
-    @Query("SELECT * FROM a_table WHERE id = :key")
+    @Query("SELECT * FROM $table WHERE id = :key")
     suspend fun get(key: Int): AEntity
 
-    @Query("SELECT * FROM a_table ORDER BY id DESC")
+    @Query("SELECT * FROM $table")
     suspend fun getAll(): List<AEntity>
 
-    @Query("SELECT * FROM a_table")
+    @Query("SELECT * FROM $table")
     fun getAllLive(): LiveData<List<AEntity>?>
 
 
-    @Query("SELECT COUNT(*) FROM a_table")
+    @Query("SELECT COUNT(*) FROM $table")
     suspend fun size(): Int
 
     //    suspend fun isEmpty() = size() == 0
-    @Query("SELECT EXISTS(SELECT id FROM a_table LIMIT 1)")
+    @Query("SELECT EXISTS(SELECT id FROM $table LIMIT 1)")
     suspend fun isEmpty(): Boolean
 
 
@@ -98,15 +100,16 @@ interface ADao {
     suspend fun insert(data: AEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(list: List<AEntity>)
+    suspend fun insertAll(list: Iterable<AEntity>)
 
     //Delete
-    @Query("DELETE FROM a_table WHERE id = :key")
+    @Query("DELETE FROM $table WHERE id = :key")
     suspend fun delete(key: Int)
 
-    @Query("DELETE FROM a_table")
+    @Query("DELETE FROM $table")
     suspend fun deleteAll()
 
+    @Transaction
     suspend fun refresh(data: List<AEntity>) {
         deleteAll()
         insertAll(data)

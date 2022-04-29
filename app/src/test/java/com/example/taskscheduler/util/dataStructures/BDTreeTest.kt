@@ -54,7 +54,6 @@ class BDTreeTest : TestCase() {
 
     public override fun tearDown() {
         println("\n\\-----------------------------------------/\n")
-
     }
 
 

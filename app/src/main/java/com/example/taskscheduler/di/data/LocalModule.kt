@@ -3,6 +3,7 @@ package com.example.taskscheduler.di.data
 import android.content.Context
 import androidx.room.Room
 import com.example.taskscheduler.data.ALocalRepository
+import com.example.taskscheduler.data.Converters
 import com.example.taskscheduler.data.sources.local.LocalDataBase
 import dagger.Module
 import dagger.Provides
@@ -21,9 +22,17 @@ object LocalModule {
     fun provideRoom(@ApplicationContext context: Context) =
         Room.databaseBuilder(
             context, LocalDataBase::class.java, DATABASE_NAME
-        ).build()
+        )/*.addTypeConverter(Converters())*/.build()
 
     @Singleton
     @Provides
     fun providesADao(db: LocalDataBase) = db.aDao
+
+    @Singleton
+    @Provides
+    fun providesTaskDao(db: LocalDataBase) = db.taskDao
+
+    @Singleton
+    @Provides
+    fun providesSubTaskDao(db: LocalDataBase) = db.subTaskDao
 }

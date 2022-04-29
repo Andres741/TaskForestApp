@@ -4,7 +4,7 @@ package com.example.taskscheduler.util.dataStructures
  * Bidirectional tree, is an implementation of the data structure general tree that extends from Tree, but each
  * node are linked to its father.
  */
-class BDTree<T>(value: T) : Tree<T>(value) {
+class BDTree<T>(value: T): Tree<T>(value) {
 
     var father: BDTree<T>? = null
     /**Determinate if is the super father, that is, he has no father.*/
@@ -22,10 +22,6 @@ class BDTree<T>(value: T) : Tree<T>(value) {
 //    override val _children = LinkedList<BDTree<T>>()
     private val bdtChildren = _children as LinkedList<BDTree<T>>
     override val children: List<BDTree<T>> get() = bdtChildren
-
-    override fun buildSelf(value: T) = BDTree(value).also { newChild->
-        newChild.father = this // I am your father
-    }
 
     override operator fun get(index: Int) = super.get(index) as BDTree
 
@@ -46,4 +42,8 @@ class BDTree<T>(value: T) : Tree<T>(value) {
 
     /**Transforms the whole tree into a List, including the higher level nodes.*/
     fun toListAll(preorder: Boolean = true): List<T> = toLinkedListAll(preorder)
+
+    override fun buildChild(value: T) = BDTree(value).also { newChild ->
+        newChild.father = this // I am your father
+    }
 }

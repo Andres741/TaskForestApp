@@ -30,9 +30,9 @@ open class Tree<T>(
 
     fun removeChild() = _children.remove()
 
-    open fun setChild(index: Int, value: T) = _children.set(index, buildSelf(value))
+    open fun setChild(index: Int, value: T) = _children.set(index, buildChild(value))
 
-    open fun addChild(value: T) = _children.add(buildSelf(value))
+    open fun addChild(value: T) = _children.add(buildChild(value))
 
     open fun addChildren(values: Iterable<T>) {
         _children.addAll(Iterable {
@@ -42,21 +42,21 @@ open class Tree<T>(
 
                 override fun hasNext() = iter.hasNext()
 
-                override fun next() = buildSelf(iter.next())
+                override fun next() = buildChild(iter.next())
             }
         })
     }
 
-    fun contains(value: T): Boolean {
-//        if (this == value) return true
-//
-//        for (child in children) {
-//            if (child.contains(value)) return true
-//        }
-//        return false
-        return contains(value){
-            this == value
+    infix fun contains(value: T): Boolean {
+        if (this.value == value) return true
+
+        for (child in children) {
+            if (child.contains(value)) return true
         }
+        return false
+//        return contains(value){
+//            this == value
+//        }
     }
 
     fun contains(value: T, eval: T.(T) -> Boolean): Boolean {
@@ -94,7 +94,5 @@ open class Tree<T>(
 
         return list
     }
-    protected open fun buildSelf(value: T): Tree<T>{
-        return Tree(value)
-    }
+    protected open fun buildChild(value: T) = Tree(value)
 }

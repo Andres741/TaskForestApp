@@ -19,7 +19,7 @@ class TaskModel (
     var superTask: TaskModel?
         get() = _superTask?.value
         set(value) {
-            tree.father = if (value == null) null else BDTree(value)
+            tree.father = value?.let { BDTree(value) }
         }
 
     private val _subTasks: List<BDTree<TaskModel>>
@@ -40,9 +40,10 @@ class TaskModel (
 
     fun toEntityWithSubTasks(): List<TaskEntity> = tree.toList().toEntity()
     fun toEntityAll(): List<TaskEntity> = tree.toListAll().toEntity()
-    fun toEntity(): TaskEntity {
-        return TaskEntity(title, type, description)
-    }
+    fun toEntity() = TaskEntity(
+        title = title, type = type, description = description,
+//        superTask = superTask?.title ?: "",// subTasks = subTasks.map { it.title }
+    )
 }
 
 fun List<TaskModel>.toEntity(): List<TaskEntity> = map { it.toEntity() }
