@@ -34,6 +34,5 @@ interface AApiClient {
         fun getQuoteApiClient(retrofit: Retrofit): AApiClient {
             return retrofit.create(AApiClient::class.java)
         }
-
     }
 }

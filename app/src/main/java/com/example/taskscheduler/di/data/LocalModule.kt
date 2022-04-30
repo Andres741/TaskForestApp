@@ -22,7 +22,7 @@ object LocalModule {
     fun provideRoom(@ApplicationContext context: Context) =
         Room.databaseBuilder(
             context, LocalDataBase::class.java, DATABASE_NAME
-        )/*.addTypeConverter(Converters())*/.build()
+        ).addTypeConverter(Converters()).build()
 
     @Singleton
     @Provides

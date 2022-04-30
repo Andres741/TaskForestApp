@@ -1,7 +1,7 @@
 package com.example.taskscheduler.data.sources.local.dao
 
 import androidx.room.*
-import com.example.taskscheduler.data.sources.local.entities.SubTaskEntity
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

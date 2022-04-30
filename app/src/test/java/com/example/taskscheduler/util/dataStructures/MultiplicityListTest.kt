@@ -1,6 +1,5 @@
 package com.example.taskscheduler.util.dataStructures
 
-import junit.framework.TestCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

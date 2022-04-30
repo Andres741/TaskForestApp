@@ -1,6 +1,6 @@
 package com.example.taskscheduler.data.models
 
-import com.example.taskscheduler.data.sources.local.entities.TaskEntity
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
 import com.example.taskscheduler.util.dataStructures.BDTree
 
 //TODO: implement TaskJson.

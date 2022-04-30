@@ -7,9 +7,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.taskscheduler.data.sources.local.LocalDataBase
 import com.example.taskscheduler.data.sources.local.entities.AEntity
-import com.example.taskscheduler.data.sources.local.entities.SubTaskEntity
-import com.example.taskscheduler.data.sources.local.entities.TaskEntity
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.flow.first
