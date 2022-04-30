@@ -47,7 +47,7 @@ class TaskDaoTest {
     private fun setUpSubTasks() = runBlocking {
         val titles = taskDao.getAllStatic().map { it.title }
 
-        subTaskDao.insertAll(listDBTasks.subList(1, numTaskEntity).map { SubTaskEntity(titles[0], it.title) })
+        subTaskDao.insertAll(listDBTasks.subList(1, numTaskEntity-1).map { SubTaskEntity(titles[0], it.title) })
 
         subTaskDao.insertAll(listDBTasks.subList(0, 4).map { SubTaskEntity(titles[3], it.title) })
 
@@ -161,10 +161,12 @@ class TaskDaoTest {
     }
 
     @Test
-    fun getAllTaskWithSubTasks_test(): Unit = runBlocking  {
-        taskDao.getAllTasksWithSubTasks().first().forEach { task ->
-            task.task.log()
-            task.subTaskEntities.forEach(SubTaskEntity::log)
+    fun getAllTaskWithSuperAndSubTasks_test(): Unit = runBlocking  {
+        taskDao.getAllTasksWithSuperAndSubTasks().first().forEach { task ->
+            task.task.log("task")
+            task.superTask.log("superTaskEntity")
+            "List of subTaskEntities: ".log()
+            task.subTasks.forEach(String::log)
             "\n".log()
         }
     }
@@ -175,7 +177,7 @@ class TaskDaoTest {
         taskDao.insert(TaskEntity("11", "programming", "11"))
         taskDao.insert(TaskEntity("22", "programming", "22"))
         taskDao.insert(TaskEntity("33", "programming", "33"))
-        taskDao.getAllTypeEntitiesStatic().forEach(TaskTypeFromDB::log)
+        taskDao.getAllTypesFromDBStatic().forEach(TaskTypeFromDB::log)
     }
 }
 

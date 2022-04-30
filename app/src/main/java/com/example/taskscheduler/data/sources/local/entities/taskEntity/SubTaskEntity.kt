@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = subtaskTable)
 data class SubTaskEntity(
-    @ColumnInfo(name = subTaskID) @PrimaryKey //A task only can be a sub task once
-    val subTask: String,
     @ColumnInfo(name = superTask_a) //A task can be the super task of many tasks
     val superTask: String,
+    @ColumnInfo(name = subTaskID) @PrimaryKey //A task only can be a sub task once
+    val subTask: String,
 )
 
 const val subtaskTable = "subtaskTable"

@@ -25,20 +25,35 @@ interface TaskDao {
     suspend fun getStatic(key: String): TaskEntity
     @Query(get)
     operator fun get(key: String): Flow<TaskEntity>
+    @Transaction
     @Query(get)
-    suspend fun getTaskWithSubTasksStatic(key: String): TaskWithSubTasks
+    suspend fun getTaskWithSuperAndSubTasksStatic(key: String): TaskWithSuperAndSubTasks
+    @Transaction
     @Query(get)
-    fun getTaskWithSubTasks(key: String): Flow<TaskWithSubTasks>
-
+    fun getTaskWithSuperAndSubTasks(key: String): Flow<TaskWithSuperAndSubTasks>
+    @Transaction
+    @Query(get)
+    suspend fun getTaskWithSuperTaskStatic(key: String): TaskWithSuperTask
+    @Transaction
+    @Query(get)
+    fun getTaskWithSuperTask(key: String): Flow<TaskWithSuperTask>
 
     @Query(getAll)
     suspend fun getAllStatic(): List<TaskEntity>
     @Query(getAll)
     fun getAll(): Flow<List<TaskEntity>>
+    @Transaction
     @Query(getAll)
-    suspend fun getAllTasksWithSubTasksStatic(): List<TaskWithSubTasks>
+    suspend fun getAllTasksWithSuperAndSubTasksStatic(): List<TaskWithSuperAndSubTasks>
+    @Transaction
     @Query(getAll)
-    fun getAllTasksWithSubTasks(): Flow<List<TaskWithSubTasks>>
+    fun getAllTasksWithSuperAndSubTasks(): Flow<List<TaskWithSuperAndSubTasks>>
+    @Transaction
+    @Query(getAll)
+    suspend fun getAllTasksWithSuperTaskStatic(): List<TaskWithSuperTask>
+    @Transaction
+    @Query(getAll)
+    fun getAllTasksWithSuperTask(): Flow<List<TaskWithSuperTask>>
 
 
     @Query(size)
@@ -58,6 +73,8 @@ interface TaskDao {
 
     @Query(contains)
     fun contains(key: String): Flow<Boolean>
+    @Query(contains)
+    fun containsStatic(key: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(data: TaskEntity)
@@ -74,15 +91,14 @@ interface TaskDao {
     suspend fun deleteAll()
 
     @Query(getTypeFromDB)
-    fun getTypeEntities(key: String): Flow<TaskTypeFromDB>
+    fun getTypeFromDB(key: String): Flow<TaskTypeFromDB>
     @Query(getTypeFromDB)
-    suspend fun getTypeEntityStatic(key: String): TaskTypeFromDB
-
+    suspend fun getTypeFromDBStatic(key: String): TaskTypeFromDB
 
     @Query(getAllTypesFromDB)
-    fun getAllTypeEntities(): Flow<List<TaskTypeFromDB>>
+    fun getAllTypesFromDB(): Flow<List<TaskTypeFromDB>>
     @Query(getAllTypesFromDB)
-    suspend fun getAllTypeEntitiesStatic(): List<TaskTypeFromDB>
+    suspend fun getAllTypesFromDBStatic(): List<TaskTypeFromDB>
 
     @Transaction
     suspend fun refresh(vararg data: TaskEntity) {

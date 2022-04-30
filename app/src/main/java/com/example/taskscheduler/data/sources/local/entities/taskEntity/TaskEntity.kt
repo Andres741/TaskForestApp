@@ -18,5 +18,5 @@ data class TaskEntity(
 }
 const val taskTable = "taskTable"
 const val titleID = "titleID"
-const val type_a = "type_a"
+const val type_a = "type"
 const val description_a = "description_a"
