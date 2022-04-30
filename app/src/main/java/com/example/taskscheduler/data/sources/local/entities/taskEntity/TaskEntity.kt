@@ -7,19 +7,16 @@ import com.example.taskscheduler.data.models.TaskModel
 
 @Entity(tableName = taskTable)
 data class TaskEntity(
-    @ColumnInfo(name = "titleID") @PrimaryKey
+    @ColumnInfo(name = titleID) @PrimaryKey
     val title: String,
-    @ColumnInfo(name = "type")
+    @ColumnInfo(name = type_a)
     val type: String,
-    @ColumnInfo(name = "description")
+    @ColumnInfo(name = description_a)
     val description: String,
-//    @ColumnInfo(name = "superTask") /**Keeps the key to one task*/
-//    val superTask: String = "",
-//    @ColumnInfo(name = "subTasks") /**Keeps the keys to others TaskEntity*/
-//    val subTasks: List<String> = emptyList(),
 ) {
     fun toModel() = TaskModel(title, type, description)
 }
-const val taskTable = "task_table"
-
-
+const val taskTable = "taskTable"
+const val titleID = "titleID"
+const val type_a = "type_a"
+const val description_a = "description_a"

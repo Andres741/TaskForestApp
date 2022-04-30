@@ -2,23 +2,26 @@ package com.example.taskscheduler.data.sources.local.dao
 
 import androidx.room.*
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.subTaskID
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.subtaskTable
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.superTask_a
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubTaskDao {
 
     private companion object {
-        const val get = "SELECT subTaskID FROM subtask_table WHERE superTask = :superTask"
-        const val getSubTaskEntities = "SELECT * FROM subtask_table WHERE superTask = :superTask"
+        const val get = "SELECT $subTaskID FROM $subtaskTable WHERE $superTask_a = :superTask"
+        const val getSubTaskEntities = "SELECT * FROM $subtaskTable WHERE $superTask_a = :superTask"
 
-        const val getAll = "SELECT * FROM subtask_table ORDER BY superTask"
+        const val getAll = "SELECT * FROM $subtaskTable ORDER BY $superTask_a"
 
-        const val getAllSuperTasks = "SELECT superTask FROM subtask_table GROUP BY superTask"
-        const val getSuperTask = "SELECT superTask FROM subtask_table WHERE subTaskID = :subTask"
+        const val getAllSuperTasks = "SELECT $superTask_a FROM $subtaskTable GROUP BY $superTask_a"
+        const val getSuperTask = "SELECT $superTask_a FROM $subtaskTable WHERE $subTaskID = :subTask"
 
-        const val deleteAll = "DELETE FROM subtask_table"
-        const val deleteSub = "DELETE FROM subtask_table WHERE subTaskID = :subTask"
-        const val deleteSuper = "DELETE FROM subtask_table WHERE superTask = :superTask"
+        const val deleteAll = "DELETE FROM $subtaskTable"
+        const val deleteSub = "DELETE FROM $subtaskTable WHERE $subTaskID = :subTask"
+        const val deleteSuper = "DELETE FROM $subtaskTable WHERE $superTask_a = :superTask"
     }
     //Select
     @Query(getSubTaskEntities)
@@ -52,7 +55,6 @@ interface SubTaskDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg list: SubTaskEntity)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(list: Iterable<SubTaskEntity>)
 

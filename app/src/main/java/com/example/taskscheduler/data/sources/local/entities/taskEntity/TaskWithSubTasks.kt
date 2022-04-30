@@ -7,8 +7,8 @@ import com.example.taskscheduler.data.models.TaskModel
 data class TaskWithSubTasks(
     @Embedded val task: TaskEntity,
     @Relation(
-        parentColumn = "titleID",
-        entityColumn = "superTask"
+        parentColumn = titleID,
+        entityColumn = superTask_a
     )
     val subTaskEntities: List<SubTaskEntity>
 ) {
