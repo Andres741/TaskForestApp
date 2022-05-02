@@ -5,6 +5,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.taskscheduler.data.models.TaskModel
 
+const val taskTable = "taskTable"
+const val titleID = "titleID"
+const val type_a = "type"
+const val description_a = "description_a"
+
 @Entity(tableName = taskTable)
 data class TaskEntity(
     @ColumnInfo(name = titleID) @PrimaryKey
@@ -14,9 +19,9 @@ data class TaskEntity(
     @ColumnInfo(name = description_a)
     val description: String,
 ) {
-    fun toModel() = TaskModel(title, type, description)
+    fun toModel() = TaskModel (
+        title = title, type = type, description = description,
+    )
 }
-const val taskTable = "taskTable"
-const val titleID = "titleID"
-const val type_a = "type"
-const val description_a = "description_a"
+
+fun Iterable<TaskEntity>.toModel(): List<TaskModel> = map(TaskEntity::toModel)

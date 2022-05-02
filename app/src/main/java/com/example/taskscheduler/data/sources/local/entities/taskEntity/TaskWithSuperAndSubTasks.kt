@@ -45,17 +45,16 @@ data class TaskWithSuperAndSubTasks(
     var isPossibleToDeclareVariables = false // Is impossible to declare variables with value in this class.
     */
 
-    val superTask: String get() = superTaskEntity?.superTask ?: ""
-    val subTasks: List<String> get() = subTaskEntities.map { it.subTask }
+    private val superTask: String get() = superTaskEntity?.superTask ?: ""
+    private val subTasks: List<String> get() = subTaskEntities.map { it.subTask }
     val hasSubTasks: Boolean get() = subTaskEntities.isNotEmpty()
     val hasSuperTask: Boolean get() = superTaskEntity != null
 
 
-    fun toModel(): TaskModel {
-        return if (hasSubTasks) {
-            task.toModel()
-        } else {
-            TODO("Task model has to be modified.")
-        }
-    }
+    fun toModel() = TaskModel (
+        title = task.title, type = task.type, description = task.description,
+        superTask = superTask, subTasks = subTasks,
+    )
 }
+
+fun Iterable<TaskWithSuperAndSubTasks>.toModel(): List<TaskModel> = map(TaskWithSuperAndSubTasks::toModel)

@@ -2,6 +2,7 @@ package com.example.taskscheduler.data.sources.local.entities.taskEntity
 
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.example.taskscheduler.data.models.TaskModel
 
 data class TaskWithSuperTask(
     @Embedded val task: TaskEntity,
@@ -9,5 +10,13 @@ data class TaskWithSuperTask(
         parentColumn = titleID,
         entityColumn = subTaskID
     )
-    val superTaskEntity: SubTaskEntity
-)
+    val superTaskEntity: SubTaskEntity?
+) {
+    fun toModel() = TaskModel (
+        title = task.title, type = task.type, description = task.description,
+        superTask = superTaskEntity?.superTask ?: "",
+    )
+
+}
+
+fun Iterable<TaskWithSuperTask>.toModel(): List<TaskModel> = map(TaskWithSuperTask::toModel)

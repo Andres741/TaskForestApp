@@ -27,7 +27,7 @@ class TaskDaoTest {
 
     private lateinit var listDBTasks: MutableList<TaskEntity>
 
-    private val numTaskEntity = 10
+    private val numTaskEntities = 10
 
     private fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -40,14 +40,14 @@ class TaskDaoTest {
 
     private fun setUpTasks() = runBlocking {
         val list = mutableListOf<TaskEntity>()
-        taskDao.insertAll(List(numTaskEntity, Int::taskNum).also { list.addAll(it) })
+        taskDao.insertAll(List(numTaskEntities, Int::taskNum).also { list.addAll(it) })
         listDBTasks = list
     }
 
     private fun setUpSubTasks() = runBlocking {
         val titles = taskDao.getAllStatic().map { it.title }
 
-        subTaskDao.insertAll(listDBTasks.subList(1, numTaskEntity-1).map { SubTaskEntity(titles[0], it.title) })
+        subTaskDao.insertAll(listDBTasks.subList(1, numTaskEntities-1).map { SubTaskEntity(titles[0], it.title) })
 
         subTaskDao.insertAll(listDBTasks.subList(0, 4).map { SubTaskEntity(titles[3], it.title) })
 
@@ -97,7 +97,7 @@ class TaskDaoTest {
 
     @Test
     fun taskDao_size_test(): Unit = runBlocking {
-        assertEquals(numTaskEntity, taskDao.sizeStatic())
+        assertEquals(numTaskEntities, taskDao.sizeStatic())
     }
 
     @Test
@@ -162,8 +162,9 @@ class TaskDaoTest {
 
     @Test
     fun getAllTaskWithSuperAndSubTasks_test(): Unit = runBlocking  {
-        taskDao.getAllTasksWithSuperAndSubTasks().first().forEach { task ->
-            task.task.log("task")
+        taskDao.getAllTasksWithSuperAndSubTasks().first().forEach { taskEntity ->
+            val task = taskEntity.toModel()
+            taskEntity.task.log("task")
             task.superTask.log("superTaskEntity")
             "List of subTaskEntities: ".log()
             task.subTasks.forEach(String::log)

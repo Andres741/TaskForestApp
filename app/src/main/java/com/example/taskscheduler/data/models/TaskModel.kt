@@ -1,49 +1,38 @@
 package com.example.taskscheduler.data.models
 
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
-import com.example.taskscheduler.util.dataStructures.BDTree
 
 //TODO: implement TaskJson.
 
-class TaskModel (
+data class TaskModel (
     val title: String,
-    val type: String,
-    val description: String = "",
-    superTask: TaskModel? = null,
-    subTasks: List<TaskModel> = emptyList(),
+    var type: String,
+    var description: String = "",
+    var superTask: String = "",
+    var subTasks: List<String> = emptyList(),
 ) {
-    private val tree: BDTree<TaskModel> = BDTree(this)
-
-    private val _superTask: BDTree<TaskModel>?
-        get() = tree.father
-    var superTask: TaskModel?
-        get() = _superTask?.value
-        set(value) {
-            tree.father = value?.let { BDTree(value) }
-        }
-
-    private val _subTasks: List<BDTree<TaskModel>>
-        get() =  tree.children
-    val subTasks: List<TaskModel>
-        get() = _subTasks.map{it.value}
-
-    init {
-        this.superTask = superTask
-        tree.addChildren(subTasks)
-    }
 
     var isDone: Boolean = false
 
     val hasDescription get() = description.isNotBlank()
-    val hasSubTasks get() = _subTasks.isNotEmpty()
-    val numSubTasks get() = _subTasks.size
+    val hasSuperTask get() = superTask.isNotBlank()
+    val hasSubTasks get() = subTasks.isNotEmpty()
+    val numSubTasks get() = subTasks.size
 
-    fun toEntityWithSubTasks(): List<TaskEntity> = tree.toList().toEntity()
-    fun toEntityAll(): List<TaskEntity> = tree.toListAll().toEntity()
     fun toEntity() = TaskEntity(
         title = title, type = type, description = description,
-//        superTask = superTask?.title ?: "",// subTasks = subTasks.map { it.title }
     )
+
+    /**Returns a SubTaskEntity with the relationship of hierarchy whit its father, or null if does not have father.*/
+    fun toSuperTaskEntity() = if (hasSuperTask) SubTaskEntity(superTask = superTask, subTask = title) else null
+
+    /**Returns a List of SubTaskEntity with the relationships of hierarchy whit its children.*/
+    fun toSubTasksEntities() = subTasks.map { subTask ->
+        SubTaskEntity(superTask = title, subTask = subTask)
+    }
 }
 
-fun List<TaskModel>.toEntity(): List<TaskEntity> = map { it.toEntity() }
+fun Iterable<TaskModel>.toEntity(): List<TaskEntity> = map(TaskModel::toEntity)
+
+fun Iterable<TaskModel>.toSuperTaskEntity(): List<SubTaskEntity> = mapNotNull(TaskModel::toSuperTaskEntity)

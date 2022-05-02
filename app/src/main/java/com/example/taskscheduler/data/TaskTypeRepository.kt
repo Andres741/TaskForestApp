@@ -16,7 +16,7 @@ class TaskTypeRepository @Inject constructor(
 ) {
     val taskTypes: List<TaskTypeModel> = _taskTypes.allToModel()
 
-    fun addType(type: String) = _taskTypes.add(type)
+    fun addType(type: String) = _taskTypes.insert(type)
 
     fun isTaskType(possibleType: String) = _taskTypes.contains(possibleType)
 
