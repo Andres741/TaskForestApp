@@ -29,7 +29,7 @@ class MultiplicityListTest {
 
         for (i in hashMap) {
             mutableList.add(i.key)
-            (1..i.value).forEach{ _ -> multiplicityList.add(i.key) }
+            (1..i.value).forEach{ _ -> multiplicityList.insert(i.key) }
         }
     }
 
@@ -61,7 +61,7 @@ class MultiplicityListTest {
         println("testGet()\n")
 
         for (i in 0 until numItems) {
-            val isEquals = multiplicityList[i].also{ print("$it =? ")} == mutableList[i].apply(::print)
+            val isEquals = multiplicityList[i].also{ print("$it =? ")}.first == mutableList[i].apply(::print)
             println()
             assert(isEquals)
         }
