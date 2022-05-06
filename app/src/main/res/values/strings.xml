@@ -6,8 +6,8 @@
     <string name="app_name">Task scheduler</string>
     <string name="action_logOut">Log out</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
+    <string name="fragment_tasks_label">Task Fragment</string>
+    <string name="fragment_task_detail_label">Task detail Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 

@@ -1,7 +1,7 @@
 package com.example.taskscheduler.data.sources.local.entities
 
 import androidx.room.ColumnInfo
-import com.example.taskscheduler.data.models.TaskTypeModel
+import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.type_a
 
 const val countOfType_a = "countOfType_a"

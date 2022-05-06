@@ -40,14 +40,14 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
 
-            android:layout_marginHorizontal="@dimen/rcy_marginHorizontal"
-            android:layout_marginVertical="@dimen/rcy_marginVertical"
-
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textview_first"
             app:layout_constraintBottom_toTopOf="@id/tasksTypeView"
-            />
+
+            style="@style/recyclerTasks"
+
+        />
 
         <!--The items of this RecyclerView should be task_type_item-->
         <androidx.recyclerview.widget.RecyclerView
@@ -56,16 +56,15 @@
             android:layout_width="0dp"
             android:layout_height="36dp"
 
-            android:layout_marginHorizontal="@dimen/rcy_marginHorizontal"
-            android:layout_marginVertical="@dimen/rcy_marginVertical"
-
             android:orientation="horizontal"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/newTaskButton"
 
-            />
+            style="@style/recyclerTasks"
+
+        />
 
         <Button
             android:id="@+id/newTaskButton"

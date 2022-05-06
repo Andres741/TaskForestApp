@@ -1,7 +1,7 @@
 package com.example.taskscheduler.data
 
-import com.example.taskscheduler.data.models.TaskTypeModel
-import com.example.taskscheduler.data.models.allToModel
+import com.example.taskscheduler.domain.models.TaskTypeModel
+import com.example.taskscheduler.domain.models.allToModel
 import com.example.taskscheduler.util.dataStructures.IMultiplicityList
 import javax.inject.Inject
 import javax.inject.Singleton

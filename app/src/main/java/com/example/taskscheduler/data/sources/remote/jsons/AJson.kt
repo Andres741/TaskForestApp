@@ -1,6 +1,6 @@
 package com.example.taskscheduler.data.sources.remote.jsons
 
-import com.example.taskscheduler.data.models.AModel
+import com.example.taskscheduler.domain.models.AModel
 import com.squareup.moshi.Json
 
 //@JsonClass(generateAdapter = true) //Now this doesn't work for some reason.

@@ -28,4 +28,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">@dimen/marginBottomButton</item>
     </style>
+
+    <style name="recyclerTasks">
+        <item name="android:layout_marginHorizontal">@dimen/rcy_marginHorizontal</item>
+        <item name="android:layout_marginVertical">@dimen/rcy_marginVertical</item>
+    </style>
 </resources>

@@ -3,7 +3,7 @@ package com.example.taskscheduler.domain
 import androidx.lifecycle.LiveData
 import com.example.taskscheduler.data.ALocalRepository
 import com.example.taskscheduler.data.ARemoteRepository
-import com.example.taskscheduler.data.models.AModel
+import com.example.taskscheduler.domain.models.AModel
 import javax.inject.Inject
 import javax.inject.Singleton
 

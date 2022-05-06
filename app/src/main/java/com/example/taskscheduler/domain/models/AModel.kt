@@ -1,4 +1,4 @@
-package com.example.taskscheduler.data.models
+package com.example.taskscheduler.domain.models
 
 import com.example.taskscheduler.data.sources.local.entities.AEntity
 import com.example.taskscheduler.data.sources.remote.jsons.AJson

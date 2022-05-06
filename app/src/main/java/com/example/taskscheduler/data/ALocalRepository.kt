@@ -1,7 +1,7 @@
 package com.example.taskscheduler.data
 
-import com.example.taskscheduler.data.models.AModel
-import com.example.taskscheduler.data.models.toEntityWithSubTasks
+import com.example.taskscheduler.domain.models.AModel
+import com.example.taskscheduler.domain.models.toEntityWithSubTasks
 import com.example.taskscheduler.data.sources.local.dao.ADao
 import com.example.taskscheduler.data.sources.local.dao.IALocalRepository
 import com.example.taskscheduler.data.sources.local.entities.toModel

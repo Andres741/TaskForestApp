@@ -1,4 +1,4 @@
-package com.example.taskscheduler.data.models
+package com.example.taskscheduler.domain.models
 
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
@@ -11,9 +11,8 @@ data class TaskModel (
     var description: String = "",
     var superTask: String = "",
     var subTasks: List<String> = emptyList(),
-) {
-
     var isDone: Boolean = false
+) {
 
     val hasDescription get() = description.isNotBlank()
     val hasSuperTask get() = superTask.isNotBlank()
@@ -21,7 +20,7 @@ data class TaskModel (
     val numSubTasks get() = subTasks.size
 
     fun toEntity() = TaskEntity(
-        title = title, type = type, description = description,
+        title = title, type = type, description = description, isDone = isDone
     )
 
     /**Returns a SubTaskEntity with the relationship of hierarchy whit its father, or null if does not have father.*/

@@ -1,4 +1,4 @@
-package com.example.taskscheduler.data.models
+package com.example.taskscheduler.domain.models
 
 import com.example.taskscheduler.util.dataStructures.IMultiplicityList
 import com.example.taskscheduler.util.dataStructures.MultiplicityList

@@ -199,13 +199,12 @@
             android:maxHeight="@dimen/subtasksRcyMaxHeight"
             tools:layout_height="@dimen/subtasksRcyMaxHeight"
 
-            android:layout_marginHorizontal="@dimen/rcy_marginHorizontal"
-            android:layout_marginVertical="@dimen/rcy_marginVertical"
-
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
 
             app:layout_constraintBottom_toTopOf="@id/previous_button"
+
+            style="@style/recyclerTasks"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@
 
         <variable
             name="task"
-            type="com.example.taskscheduler.data.models.TaskModel"
+            type="com.example.taskscheduler.domain.models.TaskModel"
         />
 
         <!--

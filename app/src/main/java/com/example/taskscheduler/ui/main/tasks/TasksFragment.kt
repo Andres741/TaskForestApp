@@ -6,10 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import com.example.taskscheduler.R
+import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.databinding.FragmentTasksBinding
+import com.example.taskscheduler.ui.adapters.fragmentAdapters.TasksAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -21,6 +28,8 @@ class TasksFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: TasksViewModel by viewModels()
+
+    private val adapter = TasksAdapter()
 
 
     override fun onCreateView(
@@ -39,6 +48,7 @@ class TasksFragment : Fragment() {
             _binding = it
             it.viewmodel = viewModel
             it.lifecycleOwner = viewLifecycleOwner
+            it.tasksRcy.adapter = adapter
             it.root
         }
     }
@@ -46,18 +56,29 @@ class TasksFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.apply {
-            lifecycleOwner = viewLifecycleOwner
-            newTaskButton.setOnClickListener {
+        /** Introduces the data into the adapter.*/
+        lifecycleScope.launch {
+            viewModel.pagingDataFlow.collectLatest(adapter::submitData)
+        }
+        /** The same but with LiveData instead Flow. */
+//        viewModel.pagingLiveData.observe(viewLifecycleOwner) {
+//            adapter.submitData(lifecycle, it)
+//        }
+
+
+        binding.also {
+//            it.tasksRcy.adapter = adapter
+
+            it.newTaskButton.setOnClickListener {
                 findNavController().navigate(
-                    TasksFragmentDirections.actionFirstFragmentToSecondFragment()
+                    TasksFragmentDirections.actionTaskFragmentToTaskDetailFragment()
                 )
             }
         }
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

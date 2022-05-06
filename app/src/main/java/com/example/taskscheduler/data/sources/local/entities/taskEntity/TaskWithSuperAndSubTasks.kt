@@ -2,7 +2,7 @@ package com.example.taskscheduler.data.sources.local.entities.taskEntity
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.example.taskscheduler.data.models.TaskModel
+import com.example.taskscheduler.domain.models.TaskModel
 
 data class TaskWithSuperAndSubTasks(
     @Embedded val task: TaskEntity,
@@ -52,7 +52,7 @@ data class TaskWithSuperAndSubTasks(
 
 
     fun toModel() = TaskModel (
-        title = task.title, type = task.type, description = task.description,
+        title = task.title, type = task.type, description = task.description, isDone = task.isDone,
         superTask = superTask, subTasks = subTasks,
     )
 }

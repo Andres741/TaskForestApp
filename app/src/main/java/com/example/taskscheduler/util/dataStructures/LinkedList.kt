@@ -6,7 +6,7 @@ import com.example.taskscheduler.util.errors.outOfBoundsOf
  * A implementation of the data structure linked list. The new elements are added by default at the end,
  * and removed at the beginning like in the queues.
  */
-class LinkedList<T>(): List<T> {  //TODO: Make this class a mutable list
+class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
     /**
      * First node of the list, it will be null only when the list is empty
      * The new nodes are going to be added here.

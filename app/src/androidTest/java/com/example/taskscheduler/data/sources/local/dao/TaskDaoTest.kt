@@ -174,10 +174,9 @@ class TaskDaoTest {
 
     @Test
     fun getAllTypeEntities_test(): Unit = runBlocking {
-        taskDao.insert(TaskEntity("00", "programming", "00"))
-        taskDao.insert(TaskEntity("11", "programming", "11"))
-        taskDao.insert(TaskEntity("22", "programming", "22"))
-        taskDao.insert(TaskEntity("33", "programming", "33"))
+        repeat(7){ i ->
+            taskDao.insert(TaskEntity("$i$i", "programming", "$i$i"))
+        }
         taskDao.getAllTypesFromDBStatic().forEach(TaskTypeFromDB::log)
     }
 }
@@ -189,5 +188,3 @@ private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this",)
 private fun<T> T.log(msj: String? = null) = apply {
     Log.d("TaskDaoTest", "${if (msj != null) "$msj: " else ""}${toString()}")
 }
-
-

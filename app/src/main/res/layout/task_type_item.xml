@@ -11,7 +11,7 @@
 
         <variable
             name="taskType"
-            type="com.example.taskscheduler.data.models.TaskTypeModel"
+            type="com.example.taskscheduler.domain.models.TaskTypeModel"
         />
     </data>
 
