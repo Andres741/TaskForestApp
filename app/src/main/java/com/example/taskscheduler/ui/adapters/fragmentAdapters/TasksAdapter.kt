@@ -9,9 +9,9 @@ import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.databinding.TaskItemBinding
 
 
-class TasksAdapter: PagingDataAdapter<TaskModel, TaskViewHolder>(TaskDiffCallback()) {
+class TasksAdapter(val viewModel: TaskAdapterViewModel): PagingDataAdapter<TaskModel, TaskViewHolder>(TaskDiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskViewHolder.create(parent = parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskViewHolder.create(parent = parent, viewModel = viewModel)
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         getItem(position)?.let { item ->
@@ -21,24 +21,40 @@ class TasksAdapter: PagingDataAdapter<TaskModel, TaskViewHolder>(TaskDiffCallbac
 }
 
 class TaskViewHolder(
-    private val binding: TaskItemBinding
+    private val binding: TaskItemBinding,
+    val viewModel: TaskAdapterViewModel
 ): RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: TaskModel) {
-        binding.apply {
-            task = item
-            executePendingBindings()
-        }
-    }
-
     companion object {
-        fun create(parent: ViewGroup) = TaskViewHolder (
+        fun create(parent: ViewGroup, viewModel: TaskAdapterViewModel) = TaskViewHolder (
             binding = TaskItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            )
+            ),
+            viewModel = viewModel
         )
+    }
+
+    fun bind(item: TaskModel) {
+        binding.apply {
+            task = item
+            doneCallBack = DoneCallBack()
+            executePendingBindings()
+        }
+    }
+
+    inner class DoneCallBack {
+        operator fun invoke(){
+            //viewModel.changeDoneStatusOf(binding.task)
+            binding.task?.let(viewModel::changeDoneStatusOf) // Will this change the image of the checkButton?
+        }
+    }
+    inner class GoToSubTaskDetailCallBack {
+        operator fun invoke(){
+            //viewModel.addToStack(binding.task)
+            binding.task?.let(viewModel::addToStack)  // taskStack must be observed in the fragments.
+        }
     }
 }
 

@@ -9,6 +9,9 @@
         <variable
             name="viewmodel"
             type="com.example.taskscheduler.ui.main.taskDetail.TaskDetailViewModel" />
+        <variable
+            name="taskAdapterViewModel"
+            type="com.example.taskscheduler.ui.adapters.fragmentAdapters.TaskAdapterViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,7 +48,7 @@
 
 
             android:hint="@{@string/enter_your_x_here(@string/title)}"
-            android:text="@{viewmodel.task.title}"
+            android:text="@{taskAdapterViewModel.taskStack.title}"
 
             tools:text="value 0"
 
@@ -58,12 +61,12 @@
             android:layout_height="wrap_content"
 
             app:layout_constraintBottom_toTopOf="@id/task_done_cont"
-
-            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
             app:layout_constraintTop_toBottomOf="@id/task_title_cont"
 
+            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
+
             android:hint="@{@string/enter_your_x_here(@string/type)}"
-            android:text="@{viewmodel.task.type}"
+            android:text="@{taskAdapterViewModel.taskStack.type}"
 
             tools:text="value 1"
 
@@ -77,22 +80,44 @@
         -->
         <TextView
             android:id="@+id/task_done_cont"
+
             android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+
+            android:text="@{taskAdapterViewModel.taskStack.isDone ? @string/completed : @string/uncompleted}"
+            android:textColor="@{taskAdapterViewModel.taskStack.isDone ? @color/done : @color/undone}"
+
+            app:layout_constraintBottom_toTopOf="@+id/superTask_cont"
+            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
+
+            app:layout_constraintTop_toBottomOf="@id/task_type_cont"
+            tools:text="completed"
+
+            tools:textColor="@color/done"
+
+            style="@style/task_value"
+            />
+
+        <TextView
+            android:id="@+id/superTask_cont"
+
+            style="@style/task_value"
+            android:layout_width="wrap_content"
+
             android:layout_height="wrap_content"
 
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
 
-            app:layout_constraintTop_toBottomOf="@id/task_type_cont"
-            app:layout_constraintBottom_toTopOf="@id/task_description_cont"
+            app:layout_constraintBottom_toTopOf="@+id/task_description_cont"
+            app:layout_constraintTop_toBottomOf="@+id/task_done_cont"
 
-            android:textColor="@{viewmodel.task.isDone ? @color/done : @color/undone}"
-            android:text="@{viewmodel.task.isDone ? @string/completed : @string/uncompleted}"
+            android:text="@{taskAdapterViewModel.taskStack.hasSuperTask ? taskAdapterViewModel.taskStack.superTask : @string/doesn_t_have}"
 
-            tools:textColor="@color/done"
-            tools:text="completed"
+            android:onClick="@{()-> taskAdapterViewModel.removeFromStack()}"
 
-            style="@style/task_value"
-            />
+            tools:text="Learning" />
+
 
         <EditText
             android:id="@+id/task_description_cont"
@@ -109,7 +134,9 @@
             app:layout_constraintBottom_toTopOf="@id/subtasksRcy"
 
             android:hint="@{@string/enter_your_x_here(@string/description)}"
-            android:text="@{viewmodel.task.description}"
+
+            android:text="@{taskAdapterViewModel.taskStack.hasDescription ? taskAdapterViewModel.taskStack.description : @string/doesn_t_have}"
+
 
             tools:text="@string/mucho_texto_1"
 
@@ -127,7 +154,7 @@
         android:onClick = "@{() -> viewModel.addSubTask() )}"
         -->
         <Button
-            android:id="@+id/previous_button"
+            android:id="@+id/add_subtask_button"
 
 
             app:layout_constraintStart_toStartOf="parent"
@@ -181,6 +208,19 @@
         />
 
         <TextView
+            android:id="@+id/superTask"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+
+            app:layout_constraintBaseline_toBaselineOf="@id/superTask_cont"
+
+            android:text="@string/super_task"
+            />
+
+        <TextView
             android:id="@+id/task_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -197,12 +237,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:maxHeight="@dimen/subtasksRcyMaxHeight"
-            tools:layout_height="@dimen/subtasksRcyMaxHeight"
+            tools:layout_height="300dp"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
 
-            app:layout_constraintBottom_toTopOf="@id/previous_button"
+            app:layout_constraintBottom_toTopOf="@id/add_subtask_button"
 
             style="@style/recyclerTasks"
             />

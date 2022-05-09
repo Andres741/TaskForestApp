@@ -12,34 +12,24 @@
             type="com.example.taskscheduler.domain.models.TaskModel"
         />
 
-        <!--
-        TODO: Implement the classes of the following two variables:
-
         <variable
             name="doneCallBack"
-            type="com.example.taskscheduler..."
-        />
+            type="com.example.taskscheduler.ui.adapters.fragmentAdapters.TaskViewHolder.DoneCallBack"
+            />
+
         <variable
             name="goToSubTaskDetailCallBack"
-            type="com.example.taskscheduler..."
-        />
-
-        -->
+            type="com.example.taskscheduler.ui.adapters.fragmentAdapters.TaskViewHolder.GoToSubTaskDetailCallBack"
+            />
     </data>
-    <!--
-    TODO: put the on click listener.
-    "android:onClick = "@{() -> goToSubTaskDetailCallBack())}"
-    -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/marginItem"
-        >
+        android:onClick="@{() -> goToSubTaskDetailCallBack.invoke()}"
+    >
 
-        <!--
-            TODO: put an image and the on click listener.
-        android:onClick = "@{() -> doneCallBack(task) )}"
-        -->
         <ImageView
             android:id="@+id/checkButton"
             android:layout_width="@dimen/checkButtonSize"
@@ -52,6 +42,8 @@
             app:layout_constraintTop_toTopOf="parent"
 
             android:src="@{task.isDone ? @drawable/done: @drawable/undone}"
+
+            android:onClick = "@{() -> doneCallBack.invoke() }"
 
             tools:src="@drawable/undone"
             />

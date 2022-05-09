@@ -9,7 +9,5 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(): ViewModel() {
-
-    val task: MutableLiveData<TaskModel> = TODO("Navigation not implemented yet.")
-
+    //TODO: Determine if this ViewModel is useful
 }

@@ -78,5 +78,7 @@
     <string name="type">type</string>
     <string name="add_task">Add task</string>
     <string name="save">save</string>
+    <string name="super_task">Super task:</string>
+    <string name="doesn_t_have">doesn\'t have</string>
 
 </resources>

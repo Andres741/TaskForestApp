@@ -162,11 +162,11 @@ class TaskDaoTest {
 
     @Test
     fun getAllTaskWithSuperAndSubTasks_test(): Unit = runBlocking  {
-        taskDao.getAllTasksWithSuperAndSubTasks().first().forEach { taskEntity ->
-            val task = taskEntity.toModel()
-            taskEntity.task.log("task")
-            task.superTask.log("superTaskEntity")
-            "List of subTaskEntities: ".log()
+        taskDao.getAllTasksWithSuperAndSubTasks().first().forEach { taskWithSuperAndSubTasks ->
+            val task = taskWithSuperAndSubTasks.toModel()
+            task.log("task")
+            task.superTask.log("super task")
+            "List of sub tasks: ".log()
             task.subTasks.forEach(String::log)
             "\n".log()
         }

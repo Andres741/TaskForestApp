@@ -12,10 +12,7 @@ data class TaskWithSuperTask(
     )
     val superTaskEntity: SubTaskEntity?
 ) {
-    fun toModel() = TaskModel (
-        title = task.title, type = task.type, description = task.description, isDone = task.isDone,
-        superTask = superTaskEntity?.superTask ?: "",
-    )
+    fun toModel() = TaskModel (this)
 
 }
 

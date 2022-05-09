@@ -51,10 +51,33 @@ data class TaskWithSuperAndSubTasks(
     val hasSuperTask: Boolean get() = superTaskEntity != null
 
 
-    fun toModel() = TaskModel (
-        title = task.title, type = task.type, description = task.description, isDone = task.isDone,
-        superTask = superTask, subTasks = subTasks,
-    )
+    fun toModel() = TaskModel(this)
 }
 
 fun Iterable<TaskWithSuperAndSubTasks>.toModel(): List<TaskModel> = map(TaskWithSuperAndSubTasks::toModel)
+
+
+//data class TaskWithSuperAndSubTasks(
+//    val taskWithSuperTask: TaskWithSuperTask,
+//    @Relation(
+//        entity = TaskEntity::class,
+//        parentColumn = titleID,
+//        entityColumn = superTask_a
+//    )
+//    val subTaskEntities: List<SubTaskEntity>,
+//) {
+//    val task get() = taskWithSuperTask.task
+//    val superTaskEntity get() = taskWithSuperTask.superTaskEntity
+//
+//    val hasSubTasks: Boolean get() = subTaskEntities.isNotEmpty()
+//    val hasSuperTask: Boolean get() = superTaskEntity != null
+//
+//    private val superTask: String get() = superTaskEntity?.superTask ?: ""
+//    private val subTasks: List<String> get() = subTaskEntities.map { it.subTask }
+//
+//
+//    fun toModel() = TaskModel(this)
+//
+//}
+//
+

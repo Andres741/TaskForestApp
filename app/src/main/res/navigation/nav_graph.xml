@@ -34,11 +34,6 @@
             app:destination="@id/addTaskFragment"
             app:popUpTo="@id/addTaskFragment"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_fragment_task_detail_self"
-            app:destination="@id/fragment_task_detail"
-            app:popUpTo="@id/fragment_task_detail"
-            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -46,5 +41,10 @@
         android:name="com.example.taskscheduler.ui.main.addTask.AddTaskFragment"
         android:label="AddTaskFragment"
         tools:layout="@layout/add_task_fragment"
-        />
+        >
+        <argument
+            android:name="supertask"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

@@ -35,6 +35,9 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
         return getNode(index).elem
     }
 
+    fun getFirst() = first?.elem
+    fun getLast() = last?.elem
+
     override fun equals(other: Any?): Boolean {
         if (other !is LinkedList<*>) return false
 
@@ -74,6 +77,12 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
         last!!.next = Node(value)
         last = last!!.next!!
         size++
+    }
+
+    fun addFirst(value: T) {
+        val newFirst = Node(value)
+        newFirst.next = first
+        first = newFirst
     }
 
     fun addAll(values: Iterable<T>) {
@@ -142,6 +151,15 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
         }
         first = first!!.next
         size--
+    }
+
+    /**
+     * Deletes the first element and returns it.
+     */
+    fun pop(): T? {
+        val lastFirstElem = first?.elem
+        remove()
+        return lastFirstElem
     }
 
     override operator fun iterator() = object: Iterator<T> {
