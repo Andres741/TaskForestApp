@@ -37,6 +37,8 @@
 
             app:layout_constraintTop_toBottomOf="@id/title_add_task"
 
+            android:text="@={viewmodel.title}"
+
             android:hint="@{@string/enter_your_x_here(@string/title)}"
             tools:hint="Enter your title here"
 
@@ -54,6 +56,8 @@
             app:layout_constraintEnd_toEndOf="parent"
 
             app:layout_constraintTop_toBottomOf="@id/title"
+
+            android:text="@={viewmodel.type}"
 
             android:hint="@{@string/enter_your_x_here(@string/type)}"
             tools:hint="Enter your type here"
@@ -73,19 +77,20 @@
 
             app:layout_constraintTop_toBottomOf="@id/type"
 
+            android:text="@={viewmodel.description}"
+
             android:hint="@{@string/enter_your_x_here(@string/description)}"
             tools:hint="Enter your description here"
+
+            android:gravity="top"
+
+            android:maxLines="5"
 
             android:autofillHints=""
 
             style="@style/new_task_value"
         />
 
-
-        <!--
-            TODO: implement
-            android:onClick = "@{() -> viewmodel.save()}"
-        -->
         <Button
             android:id="@+id/save"
 

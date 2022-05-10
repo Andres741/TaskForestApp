@@ -81,4 +81,7 @@
     <string name="super_task">Super task:</string>
     <string name="doesn_t_have">doesn\'t have</string>
 
+    <string name="new_task_error">The new task must have name and type</string>
+    <string name="new_task_saved">The new task has been saved.</string>
+
 </resources>

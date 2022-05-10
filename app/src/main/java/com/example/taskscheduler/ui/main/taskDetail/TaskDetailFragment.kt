@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import com.example.taskscheduler.databinding.FragmentTaskDetailBinding
 import com.example.taskscheduler.ui.adapters.fragmentAdapters.TaskAdapterViewModel
 import com.example.taskscheduler.ui.adapters.fragmentAdapters.TasksAdapter
+import com.example.taskscheduler.util.ifFalse
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -67,7 +68,7 @@ class TaskDetailFragment: Fragment() {
         taskAdapterViewModel.taskStack.observe(viewLifecycleOwner){ task ->
             //Clarification: The new task is yet in taskAdapterViewModel
             if (task == null) {
-                if (!view.findNavController().popBackStack()) throw Exception("TaskDetailFragment has not back stack.")
+                view.findNavController().popBackStack().ifFalse { throw Exception("TaskDetailFragment has not back stack.") }
                 return@observe
             }
         }

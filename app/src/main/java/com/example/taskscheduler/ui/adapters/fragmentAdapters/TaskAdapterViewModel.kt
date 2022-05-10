@@ -11,11 +11,13 @@ import com.example.taskscheduler.domain.GetTaskPagerBySuperTaskUseCase
 import com.example.taskscheduler.domain.GetTaskPagerUseCase
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.observable.LiveStack
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-open class TaskAdapterViewModel @Inject constructor(
+@HiltViewModel
+class TaskAdapterViewModel @Inject constructor(
     private val getTaskPagerUseCase: GetTaskPagerUseCase,
     private val getTaskPagerBySuperTaskUseCase: GetTaskPagerBySuperTaskUseCase,
     private val changeDoneStatusOfTaskUseCase: ChangeDoneStatusOfTaskUseCase,

@@ -27,3 +27,7 @@ inline fun <T> returnNullIfError(target: ()->T?): T? {
 inline fun <T> returnDefaultIfErrorOrNull(default: ()->T, target: ()->T?): T {
     return returnNullIfError(target) ?: default()
 }
+
+inline fun Boolean?.ifTrue(block: () -> Unit) { if (this == true) block() }
+
+inline fun Boolean?.ifFalse(block: () -> Unit) { if (this == false) block() }
