@@ -25,6 +25,7 @@ class LiveStack<T> : LiveData<T>(), Collection<T> {
     fun pop() = stack.pop().also { super.setValue(stack.getFirst()) }
 
     override fun isEmpty() = stack.isEmpty()
+
     fun isNotEmpty() = stack.isNotEmpty()
 
     override val size = stack.size

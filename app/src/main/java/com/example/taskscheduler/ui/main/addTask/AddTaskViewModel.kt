@@ -4,14 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskscheduler.domain.SaveTaskUseCase
+import com.example.taskscheduler.domain.SaveNewTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
 class AddTaskViewModel @Inject constructor(
-    private val saveTaskUseCase: SaveTaskUseCase,
+    private val saveNewTaskUseCase: SaveNewTaskUseCase,
 ): ViewModel() {
 
     private lateinit var superTask: String
@@ -33,7 +33,7 @@ class AddTaskViewModel @Inject constructor(
     /** Called in fragment xml */
     fun save() {
         viewModelScope.launch {
-            _taskHasBeenSaved.value = saveTaskUseCase (
+            _taskHasBeenSaved.value = saveNewTaskUseCase (
                 title.value, type.value, description.value, superTask
             )!!  //Why don't let me remove this?
         }

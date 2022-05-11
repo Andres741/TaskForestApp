@@ -1,24 +1,43 @@
 package com.example.taskscheduler.data.sources.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
 import com.example.taskscheduler.data.sources.local.entities.countOfType_a
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
+import com.example.taskscheduler.domain.models.TaskModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
     private companion object {
-        const val get = "SELECT * FROM $taskTable WHERE $titleID = :key"
-        const val getAll = "SELECT * FROM $taskTable ORDER BY $titleID"
-        const val size = "SELECT COUNT(1) FROM $taskTable"
-        const val isNotEmpty = "SELECT EXISTS(SELECT 1 FROM $taskTable LIMIT 1)"
-        const val isEmpty = "SELECT NOT EXISTS(SELECT 1 FROM $taskTable LIMIT 1)"
-        const val contains = "SELECT EXISTS(SELECT 1 FROM $taskTable WHERE $titleID = :key)"
-        const val delete = "DELETE FROM $taskTable WHERE $titleID = :key"
-        const val deleteAll = "DELETE FROM $taskTable"
-        const val getTypeFromDB = "SELECT $type_a, COUNT(type) AS $countOfType_a FROM $taskTable WHERE $titleID = :key GROUP BY $type_a"
-        const val getAllTypesFromDB = "SELECT $type_a, COUNT(type) AS $countOfType_a FROM $taskTable GROUP BY $type_a"
+        const val get =
+            "SELECT * FROM $taskTable WHERE $titleID = :key"
+        const val getBySuperTask =
+            "SELECT * FROM $taskTable WHERE $titleID in (${SubTaskDao.get})"  //Both queries works.
+//            "SELECT $taskTable.* FROM $taskTable INNER JOIN $subtaskTable " +
+//                    "ON $taskTable.$titleID = $subtaskTable.$superTask_a " +
+//                    "WHERE $subtaskTable.$superTask_a = :superTask"
+        const val getAll =
+            "SELECT * FROM $taskTable ORDER BY $titleID"
+        const val size =
+            "SELECT COUNT(1) FROM $taskTable"
+        const val isNotEmpty =
+            "SELECT EXISTS(SELECT 1 FROM $taskTable LIMIT 1)"
+        const val isEmpty =
+            "SELECT NOT EXISTS(SELECT 1 FROM $taskTable LIMIT 1)"
+        const val contains =
+            "SELECT EXISTS(SELECT 1 FROM $taskTable WHERE $titleID = :key)"
+        const val changeDone =
+            "UPDATE $taskTable SET $isDone_a = :newValue WHERE $titleID = :key"
+        const val delete =
+            "DELETE FROM $taskTable WHERE $titleID = :key"
+        const val deleteAll =
+            "DELETE FROM $taskTable"
+        const val getTypeFromDB =
+            "SELECT $type_a, COUNT($type_a) AS $countOfType_a FROM $taskTable WHERE $titleID = :key GROUP BY $type_a"
+        const val getAllTypesFromDB =
+            "SELECT $type_a, COUNT($type_a) AS $countOfType_a FROM $taskTable GROUP BY $type_a"
     }
 
     @Query(get)
@@ -38,6 +57,16 @@ interface TaskDao {
     @Query(get)
     fun getTaskWithSuperTask(key: String): Flow<TaskWithSuperTask>
 
+    @Transaction
+    @Query(getBySuperTask)
+    fun getBySuperTask(superTask: String): Flow<List<TaskWithSuperAndSubTasks>>
+    @Transaction
+    @Query(getBySuperTask)
+    fun getBySuperTaskStatic(superTask: String): List<TaskWithSuperAndSubTasks>
+    @Transaction
+    @Query(getBySuperTask)
+    fun getPagingSourceBySuperTask(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+
     @Query(getAll)
     suspend fun getAllStatic(): List<TaskEntity>
     @Query(getAll)
@@ -54,7 +83,9 @@ interface TaskDao {
     @Transaction
     @Query(getAll)
     fun getAllTasksWithSuperTask(): Flow<List<TaskWithSuperTask>>
-
+    @Transaction
+    @Query(getAll)
+    fun getPagingSource(): PagingSource<Int, TaskWithSuperAndSubTasks>
 
     @Query(size)
     suspend fun sizeStatic(): Int
@@ -83,6 +114,9 @@ interface TaskDao {
     suspend fun insertAll(vararg entities: TaskEntity)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entities: Iterable<TaskEntity>)
+
+    @Query(changeDone)
+    suspend fun changeDone(key: String, newValue: Boolean)
 
     @Query(delete)
     suspend fun delete(key: String)

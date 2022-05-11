@@ -173,6 +173,25 @@ class TaskDaoTest {
     }
 
     @Test
+    fun getAllTaskWithSuperTask_test(): Unit = runBlocking  {
+        taskDao.getAllTasksWithSuperTask().first().forEach { task ->
+            task.log("task")
+            task.superTaskEntity?.superTask.log("super task")
+            "\n".log()
+        }
+    }
+
+    @Test
+    fun getBySuperTask_test(): Unit = runBlocking  {
+        //t0 -> 2; t3 -> 4; t9 -> 3;
+        taskDao.getBySuperTask("t3").first().forEach { task ->
+            task.log("task")
+            task.superTaskEntity?.superTask.log("super task")
+            "\n".log()
+        }
+    }
+
+    @Test
     fun getAllTypeEntities_test(): Unit = runBlocking {
         repeat(7){ i ->
             taskDao.insert(TaskEntity("$i$i", "programming", "$i$i"))

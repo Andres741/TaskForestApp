@@ -1,13 +1,10 @@
-package com.example.taskscheduler.ui.adapters.fragmentAdapters
+package com.example.taskscheduler.ui.adapters.itemAdapters
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
 import androidx.paging.PagingData
-import androidx.paging.liveData
 import com.example.taskscheduler.domain.ChangeDoneStatusOfTaskUseCase
-import com.example.taskscheduler.domain.GetTaskPagerBySuperTaskUseCase
 import com.example.taskscheduler.domain.GetTaskPagerUseCase
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.observable.LiveStack
@@ -19,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskAdapterViewModel @Inject constructor(
     private val getTaskPagerUseCase: GetTaskPagerUseCase,
-    private val getTaskPagerBySuperTaskUseCase: GetTaskPagerBySuperTaskUseCase,
     private val changeDoneStatusOfTaskUseCase: ChangeDoneStatusOfTaskUseCase,
 ): ViewModel() {
 
@@ -31,44 +27,32 @@ class TaskAdapterViewModel @Inject constructor(
     val taskStack: LiveData<TaskModel> = _taskStack
 
 
-    //TODO: Decide which one I will use.
     var pagingDataFlow: Flow<PagingData<TaskModel>>
-        private set
-    var pagingLiveData: LiveData<PagingData<TaskModel>>
         private set
 
     init {
-        getTaskPagerUseCase().apply {
-            pagingDataFlow = flow
-            pagingLiveData = liveData
-        }
+        pagingDataFlow = getTaskPagerUseCase()
     }
 
     fun addToStack(task: TaskModel) {
         _taskStack.add(task)
-
+        setPagingDataFromTopOfStack()
     }
+
     fun removeFromStack() {
         _taskStack.remove()
-
+        setPagingDataFromTopOfStack()
     }
-    fun popFromStack(): TaskModel? = _taskStack.pop().also {
 
+    fun popFromStack(): TaskModel? {
+        val res = _taskStack.pop()
+        setPagingDataFromTopOfStack()
+        return res
     }
 
     private fun setPagingDataFromTopOfStack() {
         val topTask = _taskStack.value
-
-        val pager = if (topTask != null) {
-            getTaskPagerBySuperTaskUseCase(topTask)
-        } else {
-            getTaskPagerUseCase()
-        }
-
-        pager.apply {
-            pagingDataFlow = flow
-            pagingLiveData = liveData
-        }
+        pagingDataFlow = getTaskPagerUseCase(topTask)
     }
 
     fun changeDoneStatusOf(task: TaskModel) {

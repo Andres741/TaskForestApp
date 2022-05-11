@@ -10,19 +10,27 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SubTaskDao {
 
-    private companion object {
-        const val get = "SELECT $subTaskID FROM $subtaskTable WHERE $superTask_a = :superTask"
-        const val getSubTaskEntities = "SELECT * FROM $subtaskTable WHERE $superTask_a = :superTask"
+    companion object {
+        const val get =
+            "SELECT $subTaskID FROM $subtaskTable WHERE $superTask_a = :superTask"
+        const val getSubTaskEntities =
+            "SELECT * FROM $subtaskTable WHERE $superTask_a = :superTask"
 
-        const val getAll = "SELECT * FROM $subtaskTable ORDER BY $superTask_a"
+        const val getAll =
+            "SELECT * FROM $subtaskTable ORDER BY $superTask_a"
 
-        const val getAllSuperTasks = "SELECT $superTask_a FROM $subtaskTable GROUP BY $superTask_a"
+        const val getAllSuperTasks =
+            "SELECT $superTask_a FROM $subtaskTable GROUP BY $superTask_a"
         const val getSuperTask = "SELECT $superTask_a FROM $subtaskTable WHERE $subTaskID = :subTask"
 
-        const val deleteAll = "DELETE FROM $subtaskTable"
-        const val deleteSub = "DELETE FROM $subtaskTable WHERE $subTaskID = :subTask"
-        const val deleteSuper = "DELETE FROM $subtaskTable WHERE $superTask_a = :superTask"
+        const val deleteAll =
+            "DELETE FROM $subtaskTable"
+        const val deleteSub =
+            "DELETE FROM $subtaskTable WHERE $subTaskID = :subTask"
+        const val deleteSuper =
+            "DELETE FROM $subtaskTable WHERE $superTask_a = :superTask"
     }
+
     //Select
     @Query(getSubTaskEntities)
     fun getSubTaskEntities(superTask: String): Flow<List<SubTaskEntity>>

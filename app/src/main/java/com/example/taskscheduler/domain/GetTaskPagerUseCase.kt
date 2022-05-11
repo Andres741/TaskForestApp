@@ -1,20 +1,15 @@
 package com.example.taskscheduler.domain
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
+import com.example.taskscheduler.data.TaskRepository
 import com.example.taskscheduler.domain.models.TaskModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class GetTaskPagerUseCase @Inject constructor(
-    //TODO: Create task repository
+    private val taskRepository: TaskRepository,
 ) {
-    operator fun invoke() = Pager<Int, TaskModel>(
-        config = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE),
-        pagingSourceFactory = { TODO("Task repositories not implemented") }
-    )
+    operator fun invoke(superTask: TaskModel? = null) =
+        if (superTask == null) taskRepository.local.getPagingSource()
+        else taskRepository.local.getPagingSourceBySuperTask(superTask)
 }
-
-const val PAGE_SIZE = 30
-

@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.example.taskscheduler.data.ALocalRepository
 import com.example.taskscheduler.data.Converters
+import com.example.taskscheduler.data.sources.local.ILocalTaskRepository
 import com.example.taskscheduler.data.sources.local.LocalDataBase
+import com.example.taskscheduler.data.sources.local.RoomTaskRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,4 +37,8 @@ object LocalModule {
     @Singleton
     @Provides
     fun providesSubTaskDao(db: LocalDataBase) = db.subTaskDao
+
+    @Singleton
+    @Provides   /* The local repository can be changed easily*/
+    fun providesLocalTaskRepository(repo: RoomTaskRepository): ILocalTaskRepository = repo
 }

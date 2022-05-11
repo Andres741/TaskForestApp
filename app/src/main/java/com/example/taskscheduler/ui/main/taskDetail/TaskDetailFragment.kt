@@ -13,8 +13,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.taskscheduler.databinding.FragmentTaskDetailBinding
-import com.example.taskscheduler.ui.adapters.fragmentAdapters.TaskAdapterViewModel
-import com.example.taskscheduler.ui.adapters.fragmentAdapters.TasksAdapter
+import com.example.taskscheduler.ui.adapters.itemAdapters.TaskAdapterViewModel
+import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.ifFalse
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

@@ -11,7 +11,7 @@
             type="com.example.taskscheduler.ui.main.taskDetail.TaskDetailViewModel" />
         <variable
             name="taskAdapterViewModel"
-            type="com.example.taskscheduler.ui.adapters.fragmentAdapters.TaskAdapterViewModel" />
+            type="com.example.taskscheduler.ui.adapters.itemAdapters.TaskAdapterViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

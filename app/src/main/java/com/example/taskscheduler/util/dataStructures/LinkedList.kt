@@ -1,6 +1,7 @@
 package com.example.taskscheduler.util.dataStructures
 
 import com.example.taskscheduler.util.errors.outOfBoundsOf
+import com.example.taskscheduler.util.ifTrue
 
 /**
  * A implementation of the data structure linked list. The new elements are added by default at the end,
@@ -52,7 +53,7 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
         while (nodeThis.elem == nodeOther.elem) {
             //Because both have the same size they reach the end of the list (null) at the same time.
             nodeThis = nodeThis.next ?: return true
-            nodeOther = nodeOther.next ?: return true
+            nodeOther = nodeOther.next!!
         }
         //If two nodes of the list are different the whole list is different
         return false
@@ -174,14 +175,11 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
         }
     }
 
-
-//    inline fun<R> map(transform: (T)-> R): LinkedList<R> {
-//        return LinkedList<R>().also { res ->
-//            forEach { elem ->
-//                res.add(transform(elem))
-//            }
-//        }
-//    }
+    inline fun<R> map(transform: (T)-> R) = LinkedList<R>().also { res ->
+        forEach { elem ->
+            res.add(transform(elem))
+        }
+    }
 
     override fun contains(element: T): Boolean {
         forEach { elem ->
@@ -246,22 +244,20 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
         }
     }
 
-    override fun toString(): String {
-        return StringBuilder().run {
-            val iter = this@LinkedList.iterator()
+    override fun toString() = StringBuilder().run {
+        val iter = this@LinkedList.iterator()
 
-            append("[")
-            if (iter.hasNext()) {
-                append(iter.next())
-            }
-            while (iter.hasNext()) {
-                append(", ")
-                append(iter.next())
-            }
-            append("]")
-
-            toString()
+        append("[")
+        if (iter.hasNext()) {
+            append(iter.next())
         }
+        while (iter.hasNext()) {
+            append(", ")
+            append(iter.next())
+        }
+        append("]")
+
+        toString()
     }
 
 

@@ -1,4 +1,4 @@
-package com.example.taskscheduler.ui.adapters.fragmentAdapters
+package com.example.taskscheduler.ui.adapters.itemAdapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -7,16 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.paging.PagingData
 import com.example.taskscheduler.R
-import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.databinding.FragmentTasksBinding
-import com.example.taskscheduler.ui.adapters.fragmentAdapters.TaskAdapterViewModel
-import com.example.taskscheduler.ui.adapters.fragmentAdapters.TasksAdapter
+import com.example.taskscheduler.ui.adapters.itemAdapters.TaskAdapterViewModel
+import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -62,8 +59,9 @@ class TasksFragment : Fragment() {
 
         taskAdapterViewModel.taskStack.observe(viewLifecycleOwner){ task ->
             //Clarification: The selected task is yet in taskAdapterViewModel
-            val destination = TasksFragmentDirections.actionTaskFragmentToTaskDetailFragment()
-            view.findNavController().navigate(destination)
+            view.findNavController().navigate(
+                TasksFragmentDirections.actionTaskFragmentToTaskDetailFragment()
+            )
         }
 
         /** Introduces the data into the adapter.*/

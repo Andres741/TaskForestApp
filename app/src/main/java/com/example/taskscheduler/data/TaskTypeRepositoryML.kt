@@ -10,7 +10,7 @@ import javax.inject.Singleton
     TODO: set the DI
 */
 @Singleton
-class TaskTypeRepository @Inject constructor(
+class TaskTypeRepositoryML @Inject constructor(
     /**The keys are the types recognised*/
     private val _taskTypes: IMultiplicityList<String>
 ) {
