@@ -17,14 +17,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object LocalModule {
-    private const val DATABASE_NAME = "local_database"
 
     @Singleton
     @Provides
-    fun provideRoom(@ApplicationContext context: Context) =
-        Room.databaseBuilder(
-            context, LocalDataBase::class.java, DATABASE_NAME
-        ).addTypeConverter(Converters()).build()
+    fun provideRoom(@ApplicationContext context: Context) = LocalDataBase.build(context)
 
     @Singleton
     @Provides

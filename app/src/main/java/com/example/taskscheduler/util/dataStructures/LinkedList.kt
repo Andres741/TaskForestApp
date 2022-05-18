@@ -1,7 +1,6 @@
 package com.example.taskscheduler.util.dataStructures
 
 import com.example.taskscheduler.util.errors.outOfBoundsOf
-import com.example.taskscheduler.util.ifTrue
 
 /**
  * A implementation of the data structure linked list. The new elements are added by default at the end,
@@ -72,7 +71,7 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
                 first = this
                 last = this
             }
-            size++
+            size = 1
             return
         }
         last!!.next = Node(value)
@@ -84,6 +83,13 @@ class LinkedList<T>(): List<T> {  //TODO: Make this class a MutableList
         val newFirst = Node(value)
         newFirst.next = first
         first = newFirst
+
+        if (isEmpty()) {
+            last = newFirst
+            size = 1
+            return
+        }
+        size++
     }
 
     fun addAll(values: Iterable<T>) {

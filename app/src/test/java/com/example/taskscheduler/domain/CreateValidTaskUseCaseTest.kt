@@ -35,11 +35,6 @@ class CreateValidTaskUseCaseTest {
     }
 
     @Test
-    fun simple() {
-        assert(true)
-    }
-
-    @Test
     fun existsTitle(): Unit = runBlocking {
 
         val newTitle = "t0"

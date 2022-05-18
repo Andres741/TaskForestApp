@@ -24,18 +24,18 @@ class AddTaskViewModel @Inject constructor(
     val taskHasBeenSaved: LiveData<Boolean> = _taskHasBeenSaved
 
     /** This method must be called in the onCreateView() method of the fragment. */
-    fun onCreate(superTask: String?) {
+    fun onCreate(superTask: AddTaskFragmentArgs?) {
         if (this::superTask.isInitialized) return
 
-        this.superTask = superTask ?: ""
+        this.superTask = superTask?.supertask ?: ""
     }
 
     /** Called in fragment xml */
     fun save() {
         viewModelScope.launch {
-            _taskHasBeenSaved.value = saveNewTaskUseCase (
+            _taskHasBeenSaved.value = saveNewTaskUseCase.invoke(
                 title.value, type.value, description.value, superTask
-            )!!  //Why don't let me remove this?
+            )
         }
     }
 }

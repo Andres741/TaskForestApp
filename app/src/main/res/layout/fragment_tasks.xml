@@ -9,10 +9,13 @@
     <data>
         <import type="android.view.View" />
         <variable
-            name="viewmodel"
-            type="com.example.taskscheduler.ui.main.tasks.TasksViewModel"
-            />
+            name="tasksAdapterViewModel"
+            type="com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapterViewModel" />
     </data>
+<!--    <variable-->
+<!--        name="viewmodel"-->
+<!--        type="com.example.taskscheduler.ui.main.tasks.TasksViewModel"-->
+<!--        />-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

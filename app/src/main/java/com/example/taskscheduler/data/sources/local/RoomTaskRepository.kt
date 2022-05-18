@@ -5,7 +5,6 @@ import com.example.taskscheduler.data.sources.local.ILocalTaskRepository.Compani
 import com.example.taskscheduler.data.sources.local.dao.SubTaskDao
 import com.example.taskscheduler.data.sources.local.dao.TaskDao
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperAndSubTasks
-import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperTask
 import com.example.taskscheduler.domain.models.TaskModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -20,15 +19,15 @@ class RoomTaskRepository @Inject constructor(
     private val subTaskDao: SubTaskDao,
 ): ILocalTaskRepository {
 
-    override fun getPagingSource(): Flow<PagingData<TaskModel>> = Pager(
+    override fun getPagingSource() = Pager(
         config = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE),
         pagingSourceFactory = { taskDao.getPagingSource() }
-    ).flow.map { it.map(TaskWithSuperAndSubTasks::toModel) }
+    ).flow//.map { it.map(TaskWithSuperAndSubTasks::toModel) } //TODO
 
-    override fun getPagingSourceBySuperTask(superTask: TaskModel): Flow<PagingData<TaskModel>> = Pager(
+    override fun getPagingSourceBySuperTask(superTask: TaskModel) = Pager(
         config = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE),
         pagingSourceFactory = { taskDao.getPagingSourceBySuperTask(superTask.title) }
-    ).flow.map { it.map(TaskWithSuperAndSubTasks::toModel) }
+    ).flow//.map { it.map(TaskWithSuperAndSubTasks::toModel) }
 
     override suspend fun existsTitle(taskTitle: String): Boolean = taskDao.containsStatic(taskTitle)
 

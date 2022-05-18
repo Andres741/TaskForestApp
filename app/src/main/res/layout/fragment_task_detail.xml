@@ -7,12 +7,13 @@
     <data>
         <import type="android.view.View" />
         <variable
-            name="viewmodel"
-            type="com.example.taskscheduler.ui.main.taskDetail.TaskDetailViewModel" />
-        <variable
-            name="taskAdapterViewModel"
-            type="com.example.taskscheduler.ui.adapters.itemAdapters.TaskAdapterViewModel" />
+            name="tasksAdapterViewModel"
+            type="com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapterViewModel" />
     </data>
+<!--    <variable-->
+<!--        name="viewmodel"-->
+<!--        type="com.example.taskscheduler.ui.main.taskDetail.TaskDetailViewModel" />-->
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -48,7 +49,7 @@
 
 
             android:hint="@{@string/enter_your_x_here(@string/title)}"
-            android:text="@{taskAdapterViewModel.taskStack.title}"
+            android:text="@{tasksAdapterViewModel.taskStack.title}"
 
             tools:text="value 0"
 
@@ -66,7 +67,7 @@
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
 
             android:hint="@{@string/enter_your_x_here(@string/type)}"
-            android:text="@{taskAdapterViewModel.taskStack.type}"
+            android:text="@{tasksAdapterViewModel.taskStack.type}"
 
             tools:text="value 1"
 
@@ -85,8 +86,8 @@
 
             android:layout_height="wrap_content"
 
-            android:text="@{taskAdapterViewModel.taskStack.isDone ? @string/completed : @string/uncompleted}"
-            android:textColor="@{taskAdapterViewModel.taskStack.isDone ? @color/done : @color/undone}"
+            android:text="@{tasksAdapterViewModel.taskStack.isDone ? @string/completed : @string/uncompleted}"
+            android:textColor="@{tasksAdapterViewModel.taskStack.isDone ? @color/done : @color/undone}"
 
             app:layout_constraintBottom_toTopOf="@+id/superTask_cont"
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
@@ -112,9 +113,9 @@
             app:layout_constraintBottom_toTopOf="@+id/task_description_cont"
             app:layout_constraintTop_toBottomOf="@+id/task_done_cont"
 
-            android:text="@{taskAdapterViewModel.taskStack.hasSuperTask ? taskAdapterViewModel.taskStack.superTask : @string/doesn_t_have}"
+            android:text="@{tasksAdapterViewModel.taskStack.hasSuperTask ? tasksAdapterViewModel.taskStack.superTask : @string/doesn_t_have}"
 
-            android:onClick="@{()-> taskAdapterViewModel.removeFromStack()}"
+            android:onClick="@{()-> tasksAdapterViewModel.removeFromStack()}"
 
             tools:text="Learning" />
 
@@ -135,7 +136,7 @@
 
             android:hint="@{@string/enter_your_x_here(@string/description)}"
 
-            android:text="@{taskAdapterViewModel.taskStack.hasDescription ? taskAdapterViewModel.taskStack.description : @string/doesn_t_have}"
+            android:text="@{tasksAdapterViewModel.taskStack.hasDescription ? tasksAdapterViewModel.taskStack.description : @string/doesn_t_have}"
 
 
             tools:text="@string/mucho_texto_1"

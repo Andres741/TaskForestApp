@@ -7,19 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.taskscheduler.databinding.FragmentTaskDetailBinding
-import com.example.taskscheduler.ui.adapters.itemAdapters.TaskAdapterViewModel
+import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapterViewModel
 import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.ifFalse
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -28,34 +27,29 @@ import kotlinx.coroutines.launch
 class TaskDetailFragment: Fragment() {
 
     private var _binding: FragmentTaskDetailBinding? = null
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
-    private val viewModel: TaskDetailViewModel by viewModels()
-    private val taskAdapterViewModel: TaskAdapterViewModel by activityViewModels()
-
-    private val adapter = TasksAdapter(taskAdapterViewModel)
+//    private val viewModel: TaskDetailViewModel by viewModels()
+    private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
 
 
+    private lateinit var adapter: TasksAdapter
+
+    private var collectPagingDataJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-//        _binding = FragmentSecondBinding.inflate(
-//            inflater,  container, false
-//        )
-        _binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_task_detail, container, false
-        )
+
+        adapter = TasksAdapter(tasksAdapterViewModel)
 
         val root = inflater.inflate(R.layout.fragment_task_detail, container, false)
 
         return FragmentTaskDetailBinding.bind(root).let {
             _binding = it
-            it.viewmodel = viewModel
-            it.taskAdapterViewModel = taskAdapterViewModel
+//            it.viewmodel = viewModel
+            it.tasksAdapterViewModel = tasksAdapterViewModel
             it.lifecycleOwner = viewLifecycleOwner
             it.subtasksRcy.adapter = adapter
             it.root
@@ -65,28 +59,29 @@ class TaskDetailFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        taskAdapterViewModel.taskStack.observe(viewLifecycleOwner){ task ->
-            //Clarification: The new task is yet in taskAdapterViewModel
-            if (task == null) {
-                view.findNavController().popBackStack().ifFalse { throw Exception("TaskDetailFragment has not back stack.") }
-                return@observe
+        tasksAdapterViewModel.apply {
+            taskStack.observe(viewLifecycleOwner){ task ->
+                if (task != null) return@observe
+
+                view.findNavController().popBackStack()
+                    .ifFalse { throw Exception("TaskDetailFragment has not back stack.") }
+            }
+            /** Introduces the data into the adapter.*/
+            pagingDataFlow.observe(viewLifecycleOwner) { flow ->
+                collectPagingDataJob?.cancel()
+                collectPagingDataJob = lifecycleScope.launch {
+                    flow.collectLatest(adapter::submitData)  //TODO: fix the adapter
+                }
             }
         }
-
-        /** Introduces the data into the adapter.*/
-        lifecycleScope.launch {
-            taskAdapterViewModel.pagingDataFlow.collectLatest(adapter::submitData)
-        }
-        /** The same but with LiveData instead Flow. */
-//        viewModel.pagingLiveData.observe(viewLifecycleOwner) {
-//            adapter.submitData(lifecycle, it)
-//        }
 
 
         binding.also {
             it.addSubtaskButton.setOnClickListener {
                 findNavController().navigate(
-                    TaskDetailFragmentDirections.actionFragmentTaskDetailToAddTaskFragment(taskAdapterViewModel.taskStack.value?.title)
+                    TaskDetailFragmentDirections.actionFragmentTaskDetailToAddTaskFragment(
+                        tasksAdapterViewModel.taskStack.value?.title
+                    )
                 )
             }
         }
@@ -95,6 +90,10 @@ class TaskDetailFragment: Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun<T> T.log(msj: String? = null) = apply {
+        Timber.i("${if (msj != null) "$msj: " else ""}${toString()}")
     }
 }
 

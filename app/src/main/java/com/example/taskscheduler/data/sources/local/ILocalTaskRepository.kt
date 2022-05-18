@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface ILocalTaskRepository {
-    fun getPagingSource(): Flow<PagingData<TaskModel>>
+    fun getPagingSource(): Flow<PagingData<TaskWithSuperAndSubTasks>>  //TODO
 
-    fun getPagingSourceBySuperTask(superTask: TaskModel): Flow<PagingData<TaskModel>>
+    fun getPagingSourceBySuperTask(superTask: TaskModel): Flow<PagingData<TaskWithSuperAndSubTasks>>
 
     suspend fun existsTitle(taskTitle: String): Boolean
 
