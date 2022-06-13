@@ -10,6 +10,7 @@ import com.example.taskscheduler.data.sources.local.entities.AEntity
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.flow.first
@@ -184,9 +185,9 @@ class TaskDaoTest {
     @Test
     fun getBySuperTask_test(): Unit = runBlocking  {
         //t0 -> 2; t3 -> 4; t9 -> 3;
-        taskDao.getBySuperTask("t3").first().forEach { task ->
+        taskDao.getBySuperTask("t3").first().toModel().forEach { task ->
             task.log("task")
-            task.superTaskEntity?.superTask.log("super task")
+            task.superTask.log("super task")
             "\n".log()
         }
     }
@@ -194,13 +195,13 @@ class TaskDaoTest {
     @Test
     fun getAllTypeEntities_test(): Unit = runBlocking {
         repeat(7){ i ->
-            taskDao.insert(TaskEntity("$i$i", "programming", "$i$i"))
+            taskDao.insert(TaskEntity("$i$i", "programming", "$i$i", date = 0L))
         }
         taskDao.getAllTypesFromDBStatic().forEach(TaskTypeFromDB::log)
     }
 }
 
-private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this",)
+private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this", date = 0L)
 
 //private fun Int.subTaskNum(sub: Int) = TaskEntity("t$this-$sub", "ty$this-$sub", "des$this-$sub", "super$this-$sub",)
 

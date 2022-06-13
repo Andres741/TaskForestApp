@@ -5,13 +5,15 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.navigation.ui.navigateUp
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.ActivityMainBinding
+import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
 import com.example.taskscheduler.ui.logIn.LogInActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -22,6 +24,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    private val tasksAdapterViewModel: TasksAdapterViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,13 +66,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+//        val navController = findNavController(R.id.nav_host_fragment_content_main)
+//        return navController.navigateUp(appBarConfiguration)
+//                || super.onSupportNavigateUp()
+        tasksAdapterViewModel.removeFromStack()
+        return true
     }
 
     private fun logOut() {
-        Toast.makeText(this, "Adios!!!", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, R.string.bye, Toast.LENGTH_LONG).show()
         Firebase.auth.signOut()
         startActivity(Intent(this, LogInActivity::class.java))
         finish()

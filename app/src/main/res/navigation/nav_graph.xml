@@ -12,15 +12,12 @@
         tools:layout="@layout/fragment_tasks">
 
         <action
-            android:id="@+id/action_TaskFragment_to_TaskDetailFragment"
-            app:destination="@id/fragment_task_detail"
-            app:popUpTo="@id/nav_graph"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_fragment_tasks_to_addTaskFragment"
             app:destination="@id/addTaskFragment"
-            app:popUpTo="@id/addTaskFragment"
-            app:popUpToInclusive="true" />
+            />
+        <action
+            android:id="@+id/action_fragment_tasks_to_fragment_task_detail"
+            app:destination="@id/fragment_task_detail" />
     </fragment>
 
     <fragment
@@ -32,8 +29,7 @@
         <action
             android:id="@+id/action_fragment_task_detail_to_addTaskFragment"
             app:destination="@id/addTaskFragment"
-            app:popUpTo="@id/addTaskFragment"
-            app:popUpToInclusive="true" />
+            />
     </fragment>
 
     <fragment

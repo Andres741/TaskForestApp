@@ -1,14 +1,14 @@
 package com.example.taskscheduler.util.observable
 
 import androidx.lifecycle.LiveData
-import com.example.taskscheduler.util.dataStructures.LinkedList
+import com.example.taskscheduler.util.dataStructures.MyLinkedList
 
 /**
  * Union between LiveData and Stack where like a stack FILO logic is implemented and the top of the stack
  * is observable.
  */
-class LiveStack<T> : LiveData<T>(), Collection<T> {
-    private val stack = LinkedList<T>()
+class LiveStack<T>: LiveData<T>(), Collection<T> {
+    private val stack = MyLinkedList<T>()
     val elements: List<T> = stack
 
     override fun getValue(): T? {
@@ -20,9 +20,16 @@ class LiveStack<T> : LiveData<T>(), Collection<T> {
         super.setValue(value)
     }
 
-    fun remove() = stack.remove().also { super.setValue(stack.getFirst()) }
+    fun remove() { stack.removeFirst(); super.setValue(stack.getFirst()) }
 
     fun pop() = stack.pop().also { super.setValue(stack.getFirst()) }
+
+    fun clear() {
+        stack.clear()
+        super.setValue(null)
+    }
+
+    fun notifyObserveAgain() { value = value }
 
     override fun isEmpty() = stack.isEmpty()
 

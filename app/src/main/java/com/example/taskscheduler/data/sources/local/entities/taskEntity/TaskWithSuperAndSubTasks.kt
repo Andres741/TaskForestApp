@@ -7,13 +7,13 @@ import com.example.taskscheduler.domain.models.TaskModel
 data class TaskWithSuperAndSubTasks(
     @Embedded val task: TaskEntity,
     @Relation(
-        parentColumn = titleID,
-        entityColumn = superTask_a
+        parentColumn = TITLE_ID,
+        entityColumn = SUPER_TASKa
     )
     val subTaskEntities: List<SubTaskEntity>,
     @Relation(
-        parentColumn = titleID,
-        entityColumn = subTaskID
+        parentColumn = TITLE_ID,
+        entityColumn = SUB_TASK_ID
     )
     val superTaskEntity: SubTaskEntity?
 ) {

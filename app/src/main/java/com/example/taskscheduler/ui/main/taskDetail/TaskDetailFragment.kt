@@ -1,24 +1,24 @@
 package com.example.taskscheduler.ui.main.taskDetail
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.taskscheduler.databinding.FragmentTaskDetailBinding
-import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapterViewModel
-import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapter
+import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
+import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.ifFalse
+import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -35,7 +35,7 @@ class TaskDetailFragment: Fragment() {
 
     private lateinit var adapter: TasksAdapter
 
-    private var collectPagingDataJob: Job? = null
+    private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,19 +60,20 @@ class TaskDetailFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         tasksAdapterViewModel.apply {
-            taskStack.observe(viewLifecycleOwner){ task ->
+            taskStack.observe(viewLifecycleOwner) { task ->
                 if (task != null) return@observe
 
                 view.findNavController().popBackStack()
-                    .ifFalse { throw Exception("TaskDetailFragment has not back stack.") }
+                    .ifFalse { "TaskDetailFragment hasn't back stack.".log() } //{ throw IllegalStateException("TaskDetailFragment has not back stack.") }
             }
             /** Introduces the data into the adapter.*/
-            pagingDataFlow.observe(viewLifecycleOwner) { flow ->
-                collectPagingDataJob?.cancel()
-                collectPagingDataJob = lifecycleScope.launch {
-                    flow.collectLatest(adapter::submitData)  //TODO: fix the adapter
+            tasksDataFlow.observe(viewLifecycleOwner) { flow ->
+                collectPagingDataScopeProvider.newScope.launch {
+                    flow.collectLatest(adapter::submitData)
                 }
             }
+
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { clearStack() }
         }
 
 
@@ -88,12 +89,13 @@ class TaskDetailFragment: Fragment() {
     }
 
     override fun onDestroyView() {
+        collectPagingDataScopeProvider.cancel()
         super.onDestroyView()
         _binding = null
     }
 
     private fun<T> T.log(msj: String? = null) = apply {
-        Timber.i("${if (msj != null) "$msj: " else ""}${toString()}")
+        Log.i("TaskDetailFragment", "${if (msj != null) "$msj: " else ""}${toString()}")
     }
 }
 

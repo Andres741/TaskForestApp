@@ -66,6 +66,8 @@
 
             android:maxLines="1"
 
+            android:visibility="@{ viewmodel.existsSuperTask ? View.GONE : View.VISIBLE }"
+
             style="@style/new_task_value"
         />
 

@@ -10,7 +10,7 @@
         <import type="android.view.View" />
         <variable
             name="tasksAdapterViewModel"
-            type="com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapterViewModel" />
+            type="com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel" />
     </data>
 <!--    <variable-->
 <!--        name="viewmodel"-->
@@ -48,6 +48,8 @@
             app:layout_constraintTop_toBottomOf="@id/textview_first"
             app:layout_constraintBottom_toTopOf="@id/tasksTypeView"
 
+            app:layoutManager="LinearLayoutManager"
+
             style="@style/recyclerTasks"
 
         />
@@ -64,6 +66,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/newTaskButton"
+
+            app:layoutManager="LinearLayoutManager"
 
             style="@style/recyclerTasks"
 

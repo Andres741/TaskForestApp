@@ -1,60 +1,76 @@
 package com.example.taskscheduler.data.sources.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
-import com.example.taskscheduler.data.sources.local.entities.countOfType_a
+import com.example.taskscheduler.data.sources.local.entities.COUNT_OF_TYPEa
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
-import com.example.taskscheduler.domain.models.TaskModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface TaskDao {
     private companion object {
-        const val get =
-            "SELECT * FROM $taskTable WHERE $titleID = :key"
+        const val GET =
+            "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID = :key"
+
         const val getBySuperTask =
-            "SELECT * FROM $taskTable WHERE $titleID in (${SubTaskDao.get})"  //Both queries works.
+            "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET})"
+        //Shows the same item the same times as number of items that should show. A SQLite bug?
 //            "SELECT $taskTable.* FROM $taskTable INNER JOIN $subtaskTable " +
 //                    "ON $taskTable.$titleID = $subtaskTable.$superTask_a " +
-//                    "WHERE $subtaskTable.$superTask_a = :superTask"
-        const val getAll =
-            "SELECT * FROM $taskTable ORDER BY $titleID"
-        const val size =
-            "SELECT COUNT(1) FROM $taskTable"
-        const val isNotEmpty =
-            "SELECT EXISTS(SELECT 1 FROM $taskTable LIMIT 1)"
-        const val isEmpty =
-            "SELECT NOT EXISTS(SELECT 1 FROM $taskTable LIMIT 1)"
-        const val contains =
-            "SELECT EXISTS(SELECT 1 FROM $taskTable WHERE $titleID = :key)"
-        const val changeDone =
-            "UPDATE $taskTable SET $isDone_a = :newValue WHERE $titleID = :key"
-        const val delete =
-            "DELETE FROM $taskTable WHERE $titleID = :key"
-        const val deleteAll =
-            "DELETE FROM $taskTable"
-        const val getTypeFromDB =
-            "SELECT $type_a, COUNT($type_a) AS $countOfType_a FROM $taskTable WHERE $titleID = :key GROUP BY $type_a"
+//                    "WHERE $taskTable.$titleID = :superTask"
+
+        const val GET_ALL =
+            "SELECT * FROM $TASK_TABLE ORDER BY $TITLE_ID"
+
+        const val GET_TYPE =
+            "SELECT $TYPEa FROM $TASK_TABLE WHERE $TITLE_ID = :key"
+
+        const val SIZE =
+            "SELECT COUNT(1) FROM $TASK_TABLE"
+
+        const val IS_NOT_EMPTY =
+            "SELECT EXISTS(SELECT 1 FROM $TASK_TABLE LIMIT 1)"
+
+        const val IS_EMPTY =
+            "SELECT NOT EXISTS(SELECT 1 FROM $TASK_TABLE LIMIT 1)"
+
+        const val CONTAINS =
+            "SELECT EXISTS(SELECT 1 FROM $TASK_TABLE WHERE $TITLE_ID = :key)"
+
+        const val CHANGE_DONE =
+            "UPDATE $TASK_TABLE SET $IS_DONEa = :newValue WHERE $TITLE_ID = :key"
+
+        const val DELETE =
+            "DELETE FROM $TASK_TABLE WHERE $TITLE_ID = :key"
+
+        const val DELETE_ALL =
+            "DELETE FROM $TASK_TABLE"
+
+        const val GET_TYPE_FROM_DB =
+            "SELECT $TYPEa, COUNT($TYPEa) AS $COUNT_OF_TYPEa FROM $TASK_TABLE WHERE $TITLE_ID = :key GROUP BY $TYPEa"
+
         const val getAllTypesFromDB =
-            "SELECT $type_a, COUNT($type_a) AS $countOfType_a FROM $taskTable GROUP BY $type_a"
+            "SELECT $TYPEa, COUNT($TYPEa) AS $COUNT_OF_TYPEa FROM $TASK_TABLE GROUP BY $TYPEa"
     }
 
-    @Query(get)
+    @Query(GET)
     suspend fun getStatic(key: String): TaskEntity
-    @Query(get)
+    @Query(GET)
     operator fun get(key: String): Flow<TaskEntity>
     @Transaction
-    @Query(get)
+    @Query(GET)
     suspend fun getTaskWithSuperAndSubTasksStatic(key: String): TaskWithSuperAndSubTasks
     @Transaction
-    @Query(get)
+    @Query(GET)
     fun getTaskWithSuperAndSubTasks(key: String): Flow<TaskWithSuperAndSubTasks>
     @Transaction
-    @Query(get)
+    @Query(GET)
     suspend fun getTaskWithSuperTaskStatic(key: String): TaskWithSuperTask
     @Transaction
-    @Query(get)
+    @Query(GET)
     fun getTaskWithSuperTask(key: String): Flow<TaskWithSuperTask>
 
     @Transaction
@@ -67,45 +83,53 @@ interface TaskDao {
     @Query(getBySuperTask)
     fun getPagingSourceBySuperTask(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
 
-    @Query(getAll)
+    @Query(GET_TYPE)
+    fun getType(key: String): Flow<String>
+
+    @Query(GET_TYPE)
+    suspend fun getTypeStatic(key: String): String
+
+
+    @Query(GET_ALL)
     suspend fun getAllStatic(): List<TaskEntity>
-    @Query(getAll)
+    @Query(GET_ALL)
     fun getAll(): Flow<List<TaskEntity>>
     @Transaction
-    @Query(getAll)
+    @Query(GET_ALL)
     suspend fun getAllTasksWithSuperAndSubTasksStatic(): List<TaskWithSuperAndSubTasks>
     @Transaction
-    @Query(getAll)
+    @Query(GET_ALL)
     fun getAllTasksWithSuperAndSubTasks(): Flow<List<TaskWithSuperAndSubTasks>>
     @Transaction
-    @Query(getAll)
+    @Query(GET_ALL)
     suspend fun getAllTasksWithSuperTaskStatic(): List<TaskWithSuperTask>
     @Transaction
-    @Query(getAll)
+    @Query(GET_ALL)
     fun getAllTasksWithSuperTask(): Flow<List<TaskWithSuperTask>>
     @Transaction
-    @Query(getAll)
+    @Query(GET_ALL)
     fun getPagingSource(): PagingSource<Int, TaskWithSuperAndSubTasks>
 
-    @Query(size)
+    @Query(SIZE)
     suspend fun sizeStatic(): Int
-    @Query(size)
+    @Query(SIZE)
     fun size(): Flow<Int>
 
-    @Query(isEmpty)
+    @Query(IS_EMPTY)
     suspend fun isEmptyStatic(): Boolean
-    @Query(isEmpty)
+    @Query(IS_EMPTY)
     fun isEmpty(): Flow<Boolean>
 
-    @Query(isNotEmpty)
+    @Query(IS_NOT_EMPTY)
     suspend fun isNotEmptyStatic(): Boolean
-    @Query(isNotEmpty)
+    @Query(IS_NOT_EMPTY)
     fun isNotEmpty(): Flow<Boolean>
 
-    @Query(contains)
+    @Query(CONTAINS)
     fun contains(key: String): Flow<Boolean>
-    @Query(contains)
-    fun containsStatic(key: String): Boolean
+    @Query(CONTAINS)
+    suspend fun containsStatic(key: String): Boolean
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(data: TaskEntity)
@@ -115,18 +139,18 @@ interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entities: Iterable<TaskEntity>)
 
-    @Query(changeDone)
-    suspend fun changeDone(key: String, newValue: Boolean)
+    @Query(CHANGE_DONE)
+    suspend fun changeDone(key: String, newValue: Boolean): Int
 
-    @Query(delete)
+    @Query(DELETE)
     suspend fun delete(key: String)
 
-    @Query(deleteAll)
+    @Query(DELETE_ALL)
     suspend fun deleteAll()
 
-    @Query(getTypeFromDB)
+    @Query(GET_TYPE_FROM_DB)
     fun getTypeFromDB(key: String): Flow<TaskTypeFromDB>
-    @Query(getTypeFromDB)
+    @Query(GET_TYPE_FROM_DB)
     suspend fun getTypeFromDBStatic(key: String): TaskTypeFromDB
 
     @Query(getAllTypesFromDB)

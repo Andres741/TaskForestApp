@@ -7,18 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.FragmentTasksBinding
-import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapter
-import com.example.taskscheduler.ui.adapters.itemAdapters.TasksAdapterViewModel
+import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
+import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
+import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -32,17 +30,17 @@ class TasksFragment: Fragment() {
 //    private val viewModel: TasksViewModel by viewModels()
     private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
     //Impossible to initialize here adapter because the view model is not available until onCreateView
-//    private var _adapter: TasksAdapter? = null  //This provokes null pinter exception sometimes
-    private lateinit var adapter: TasksAdapter
+//    private var _adapter: TasksAdapter? = null  //This provokes null pointer exception sometimes
+    private lateinit var tasksAdapter: TasksAdapter
 
-    private var collectPagingDataJob: Job? = null
+    private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
-        adapter = TasksAdapter(tasksAdapterViewModel)
+        tasksAdapter = TasksAdapter(tasksAdapterViewModel)
 
         val root = inflater.inflate(R.layout.fragment_tasks, container, false)
 
@@ -51,7 +49,7 @@ class TasksFragment: Fragment() {
 //            it.viewmodel = viewModel
             it.tasksAdapterViewModel = tasksAdapterViewModel
             it.lifecycleOwner = viewLifecycleOwner
-            it.tasksRcy.adapter = adapter  //TODO: fix the adapter
+            it.tasksRcy.adapter = tasksAdapter
             it.root
         }
     }
@@ -60,19 +58,18 @@ class TasksFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         tasksAdapterViewModel.apply {
-            taskStack.observe(viewLifecycleOwner){ task ->
+            taskStack.observe(viewLifecycleOwner) { task ->
                 task ?: return@observe
 
                 view.findNavController().navigate(
-                    TasksFragmentDirections.actionTaskFragmentToTaskDetailFragment()
+                    TasksFragmentDirections.actionFragmentTasksToFragmentTaskDetail()
                 )
             }
 
             /** Introduces the data into the adapter.*/
-            pagingDataFlow.observe(viewLifecycleOwner) { flow ->
-                collectPagingDataJob?.cancel()
-                collectPagingDataJob = lifecycleScope.launch {
-                    flow.collectLatest(adapter::submitData)  //TODO: fix the adapter
+            tasksDataFlow.observe(viewLifecycleOwner) { flow ->
+                collectPagingDataScopeProvider.newScope.launch {
+                    flow.collectLatest(tasksAdapter::submitData)
                 }
             }
         }
@@ -87,6 +84,7 @@ class TasksFragment: Fragment() {
     }
 
     override fun onDestroyView() {
+        collectPagingDataScopeProvider.cancel()
         super.onDestroyView()
         _binding = null
     }

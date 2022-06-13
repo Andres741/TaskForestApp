@@ -81,7 +81,13 @@
     <string name="super_task">Super task:</string>
     <string name="doesn_t_have">doesn\'t have</string>
 
-    <string name="new_task_error">The new task must have name and type</string>
+    <string name="new_task_error">The new task must have name and type.</string>
+    <string name="new_task_wrong_title">The new task has an invalid title.</string>
+    <string name="new_task_wrong_super_task">The new task has an invalid super task.</string>
+    <string name="new_task_wrong_type">The new task has an invalid type.</string>
     <string name="new_task_saved">The new task has been saved.</string>
+
+
+    <string name="bye">Bye!!!</string>
 
 </resources>

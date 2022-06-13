@@ -1,41 +1,64 @@
 package com.example.taskscheduler.ui.main.addTask
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.taskscheduler.domain.CreateValidTaskUseCase
+import com.example.taskscheduler.domain.GetTaskByNameUseCase
 import com.example.taskscheduler.domain.SaveNewTaskUseCase
+import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.util.FirstToSecond
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class AddTaskViewModel @Inject constructor(
     private val saveNewTaskUseCase: SaveNewTaskUseCase,
+    private val getTaskByNameUseCase: GetTaskByNameUseCase,
 ): ViewModel() {
-
-    private lateinit var superTask: String
 
     val title = MutableLiveData<String>()
     val type = MutableLiveData<String>()
     val description = MutableLiveData<String>()
 
-    private val _taskHasBeenSaved = MutableLiveData<Boolean>()
-    val taskHasBeenSaved: LiveData<Boolean> = _taskHasBeenSaved
+    private val isCrated = FirstToSecond(first = false, second = true)
+
+    private var superTaskTitle: String? = null
+    val existsSuperTask get() = superTaskTitle != null
+
+
+    private val _taskHasBeenSaved = MutableLiveData<CreateValidTaskUseCase.Response>()
+    val taskHasBeenSaved: LiveData<CreateValidTaskUseCase.Response> = _taskHasBeenSaved
+
+    lateinit var flow: Flow<TaskModel>
 
     /** This method must be called in the onCreateView() method of the fragment. */
-    fun onCreate(superTask: AddTaskFragmentArgs?) {
-        if (this::superTask.isInitialized) return
+    fun onCreate(args: AddTaskFragmentArgs) {
+        if (isCrated()) return
 
-        this.superTask = superTask?.supertask ?: ""
+        isCrated.moveToSecond()
+        superTaskTitle = args.supertask
+
+        "AddTaskViewModel created".log()
     }
 
     /** Called in fragment xml */
     fun save() {
         viewModelScope.launch {
-            _taskHasBeenSaved.value = saveNewTaskUseCase.invoke(
-                title.value, type.value, description.value, superTask
-            )
+            "Save task coroutine starts".log()
+
+            _taskHasBeenSaved.value = saveNewTaskUseCase(
+                title = title.value, type = type.value,
+                description = description.value, superTask = superTaskTitle
+            ).log("Response")
         }
+    }
+
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i("AddTaskViewModel", "${if (msj != null) "$msj: " else ""}${toString()}")
     }
 }

@@ -14,12 +14,12 @@
 
         <variable
             name="doneCallBack"
-            type="com.example.taskscheduler.ui.adapters.itemAdapters.TaskViewHolder.DoneCallBack"
+            type="com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskViewHolder.DoneCallBack"
             />
 
         <variable
             name="goToSubTaskDetailCallBack"
-            type="com.example.taskscheduler.ui.adapters.itemAdapters.TaskViewHolder.GoToSubTaskDetailCallBack"
+            type="com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskViewHolder.GoToSubTaskDetailCallBack"
             />
     </data>
 
@@ -27,8 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/marginItem"
-        android:onClick="@{() -> goToSubTaskDetailCallBack.invoke()}"
-    >
+        android:onClick="@{() -> goToSubTaskDetailCallBack.invoke()}">
 
         <ImageView
             android:id="@+id/checkButton"

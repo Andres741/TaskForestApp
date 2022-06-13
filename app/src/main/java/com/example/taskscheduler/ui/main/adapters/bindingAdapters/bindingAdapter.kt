@@ -1,4 +1,4 @@
-package com.example.taskscheduler.ui.adapters.bindingAdapters
+package com.example.taskscheduler.ui.main.adapters.bindingAdapters
 
 import android.text.method.LinkMovementMethod
 import android.widget.TextView

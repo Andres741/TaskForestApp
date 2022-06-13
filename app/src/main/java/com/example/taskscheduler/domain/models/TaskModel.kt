@@ -14,23 +14,20 @@ data class TaskModel (
     var description: String = "",
     var superTask: String = "",
     var subTasks: List<String> = emptyList(),
+    var isDone: Boolean = false,
+    val dateNum: Long = System.currentTimeMillis(),
 ) {
-    var isDone: Boolean = false
-    var dateNum: Long? = null //The date is created in task entity.
-        private set
 
-    val date get() = dateNum?.let { Calendar.getInstance().apply { timeInMillis = it } }
+    val date get() = dateNum.let { Calendar.getInstance().apply { timeInMillis = it } }
     val hasDescription get() = description.isNotBlank()
     val hasSuperTask get() = superTask.isNotBlank()
     val hasSubTasks get() = subTasks.isNotEmpty()
     val numSubTasks get() = subTasks.size
 
     constructor(entity: TaskEntity): this (
-        title = entity.title, type = entity.type, description = entity.description
-    ) {
-        isDone = entity.isDone
-        dateNum = entity.date
-    }
+        title = entity.title, type = entity.type, description = entity.description,
+        isDone = entity.isDone, dateNum = entity.date
+    )
     constructor(entity: TaskWithSuperTask): this(entity.task) {
         entity.superTaskEntity?.superTask?.also(::superTask.setter)
     }
@@ -39,14 +36,9 @@ data class TaskModel (
         subTasks = entity.subTaskEntities.map(SubTaskEntity::subTask)
     }
 
-    fun toEntity(): TaskEntity {
-        val date = dateNum
-        return if (date != null) TaskEntity(
-            title = title, type = type, description = description, isDone = isDone, date = date
-        ) else TaskEntity(
-            title = title, type = type, description = description, isDone = isDone,
-        )
-    }
+    fun toEntity() = TaskEntity(
+        title = title, type = type, description = description, isDone = isDone, date = dateNum
+    )
 
     /**Returns a SubTaskEntity with the relationship of hierarchy whit its father, or null if does not have father.*/
     fun toSuperTaskEntity() = if (hasSuperTask) SubTaskEntity(superTask = superTask, subTask = title) else null
