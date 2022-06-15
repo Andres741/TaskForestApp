@@ -11,6 +11,7 @@ import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.TaskTypeItemBinding
 import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.util.OnClickTaskTypeVH
+import kotlinx.android.synthetic.main.task_item.view.*
 
 class TaskTypeAdapter (
     private val onClickCallBack: OnClickTaskTypeVH
@@ -56,8 +57,8 @@ class TaskTypeViewHolder private constructor(
 
         fun removeSelected() {
             selectedTaskType = null
-            val previousColored = selectedViewHolder?.binding?.root
-            previousColored?.setBackgroundColor(whiteColor)
+            val previousColored = selectedViewHolder?.binding?.cardRoot
+            previousColored?.setCardBackgroundColor(whiteColor)
             selectedViewHolder = null
         }
 
@@ -90,17 +91,17 @@ class TaskTypeViewHolder private constructor(
     }
 
     fun unselect() {
-        binding.root.setBackgroundColor(whiteColor)
+        binding.cardRoot.setCardBackgroundColor(whiteColor)
     }
 
     fun setIsSelected() {
         if (isSelected) {
             selectedViewHolder?.unselect()
-            binding.root.setBackgroundColor(greenColor)
+            binding.cardRoot.setCardBackgroundColor(greenColor)
             selectedViewHolder = this
             return
         }
-        binding.root.setBackgroundColor(whiteColor)
+        binding.cardRoot.setCardBackgroundColor(whiteColor)
     }
 
 

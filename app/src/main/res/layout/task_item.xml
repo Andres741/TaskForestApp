@@ -23,104 +23,119 @@
             />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/marginHorizontalTaskType"
-        android:onClick="@{() -> goToSubTaskDetailCallBack.invoke()}">
 
-        <ImageView
-            android:id="@+id/checkButton"
-            android:layout_width="@dimen/checkButtonSize"
-            android:layout_height="@dimen/checkButtonSize"
+        android:layout_marginVertical="4dp"
 
-            android:layout_marginStart="@dimen/marginCheckButton"
-            android:layout_marginVertical="@dimen/marginCheckButton"
+        android:clickable="true"
+        android:elevation="16dp"
+        android:focusable="true"
+        app:cardCornerRadius="16dp">
 
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0"
-
-            android:src="@{task.isDone ? @drawable/done : @drawable/undone}"
-
-            android:onClick = "@{() -> doneCallBack.invoke() }"
-
-            tools:src="@drawable/undone"
-            />
-
-        <TextView
-            android:id="@+id/titleTask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/titleTaskMarginStart"
-            android:layout_marginTop="@dimen/textTaskMarginVertical"
-            app:layout_constraintStart_toEndOf="@+id/checkButton"
-            app:layout_constraintTop_toTopOf="parent"
-
-            android:text="@{task.title}"
-
-            tools:text="My task"
-            />
-
-        <TextView
-            android:id="@+id/taskType"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-
-            android:layout_marginTop="@dimen/textTaskMarginVertical"
-
-            app:layout_constraintTop_toBottomOf="@id/titleTask"
-            app:layout_constraintStart_toStartOf="@id/titleTask"
-
-            android:text="@{task.type}"
-
-            app:layout_constraintStart_toEndOf="@id/titleTask"
-            tools:text="programming"
-            />
-
-        <TextView
-            android:id="@+id/descriptionTask"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:layout_marginStart="@dimen/zero"
-            android:layout_marginEnd="18dp"
-            android:layout_marginVertical="@dimen/textTaskMarginVertical"
+            android:layout_margin="@dimen/marginHorizontalTaskType"
 
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/titleTask"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/taskType"
+            android:onClick="@{() -> goToSubTaskDetailCallBack.invoke()}">
 
-            android:text="@{task.description}"
-            android:visibility="@{task.hasDescription ? View.VISIBLE : View.GONE}"
+            <ImageView
+                android:id="@+id/checkButton"
+                android:layout_width="@dimen/checkButtonSize"
+                android:layout_height="@dimen/checkButtonSize"
 
-            tools:text="@string/mucho_texto"
-            tools:visibility="visible"
-            />
-        <!--visible gone-->
+                android:layout_marginStart="@dimen/marginCheckButton"
+                android:layout_marginVertical="@dimen/marginCheckButton"
 
-        <TextView
-            android:id="@+id/subtasksText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0"
 
-            android:layout_marginEnd="10dp"
+                android:src="@{task.isDone ? @drawable/done : @drawable/undone}"
 
-            android:textSize="@dimen/goToSubtaskButtonTextSize"
+                android:onClick = "@{() -> doneCallBack.invoke() }"
 
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/titleTask"
+                tools:src="@drawable/undone"
+                />
 
-            android:text="@{@plurals/subtask_s(task.numSubTasks, task.numSubTasks)}"
+            <TextView
+                android:id="@+id/titleTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/titleTaskMarginStart"
+                android:layout_marginTop="@dimen/textTaskMarginVertical"
+                app:layout_constraintStart_toEndOf="@+id/checkButton"
+                app:layout_constraintTop_toTopOf="parent"
 
-            tools:text="Subtasks: 3"
-            tools:visibility="visible"
-        />
-<!--        app:baTextSubtasksText="@{task}"-->
+                android:text="@{task.title}"
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                tools:text="My task"
+                />
+
+            <TextView
+                android:id="@+id/taskType"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+
+                android:layout_marginTop="@dimen/textTaskMarginVertical"
+
+                app:layout_constraintTop_toBottomOf="@id/titleTask"
+                app:layout_constraintStart_toStartOf="@id/titleTask"
+
+                android:text="@{task.type}"
+
+                app:layout_constraintStart_toEndOf="@id/titleTask"
+                tools:text="programming"
+                />
+
+            <TextView
+                android:id="@+id/descriptionTask"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="@dimen/zero"
+                android:layout_marginEnd="18dp"
+                android:layout_marginVertical="@dimen/textTaskMarginVertical"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/titleTask"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/taskType"
+
+                android:text="@{task.description}"
+                android:visibility="@{task.hasDescription ? View.VISIBLE : View.GONE}"
+
+                tools:text="@string/mucho_texto"
+                tools:visibility="visible"
+                />
+            <!--visible gone-->
+
+            <TextView
+                android:id="@+id/subtasksText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginEnd="10dp"
+
+                android:textSize="@dimen/goToSubtaskButtonTextSize"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/titleTask"
+
+                android:text="@{@plurals/subtask_s(task.numSubTasks, task.numSubTasks)}"
+
+                tools:text="Subtasks: 3"
+                tools:visibility="visible"
+                />
+            <!--        app:baTextSubtasksText="@{task}"-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </layout>
 
 <!--    "@{property.imgSrcUrl}"-->

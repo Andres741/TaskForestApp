@@ -10,7 +10,7 @@
     <dimen name="zero">0dp</dimen>
     <dimen name="goToSubtaskButtonTextSize">12sp</dimen>
     <dimen name="marginCheckButton">4dp</dimen>
-    <dimen name="marginHorizontalTaskType">16dp</dimen>
+    <dimen name="marginHorizontalTaskType">10dp</dimen>
     <dimen name="marginVerticalTaskItem">4dp</dimen>
     <dimen name="marginTopTitle">32dp</dimen>
     <dimen name="marginBottomButton">10dp</dimen>
