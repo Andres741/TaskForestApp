@@ -197,7 +197,15 @@ class TaskDaoTest {
         repeat(7){ i ->
             taskDao.insert(TaskEntity("$i$i", "programming", "$i$i", date = 0L))
         }
-        taskDao.getAllTypesFromDBStatic().forEach(TaskTypeFromDB::log)
+        taskDao.getAllTypesFromDBStatic().forEach { it.log() }
+    }
+
+    @Test
+    fun getTaskByType_test(): Unit = runBlocking {
+        taskDao.getTaskByTypeStatic("t0").forEach { it.log("t0") }
+        taskDao.getTaskByTypeStatic("t1").forEach { it.log("t1") }
+        taskDao.getTaskByTypeStatic("t3").forEach { it.log("t3") }
+        taskDao.getTaskByTypeStatic("t9").forEach { it.log("t9") }
     }
 }
 

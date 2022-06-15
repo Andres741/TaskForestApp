@@ -3,28 +3,26 @@ package com.example.taskscheduler.ui.main.adapters.itemAdapters
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import android.widget.Toast
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskscheduler.R
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.databinding.TaskItemBinding
+import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskViewHolder.Companion.setTasksAdapterViewModel
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import kotlinx.coroutines.*
 
-
 class TasksAdapter(
-    val viewModel: TasksAdapterViewModel
+    viewModel: TasksAdapterViewModel
 ): PagingDataAdapter<TaskModel, TaskViewHolder>(TaskDiffCallback) {
 
-//    init { "TasksAdapter created".log() }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        return TaskViewHolder.create(
-            parent = parent, viewModel = viewModel
-        )
+    init {
+        setTasksAdapterViewModel(viewModel)
     }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskViewHolder.create(parent)
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         getItem(position)?.also(holder::bind)
@@ -38,34 +36,48 @@ class TasksAdapter(
 
 class TaskViewHolder private constructor(
     private val binding: TaskItemBinding,
-    val viewModel: TasksAdapterViewModel,
 ): RecyclerView.ViewHolder(binding.root) {
 
     companion object {
-        fun create(parent: ViewGroup, viewModel: TasksAdapterViewModel) = TaskViewHolder (
-            //            binding = TaskItemBinding.inflate(
-            //                LayoutInflater.from(parent.context),
-            //                parent,
-            //                false
-            //            ),
-            binding = DataBindingUtil.inflate<TaskItemBinding>(
+        private lateinit var viewModel: TasksAdapterViewModel
+
+        fun setTasksAdapterViewModel(tasksAdapterViewModel: TasksAdapterViewModel) {
+            viewModel = tasksAdapterViewModel
+        }
+
+        fun create(parent: ViewGroup) = TaskViewHolder (
+            TaskItemBinding.inflate(
                 LayoutInflater.from(parent.context),
-                R.layout.task_item,
                 parent,
                 false
-            ),
-            viewModel = viewModel
+            )
+//            DataBindingUtil.inflate(
+//                LayoutInflater.from(parent.context),
+//                R.layout.task_item,
+//                parent,
+//                false
+//            )
         ).apply { setCallBacks() } //(::setCallBacks) // Doesn't work the reference.
     }
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
     private inline val taskViewHolderScope get() = scopeProvider.currentScope
+    //Safe in coroutines crated with taskViewHolderScope.
+    private inline val taskInBinding: TaskModel get() = binding.task!!
+
 
     private fun setCallBacks() {
         binding.apply {
             doneCallBack = DoneCallBack()
             goToSubTaskDetailCallBack = GoToSubTaskDetailCallBack()
+
+            taskType.setOnClickListener onClick@ {
+                taskViewHolderScope?.launch {
+                    val taskType = viewModel.getTaskTypeFromTask(taskInBinding)
+                    viewModel.selectedTaskTypeName.value = taskType
+                }
+            }
         }
     }
 
@@ -88,10 +100,8 @@ class TaskViewHolder private constructor(
     inner class DoneCallBack {
         operator fun invoke() {
             taskViewHolderScope?.launch {
-                // Completely safe, because taskViewHolderScope isn't null only when the viewHolder is bind.
-                val task = binding.task!!
-                if (viewModel.changeDoneStatusOf(task)) {
-                    setItem(task)
+                if (viewModel.changeDoneStatusOf(taskInBinding)) {
+                    setItem(taskInBinding)
                 }
             }
         }

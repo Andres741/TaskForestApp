@@ -1,26 +1,27 @@
 package com.example.taskscheduler.data.sources.local.dao
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
 import com.example.taskscheduler.data.sources.local.entities.COUNT_OF_TYPEa
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface TaskDao {
-    private companion object {
+    companion object {
         const val GET =
             "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID = :key"
 
-        const val getBySuperTask =
+        const val GET_BY_SUPER_TASK =
             "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET})"
         //Shows the same item the same times as number of items that should show. A SQLite bug?
-//            "SELECT $taskTable.* FROM $taskTable INNER JOIN $subtaskTable " +
-//                    "ON $taskTable.$titleID = $subtaskTable.$superTask_a " +
-//                    "WHERE $taskTable.$titleID = :superTask"
+//            "SELECT $TASK_TABLE.* FROM $TASK_TABLE INNER JOIN $SUBTASK_TABLE " +
+//                    "ON $TASK_TABLE.$TITLE_ID = $SUBTASK_TABLE.$SUPER_TASKa " +
+//                    "WHERE $TASK_TABLE.$TITLE_ID = :superTask"
+
+        const val GET_BY_TASK_TYPE =
+            "SELECT * FROM $TASK_TABLE WHERE $TYPEa = :typeName ORDER BY $TITLE_ID"
 
         const val GET_ALL =
             "SELECT * FROM $TASK_TABLE ORDER BY $TITLE_ID"
@@ -49,11 +50,14 @@ interface TaskDao {
         const val DELETE_ALL =
             "DELETE FROM $TASK_TABLE"
 
-        const val GET_TYPE_FROM_DB =
-            "SELECT $TYPEa, COUNT($TYPEa) AS $COUNT_OF_TYPEa FROM $TASK_TABLE WHERE $TITLE_ID = :key GROUP BY $TYPEa"
+        const val GET_TYPE_FROM_DB_BY_TASK =
+            "SELECT $TYPEa, COUNT($TYPEa) AS $COUNT_OF_TYPEa FROM $TASK_TABLE WHERE $TYPEa = :type GROUP BY $TYPEa"
 
-        const val getAllTypesFromDB =
-            "SELECT $TYPEa, COUNT($TYPEa) AS $COUNT_OF_TYPEa FROM $TASK_TABLE GROUP BY $TYPEa"
+        const val GET_TYPE_MULTIPLICITY =
+            "SELECT COUNT($TYPEa) FROM $TASK_TABLE WHERE $TYPEa = :type GROUP BY $TYPEa"
+
+        const val GET_All_TYPES_FROM_DB =
+            "SELECT $TYPEa, COUNT($TYPEa) AS $COUNT_OF_TYPEa FROM $TASK_TABLE GROUP BY $TYPEa ORDER BY $TYPEa"
     }
 
     @Query(GET)
@@ -74,18 +78,29 @@ interface TaskDao {
     fun getTaskWithSuperTask(key: String): Flow<TaskWithSuperTask>
 
     @Transaction
-    @Query(getBySuperTask)
+    @Query(GET_BY_SUPER_TASK)
     fun getBySuperTask(superTask: String): Flow<List<TaskWithSuperAndSubTasks>>
     @Transaction
-    @Query(getBySuperTask)
+    @Query(GET_BY_SUPER_TASK)
     fun getBySuperTaskStatic(superTask: String): List<TaskWithSuperAndSubTasks>
     @Transaction
-    @Query(getBySuperTask)
-    fun getPagingSourceBySuperTask(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+    @Query(GET_BY_SUPER_TASK)
+    fun getTaskPagingSourceBySuperTask(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+
+
+    @Transaction
+    @Query(GET_BY_TASK_TYPE)
+    fun getTaskByType(typeName: String): Flow<List<TaskWithSuperAndSubTasks>>
+    @Transaction
+    @Query(GET_BY_TASK_TYPE)
+    fun getTaskByTypeStatic(typeName: String): List<TaskWithSuperAndSubTasks>
+    @Transaction
+    @Query(GET_BY_TASK_TYPE)
+    fun getTaskPagingSourceByType(typeName: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+
 
     @Query(GET_TYPE)
     fun getType(key: String): Flow<String>
-
     @Query(GET_TYPE)
     suspend fun getTypeStatic(key: String): String
 
@@ -108,7 +123,7 @@ interface TaskDao {
     fun getAllTasksWithSuperTask(): Flow<List<TaskWithSuperTask>>
     @Transaction
     @Query(GET_ALL)
-    fun getPagingSource(): PagingSource<Int, TaskWithSuperAndSubTasks>
+    fun getTaskPagingSource(): PagingSource<Int, TaskWithSuperAndSubTasks>
 
     @Query(SIZE)
     suspend fun sizeStatic(): Int
@@ -148,15 +163,22 @@ interface TaskDao {
     @Query(DELETE_ALL)
     suspend fun deleteAll()
 
-    @Query(GET_TYPE_FROM_DB)
-    fun getTypeFromDB(key: String): Flow<TaskTypeFromDB>
-    @Query(GET_TYPE_FROM_DB)
-    suspend fun getTypeFromDBStatic(key: String): TaskTypeFromDB
+    @Query(GET_TYPE_FROM_DB_BY_TASK)
+    fun getTypeFromDBByTask(type: String): Flow<TaskTypeFromDB>
+    @Query(GET_TYPE_FROM_DB_BY_TASK)
+    suspend fun getTypeFromDBByTaskStatic(type: String): TaskTypeFromDB
 
-    @Query(getAllTypesFromDB)
+    @Query(GET_TYPE_MULTIPLICITY)
+    fun getTypeFromDB(type: String): Flow<Int>
+    @Query(GET_TYPE_MULTIPLICITY)
+    suspend fun getTypeFromDBStatic(type: String): Int
+
+    @Query(GET_All_TYPES_FROM_DB)
     fun getAllTypesFromDB(): Flow<List<TaskTypeFromDB>>
-    @Query(getAllTypesFromDB)
+    @Query(GET_All_TYPES_FROM_DB)
     suspend fun getAllTypesFromDBStatic(): List<TaskTypeFromDB>
+    @Query(GET_All_TYPES_FROM_DB)
+    fun getTaskTypePagingSource(): PagingSource<Int, TaskTypeFromDB>
 
     @Transaction
     suspend fun refresh(vararg data: TaskEntity) {

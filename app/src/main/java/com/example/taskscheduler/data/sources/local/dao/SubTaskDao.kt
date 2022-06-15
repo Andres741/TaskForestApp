@@ -1,10 +1,7 @@
 package com.example.taskscheduler.data.sources.local.dao
 
 import androidx.room.*
-import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
-import com.example.taskscheduler.data.sources.local.entities.taskEntity.SUB_TASK_ID
-import com.example.taskscheduler.data.sources.local.entities.taskEntity.SUBTASK_TABLE
-import com.example.taskscheduler.data.sources.local.entities.taskEntity.SUPER_TASKa
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -59,7 +56,7 @@ interface SubTaskDao {
 
     //Insert
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(data: SubTaskEntity)
+    suspend fun insert(task: SubTaskEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg list: SubTaskEntity)

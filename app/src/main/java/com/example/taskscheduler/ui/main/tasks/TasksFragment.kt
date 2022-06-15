@@ -7,10 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.FragmentTasksBinding
+import com.example.taskscheduler.domain.models.TaskTypeModel
+import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskTypeAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
@@ -27,11 +31,12 @@ class TasksFragment: Fragment() {
     private var _binding: FragmentTasksBinding? = null
     private val binding get() = _binding!!
 
-//    private val viewModel: TasksViewModel by viewModels()
+    private val viewModel: TasksViewModel by viewModels()
     private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
     //Impossible to initialize here adapter because the view model is not available until onCreateView
 //    private var _adapter: TasksAdapter? = null  //This provokes null pointer exception sometimes
-    private lateinit var tasksAdapter: TasksAdapter
+    private val tasksAdapter by lazy { TasksAdapter(tasksAdapterViewModel) }
+    private val taskTypeAdapter by lazy { TaskTypeAdapter(tasksAdapterViewModel.selectedTaskTypeName::setValue) }
 
     private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
@@ -39,8 +44,6 @@ class TasksFragment: Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        tasksAdapter = TasksAdapter(tasksAdapterViewModel)
 
         val root = inflater.inflate(R.layout.fragment_tasks, container, false)
 
@@ -50,6 +53,7 @@ class TasksFragment: Fragment() {
             it.tasksAdapterViewModel = tasksAdapterViewModel
             it.lifecycleOwner = viewLifecycleOwner
             it.tasksRcy.adapter = tasksAdapter
+            it.tasksTypeRcy.adapter = taskTypeAdapter
             it.root
         }
     }
@@ -72,13 +76,25 @@ class TasksFragment: Fragment() {
                     flow.collectLatest(tasksAdapter::submitData)
                 }
             }
+            selectedTaskTypeName.observe(viewLifecycleOwner) {
+                filterByType(it)
+                if (it == null){
+                    taskTypeAdapter.unselectViewHolder()
+                    return@observe
+                }
+                taskTypeAdapter.selectViewHolder(it)
+            }
         }
-
         binding.also {
             it.newTaskButton.setOnClickListener {
                 findNavController().navigate(
                     TasksFragmentDirections.actionFragmentTasksToAddTaskFragment(null)
                 )
+            }
+        }
+        viewModel.apply {
+            lifecycleScope.launch{
+                taskTypeDataFlow.collectLatest(taskTypeAdapter::submitData)
             }
         }
     }

@@ -4,13 +4,14 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="checkButtonSize">48dp</dimen>
-    <dimen name="titleTaskMarginTop">4dp</dimen>
+    <dimen name="textTaskMarginVertical">4dp</dimen>
     <dimen name="titleTaskMarginStart">26dp</dimen>
     <dimen name="descriptionTaskMarginVertical">4dp</dimen>
     <dimen name="zero">0dp</dimen>
     <dimen name="goToSubtaskButtonTextSize">12sp</dimen>
     <dimen name="marginCheckButton">4dp</dimen>
-    <dimen name="marginItem">10dp</dimen>
+    <dimen name="marginHorizontalTaskType">16dp</dimen>
+    <dimen name="marginVerticalTaskItem">4dp</dimen>
     <dimen name="marginTopTitle">32dp</dimen>
     <dimen name="marginBottomButton">10dp</dimen>
     <dimen name="rcy_marginHorizontal">14dp</dimen>

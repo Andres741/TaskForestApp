@@ -8,6 +8,8 @@ data class TaskTypeModel (
     val multiplicity: Int,
 ) {
     fun toPair() = name to multiplicity
+
+    fun Pair<String, Int>.toTaskTypeModel() = TaskTypeModel(first, second)
 }
 
 fun Iterable<TaskTypeModel>.toPair() = map(TaskTypeModel::toPair)

@@ -29,11 +29,12 @@ class TaskDetailFragment: Fragment() {
     private var _binding: FragmentTaskDetailBinding? = null
     private val binding get() = _binding!!
 
+
 //    private val viewModel: TaskDetailViewModel by viewModels()
     private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
 
 
-    private lateinit var adapter: TasksAdapter
+    private val adapter by lazy { TasksAdapter(tasksAdapterViewModel) }
 
     private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
@@ -41,8 +42,6 @@ class TaskDetailFragment: Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        adapter = TasksAdapter(tasksAdapterViewModel)
 
         val root = inflater.inflate(R.layout.fragment_task_detail, container, false)
 

@@ -2,26 +2,26 @@ package com.example.taskscheduler.ui.main.adapters.itemAdapters
 
 import android.util.Log
 import androidx.lifecycle.*
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.taskscheduler.domain.ChangeDoneStatusOfTaskUseCase
+import com.example.taskscheduler.domain.GetTaskPagerByTypeUseCase
 import com.example.taskscheduler.domain.GetTaskPagerUseCase
+import com.example.taskscheduler.domain.GetTaskTypeFromTaskUseCase
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.TaskTypeModel
+import com.example.taskscheduler.util.TaskDataFlow
 import com.example.taskscheduler.util.observable.LiveStack
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-
-typealias TaskDataFlow = Flow<PagingData<TaskModel>>
-typealias TaskTypeDataFlow = Flow<PagingData<TaskTypeModel>>
 
 @HiltViewModel
 class TasksAdapterViewModel @Inject constructor(
     private val getTaskPagerUseCase: GetTaskPagerUseCase,
+    private val getTaskPagerByTypeUseCase: GetTaskPagerByTypeUseCase,
     private val changeDoneStatusOfTaskUseCase: ChangeDoneStatusOfTaskUseCase,
+    private val getTaskTypeFromTaskUseCase: GetTaskTypeFromTaskUseCase,
 ): ViewModel() {
     private val _taskStack = LiveStack<TaskModel>()
     /**
@@ -37,7 +37,18 @@ class TasksAdapterViewModel @Inject constructor(
     }
     val tasksDataFlow: LiveData<TaskDataFlow> = _tasksDataFlow
 
-    val taskTypeData: TaskTypeDataFlow = TODO()
+    val selectedTaskTypeName = MutableLiveData<TaskTypeModel?>()
+
+
+    private fun setPagingData(newTask: TaskModel?) {
+        _tasksDataFlow.value = getTaskPagerUseCase(newTask).cachedIn(pagingDataScopeProvider.newScope)
+    }
+
+    private fun setPagingDataFromType(type: TaskTypeModel) {
+        _tasksDataFlow.value = getTaskPagerByTypeUseCase(type).cachedIn(pagingDataScopeProvider.newScope)
+    }
+
+    private fun setPagingDataFromTopOfStack() = setPagingData(_taskStack.value)
 
 
     fun addToStack(task: TaskModel) {
@@ -59,11 +70,17 @@ class TasksAdapterViewModel @Inject constructor(
         setPagingData(null)
     }
 
-    private fun setPagingData(newTask: TaskModel?) {
-        _tasksDataFlow.value = getTaskPagerUseCase(newTask).cachedIn(pagingDataScopeProvider.newScope)
+    fun filterByType(typeName: TaskTypeModel?) {
+        if (_taskStack.isNotEmpty()) {
+            "Impossible to filter by type if the _taskStack is not empty".log()
+            return
+        }
+        if (typeName == null) {
+            setPagingData(null)  // setPagingData(type) // Ugly but works!
+            return
+        }
+        setPagingDataFromType(typeName)
     }
-
-    private fun setPagingDataFromTopOfStack() = setPagingData(_taskStack.value)
 
     suspend fun changeDoneStatusOf(task: TaskModel) = changeDoneStatusOfTaskUseCase(task)//.log("Status changed")
 
@@ -76,6 +93,8 @@ class TasksAdapterViewModel @Inject constructor(
         }
     }
 
+    suspend fun getTaskTypeFromTask(task: TaskModel) = getTaskTypeFromTaskUseCase(task)
+
     override fun onCleared() {
         pagingDataScopeProvider.cancel()
         super.onCleared()
@@ -87,4 +106,11 @@ class TasksAdapterViewModel @Inject constructor(
             "${if (msj != null) "$msj: " else ""}${toString()}"
         )
     }
+
+//    sealed class SelectedTaskType(
+//        val taskType: TaskTypeModel
+//    ) {
+//        class FromTaskTypeItem(taskType: TaskTypeModel): SelectedTaskType(taskType)
+//        class FromAnywhere(taskType: TaskTypeModel): SelectedTaskType(taskType)
+//    }
 }

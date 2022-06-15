@@ -5,9 +5,11 @@ import androidx.room.Transaction
 import com.example.taskscheduler.data.sources.local.ILocalTaskRepository.Companion.PAGE_SIZE
 import com.example.taskscheduler.data.sources.local.dao.SubTaskDao
 import com.example.taskscheduler.data.sources.local.dao.TaskDao
+import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperAndSubTasks
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperTask
 import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.domain.models.TaskTypeModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,15 +20,27 @@ class RoomTaskRepository @Inject constructor(
     private val subTaskDao: SubTaskDao,
 ): ILocalTaskRepository {
 
-    override fun getPagingSource() = Pager(
-        config = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE),
-        pagingSourceFactory = { taskDao.getPagingSource() }
+    private val pagingConfig = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE)
+
+    override fun getTaskPagingSource(): Flow<PagingData<TaskModel>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { taskDao.getTaskPagingSource() }
     ).flow.map { it.map (TaskWithSuperAndSubTasks::toModel) }
 
-    override fun getPagingSourceBySuperTask(superTask: TaskModel) = Pager(
-        config = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE),
-        pagingSourceFactory = { taskDao.getPagingSourceBySuperTask(superTask.title) }
+    override fun getTaskPagingSourceBySuperTask(superTask: TaskModel): Flow<PagingData<TaskModel>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { taskDao.getTaskPagingSourceBySuperTask(superTask.title) }
     ).flow.map { it.map (TaskWithSuperAndSubTasks::toModel) }
+
+    override fun getTaskPagingSourceByTaskType(type: TaskTypeModel): Flow<PagingData<TaskModel>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { taskDao.getTaskPagingSourceByType(type.name) }
+    ).flow.map { it.map (TaskWithSuperAndSubTasks::toModel) }
+
+    override fun getTaskTypePagingSource(): Flow<PagingData<TaskTypeModel>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { taskDao.getTaskTypePagingSource() }
+    ).flow.map { it.map (TaskTypeFromDB::toModel) }
 
     override suspend fun existsTitle(taskTitle: String): Boolean = taskDao.containsStatic(taskTitle)
 
@@ -60,6 +74,8 @@ class RoomTaskRepository @Inject constructor(
     override suspend fun getTaskTypeByTitleStatic(title: String): String = taskDao.
         getTypeStatic(title)
 
+    override suspend fun getTaskTypeFromTask(task: TaskModel) = taskDao.
+        getTypeFromDBByTaskStatic(task.type).toModel()
 
 
 //    private fun<T> T.log(msj: String? = null) = apply {
