@@ -132,8 +132,6 @@
                 tools:text="Subtasks: 3"
                 tools:visibility="visible"
                 />
-            <!--        app:baTextSubtasksText="@{task}"-->
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </layout>

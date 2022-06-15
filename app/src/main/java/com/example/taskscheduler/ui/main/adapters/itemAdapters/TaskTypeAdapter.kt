@@ -17,6 +17,10 @@ class TaskTypeAdapter (
     private val onClickCallBack: OnClickTaskTypeVH
 ): PagingDataAdapter<TaskTypeModel, TaskTypeViewHolder>(TaskTypeDiffCallback) {
 
+    init {
+        TaskTypeViewHolder.removeSelected()
+    }
+
     private val bindViewHolderMap = hashMapOf<TaskTypeModel, TaskTypeViewHolder>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskTypeViewHolder.create(
