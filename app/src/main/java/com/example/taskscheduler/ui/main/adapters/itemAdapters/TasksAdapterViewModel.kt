@@ -8,8 +8,9 @@ import com.example.taskscheduler.domain.GetTaskPagerByTypeUseCase
 import com.example.taskscheduler.domain.GetTaskPagerUseCase
 import com.example.taskscheduler.domain.GetTaskTypeFromTaskUseCase
 import com.example.taskscheduler.domain.models.TaskModel
-import com.example.taskscheduler.domain.models.TaskTypeModel
+import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.util.TaskDataFlow
+import com.example.taskscheduler.util.observable.EventTrigger
 import com.example.taskscheduler.util.observable.LiveStack
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,14 +38,16 @@ class TasksAdapterViewModel @Inject constructor(
     }
     val tasksDataFlow: LiveData<TaskDataFlow> = _tasksDataFlow
 
-    val selectedTaskTypeName = MutableLiveData<TaskTypeModel?>()
+    val selectedTaskTypeName = MutableLiveData<ITaskTypeNameOwner?>()
+
+    val onUpButtonPressedEvent = EventTrigger()
 
 
     private fun setPagingData(newTask: TaskModel?) {
         _tasksDataFlow.value = getTaskPagerUseCase(newTask).cachedIn(pagingDataScopeProvider.newScope)
     }
 
-    private fun setPagingDataFromType(type: TaskTypeModel) {
+    private fun setPagingDataFromType(type: ITaskTypeNameOwner) {
         _tasksDataFlow.value = getTaskPagerByTypeUseCase(type).cachedIn(pagingDataScopeProvider.newScope)
     }
 
@@ -70,7 +73,7 @@ class TasksAdapterViewModel @Inject constructor(
         setPagingData(null)
     }
 
-    fun filterByType(typeName: TaskTypeModel?) {
+    fun filterByType(typeName: ITaskTypeNameOwner?) {
         if (_taskStack.isNotEmpty()) {
             "Impossible to filter by type if the _taskStack is not empty".log()
             return

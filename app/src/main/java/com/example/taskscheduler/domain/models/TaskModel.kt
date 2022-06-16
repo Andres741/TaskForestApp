@@ -10,31 +10,37 @@ import java.util.*
 
 data class TaskModel (
     val title: String,
-    var type: String,
+    val type: String,
     var description: String = "",
-    var superTask: String = "",
-    var subTasks: List<String> = emptyList(),
+    val superTask: String = "",
+    val subTasks: List<String> = emptyList(),
     var isDone: Boolean = false,
     val dateNum: Long = System.currentTimeMillis(),
-) {
+): ITaskTypeNameOwner {
 
-    val date get() = dateNum.let { Calendar.getInstance().apply { timeInMillis = it } }
+    val date: Calendar get() = dateNum.let { Calendar.getInstance().apply { timeInMillis = it } }
     val hasDescription get() = description.isNotBlank()
     val hasSuperTask get() = superTask.isNotBlank()
     val hasSubTasks get() = subTasks.isNotEmpty()
     val numSubTasks get() = subTasks.size
+    override val typeName: String get() = type
 
     constructor(entity: TaskEntity): this (
         title = entity.title, type = entity.type, description = entity.description,
         isDone = entity.isDone, dateNum = entity.date
     )
-    constructor(entity: TaskWithSuperTask): this(entity.task) {
-        entity.superTaskEntity?.superTask?.also(::superTask.setter)
-    }
-    constructor(entity: TaskWithSuperAndSubTasks): this(entity.task) {
-        entity.superTaskEntity?.superTask?.also(::superTask.setter)
+    constructor(entity: TaskWithSuperTask): this (
+        title = entity.task.title, type = entity.task.type, description = entity.task.description,
+        isDone = entity.task.isDone, dateNum = entity.task.date,
+        superTask = entity.superTaskEntity?.superTask ?: ""
+    )
+
+    constructor(entity: TaskWithSuperAndSubTasks): this (
+        title = entity.task.title, type = entity.task.type, description = entity.task.description,
+        isDone = entity.task.isDone, dateNum = entity.task.date,
+        superTask = entity.superTaskEntity?.superTask ?: "",
         subTasks = entity.subTaskEntities.map(SubTaskEntity::subTask)
-    }
+    )
 
     fun toEntity() = TaskEntity(
         title = title, type = type, description = description, isDone = isDone, date = dateNum
@@ -49,7 +55,7 @@ data class TaskModel (
     }
 
     override fun toString() =
-        "TaskModel(title=$title, type=$type, description=$description, isDone=$isDone, date=${date?.time}, superTask=$superTask, subTasks=$subTasks)"
+        "TaskModel(title=$title, type=$type, description=$description, isDone=$isDone, date=${date.time}, superTask=$superTask, subTasks=$subTasks)"
 }
 
 fun Iterable<TaskModel>.toEntity(): List<TaskEntity> = map(TaskModel::toEntity)

@@ -6,7 +6,10 @@ import com.example.taskscheduler.util.dataStructures.MultiplicityList
 data class TaskTypeModel (
     val name: String,
     val multiplicity: Int,
-) {
+): ITaskTypeNameOwner {
+
+    override val typeName: String get() = name
+
     fun toPair() = name to multiplicity
 
     fun Pair<String, Int>.toTaskTypeModel() = TaskTypeModel(first, second)

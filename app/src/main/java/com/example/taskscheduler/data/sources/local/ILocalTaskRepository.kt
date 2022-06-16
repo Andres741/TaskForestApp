@@ -2,6 +2,7 @@ package com.example.taskscheduler.data.sources.local
 
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.TaskTypeModel
+import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.util.TaskDataFlow
 import com.example.taskscheduler.util.TaskTypeDataFlow
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ interface ILocalTaskRepository {
 
     fun getTaskPagingSourceBySuperTask(superTask: TaskModel): TaskDataFlow
 
-    fun getTaskPagingSourceByTaskType(type: TaskTypeModel): TaskDataFlow
+    fun getTaskPagingSourceByTaskType(type: ITaskTypeNameOwner): TaskDataFlow
 
     fun getTaskTypePagingSource(): TaskTypeDataFlow
 

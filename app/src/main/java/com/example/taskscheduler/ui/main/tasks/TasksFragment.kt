@@ -69,7 +69,6 @@ class TasksFragment: Fragment() {
                     TasksFragmentDirections.actionFragmentTasksToFragmentTaskDetail()
                 )
             }
-
             /** Introduces the data into the adapter.*/
             tasksDataFlow.observe(viewLifecycleOwner) { flow ->
                 collectPagingDataScopeProvider.newScope.launch {
@@ -78,7 +77,7 @@ class TasksFragment: Fragment() {
             }
             selectedTaskTypeName.observe(viewLifecycleOwner) {
                 filterByType(it)
-                if (it == null){
+                if (it == null) {
                     taskTypeAdapter.unselectViewHolder()
                     return@observe
                 }

@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.TaskTypeItemBinding
 import com.example.taskscheduler.domain.models.TaskTypeModel
+import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
+import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
 import com.example.taskscheduler.util.OnClickTaskTypeVH
-import kotlinx.android.synthetic.main.task_item.view.*
 
 class TaskTypeAdapter (
     private val onClickCallBack: OnClickTaskTypeVH
@@ -21,7 +22,7 @@ class TaskTypeAdapter (
         TaskTypeViewHolder.removeSelected()
     }
 
-    private val bindViewHolderMap = hashMapOf<TaskTypeModel, TaskTypeViewHolder>()
+    private val bindViewHolderMap = hashMapOf<SimpleTaskTypeNameOwner, TaskTypeViewHolder>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskTypeViewHolder.create(
         parent, onClickCallBack
@@ -30,18 +31,18 @@ class TaskTypeAdapter (
     override fun onBindViewHolder(holder: TaskTypeViewHolder, position: Int) {
         getItem(position)?.also { taskType ->
             holder.bind(taskType)
-            bindViewHolderMap[taskType] = holder
+            bindViewHolderMap[taskType.toSimpleTaskTypeNameOwner()] = holder
         }
     }
 
     override fun onViewRecycled(holder: TaskTypeViewHolder) {
-        bindViewHolderMap.remove(holder.taskTypeInBinding!!)
+        bindViewHolderMap.remove(holder.taskTypeInBinding!!.toSimpleTaskTypeNameOwner())
         super.onViewRecycled(holder)
     }
 
-    fun selectViewHolder(taskType: TaskTypeModel) {
-        TaskTypeViewHolder.selectedTaskType = taskType.log("taskType")
-        bindViewHolderMap[taskType]?.setIsSelected()
+    fun selectViewHolder(taskType: ITaskTypeNameOwner) {
+        TaskTypeViewHolder.selectedTaskType = taskType.log("TaskTypeNameOwner")
+        bindViewHolderMap[taskType.toSimpleTaskTypeNameOwner()]?.setIsSelected()
     }
     fun unselectViewHolder() {
         TaskTypeViewHolder.removeSelected()
@@ -54,7 +55,7 @@ class TaskTypeViewHolder private constructor(
 ): RecyclerView.ViewHolder(binding.root) {
     companion object {
         var selectedViewHolder: TaskTypeViewHolder? = null
-        var selectedTaskType: TaskTypeModel? = null
+        var selectedTaskType: ITaskTypeNameOwner? = null
 
         const val greenColor = 0xff00ff55.toInt()
         const val whiteColor = 0xffffffff.toInt()
@@ -80,7 +81,7 @@ class TaskTypeViewHolder private constructor(
     val isSelected: Boolean
         get() {
             val selectedTaskType = selectedTaskType
-            return selectedTaskType != null && binding.taskType == selectedTaskType
+            return selectedTaskType != null && (binding.taskType?.equalsType(selectedTaskType) == true)
         }
 
     private fun setCallBacks(onClickCallBack: OnClickTaskTypeVH) = apply {

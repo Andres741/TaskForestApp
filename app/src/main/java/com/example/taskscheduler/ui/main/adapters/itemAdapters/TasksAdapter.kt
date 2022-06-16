@@ -74,8 +74,7 @@ class TaskViewHolder private constructor(
 
             taskType.setOnClickListener onClick@ {
                 taskViewHolderScope?.launch {
-                    val taskType = viewModel.getTaskTypeFromTask(taskInBinding)
-                    viewModel.selectedTaskTypeName.value = taskType
+                    viewModel.selectedTaskTypeName.value = taskInBinding
                 }
             }
         }
@@ -109,7 +108,7 @@ class TaskViewHolder private constructor(
 
     inner class GoToSubTaskDetailCallBack {
         operator fun invoke() {
-            binding.task?.also(viewModel::addToStack)  // taskStack must be observed in the fragments.
+            binding.task.log("binding.task")?.also(viewModel::addToStack)  // taskStack must be observed in the fragments.
         }
     }
 }

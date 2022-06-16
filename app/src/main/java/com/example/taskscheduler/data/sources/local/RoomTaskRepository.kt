@@ -10,6 +10,7 @@ import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWith
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperTask
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.TaskTypeModel
+import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,9 +33,9 @@ class RoomTaskRepository @Inject constructor(
         pagingSourceFactory = { taskDao.getTaskPagingSourceBySuperTask(superTask.title) }
     ).flow.map { it.map (TaskWithSuperAndSubTasks::toModel) }
 
-    override fun getTaskPagingSourceByTaskType(type: TaskTypeModel): Flow<PagingData<TaskModel>> = Pager(
+    override fun getTaskPagingSourceByTaskType(type: ITaskTypeNameOwner): Flow<PagingData<TaskModel>> = Pager(
         config = pagingConfig,
-        pagingSourceFactory = { taskDao.getTaskPagingSourceByType(type.name) }
+        pagingSourceFactory = { taskDao.getTaskPagingSourceByType(type.typeName) }
     ).flow.map { it.map (TaskWithSuperAndSubTasks::toModel) }
 
     override fun getTaskTypePagingSource(): Flow<PagingData<TaskTypeModel>> = Pager(

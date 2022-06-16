@@ -71,6 +71,9 @@ class TaskDetailFragment: Fragment() {
                     flow.collectLatest(adapter::submitData)
                 }
             }
+            onUpButtonPressedEvent.setEvent(viewLifecycleOwner) {
+                removeFromStack()
+            }
 
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { clearStack() }
         }

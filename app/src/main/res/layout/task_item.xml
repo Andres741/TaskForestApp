@@ -110,7 +110,7 @@
                 android:text="@{task.description}"
                 android:visibility="@{task.hasDescription ? View.VISIBLE : View.GONE}"
 
-                tools:text="@string/mucho_texto"
+                tools:text="@string/mucho_texto_1"
                 tools:visibility="visible"
                 />
             <!--visible gone-->

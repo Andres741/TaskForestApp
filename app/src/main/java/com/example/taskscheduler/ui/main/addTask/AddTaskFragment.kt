@@ -1,6 +1,7 @@
 package com.example.taskscheduler.ui.main.addTask
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +27,7 @@ class AddTaskFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: AddTaskViewModel by viewModels()
-//    private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
+    private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
 
     private val args: AddTaskFragmentArgs by navArgs()
 
@@ -72,10 +73,12 @@ class AddTaskFragment : Fragment() {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 
             if (isSuccessful) {
-                view.findNavController().popBackStack().ifFalse {
-                    throw Error("AddTaskFragment has not back stack.")
-                }
+                view.findNavController().popBackStack()
+                    .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
             }
+        }
+        tasksAdapterViewModel.onUpButtonPressedEvent.setEvent(viewLifecycleOwner) {
+            view.findNavController().popBackStack()
         }
     }
 
@@ -83,4 +86,9 @@ class AddTaskFragment : Fragment() {
         _binding = null
         super.onDestroy()
     }
+
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i("AddTaskFragment", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
+
 }
