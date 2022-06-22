@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface SubTaskDao {
 
     companion object {
-        const val GET =
+        const val GET_SUB_TASKS_OF_SUPER_TASK =
             "SELECT $SUB_TASK_ID FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask"
         const val GET_SUBTASK_ENTITIES =
             "SELECT * FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask"
@@ -18,14 +18,101 @@ interface SubTaskDao {
 
         const val GET_ALL_SUPER_TASKS =
             "SELECT $SUPER_TASKa FROM $SUBTASK_TABLE GROUP BY $SUPER_TASKa"
-        const val GET_SUPER_TASK = "SELECT $SUPER_TASKa FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask"
+        const val GET_SUPER_TASK =
+            "SELECT $SUPER_TASKa FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask"
 
-        const val DELETE_ALL =
-            "DELETE FROM $SUBTASK_TABLE"
-        const val DELETE_SUB =
-            "DELETE FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask"
-        const val DELETE_SUPER =
-            "DELETE FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask"
+        const val GET_All_TOP_SUPER_TASK =
+            "SELECT $SUB_TASK_ID FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = '' "
+
+        const val GET_ALL_FATHERS = """
+            WITH RECURSIVE response AS ( 
+                SELECT * FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask 
+                UNION ALL
+                SELECT tab.*
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res
+                    ON res.$SUPER_TASKa = tab.$SUB_TASK_ID
+            )
+            SELECT * FROM response
+        """  // On each recursive call res stores the last data selected.
+        const val GET_ALL_FATHERS_BY_SUPER_TASK = """
+            WITH RECURSIVE response AS (
+                SELECT * FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask
+                UNION ALL
+                SELECT tab.*
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res
+                    ON res.$SUPER_TASKa = tab.$SUB_TASK_ID
+            )
+            SELECT * FROM response
+        """
+        const val GET_ALL_SUPER_TASKS_OF_TASK = """
+            WITH RECURSIVE response AS ( 
+                SELECT $SUPER_TASKa FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask 
+                UNION ALL
+                SELECT tab.$SUPER_TASKa
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res
+                    ON res.$SUPER_TASKa = tab.$SUB_TASK_ID
+            )
+            SELECT * FROM response
+        """
+
+
+        const val GET_ALL_CHILDREN_BY_SUB_TASK = """ 
+            WITH RECURSIVE response AS ( 
+                SELECT * FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask 
+                UNION ALL 
+                SELECT tab.* 
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res 
+                    ON res.$SUB_TASK_ID = tab.$SUPER_TASKa 
+            ) 
+            SELECT * FROM response 
+        """
+        const val GET_ALL_CHILDREN = """
+            WITH RECURSIVE response AS (
+                SELECT * FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask
+                UNION ALL
+                SELECT tab.*
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res
+                    ON res.$SUB_TASK_ID = tab.$SUPER_TASKa
+            )
+            SELECT * FROM response
+        """
+        const val GET_ALL_SUB_TASKS = """
+            WITH RECURSIVE response AS (
+                SELECT $SUB_TASK_ID FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask
+                UNION ALL
+                SELECT tab.$SUB_TASK_ID
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res
+                    ON res.$SUB_TASK_ID = tab.$SUPER_TASKa
+            )
+            SELECT * FROM response
+        """
+
+
+        const val GET_TOP_SUPER_TASK_OF_TASK = """
+            WITH RECURSIVE response AS ( 
+                SELECT * FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask 
+                UNION ALL
+                SELECT tab.*
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res
+                    ON res.$SUPER_TASKa = tab.$SUB_TASK_ID
+            )
+            SELECT $SUB_TASK_ID FROM response WHERE $SUPER_TASKa = ''
+        """
+
+        const val EXISTS_SUB_SASK =
+            "SELECT EXISTS (SELECT 1 FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :key )"
+        const val NOT_EXISTS_SUB_SASK =
+            "SELECT NOT EXISTS (SELECT 1 FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :key )"
+        const val EXISTS_SUPER_SASK =
+            "SELECT EXISTS (SELECT 1 FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask ) LIMIT 1"
+        const val NOT_EXISTS_SUPER_SASK =
+            "SELECT NOT EXISTS (SELECT 1 FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask ) LIMIT 1"
+
+        const val IS_TOP_SUPER_TASK =
+            "SELECT '' = ($GET_SUPER_TASK)"
+
+        const val IS_NOT_TOP_SUPER_TASK =
+            "SELECT '' <> ($GET_SUPER_TASK)"
     }
 
     //Select
@@ -34,9 +121,9 @@ interface SubTaskDao {
     @Query(GET_SUBTASK_ENTITIES)
     suspend fun getSubTaskEntitiesStatic(superTask: String): List<SubTaskEntity>
 
-    @Query(GET)
+    @Query(GET_SUB_TASKS_OF_SUPER_TASK)
     operator fun get(superTask: String): Flow<List<String>>
-    @Query(GET)
+    @Query(GET_SUB_TASKS_OF_SUPER_TASK)
     suspend fun getStatic(superTask: String): List<String>
 
     @Query(GET_ALL)
@@ -47,33 +134,47 @@ interface SubTaskDao {
     @Query(GET_ALL_SUPER_TASKS)
     fun getAllSuperTasks(): Flow<List<String>>
     @Query(GET_ALL_SUPER_TASKS)
-    fun getAllSuperTasksStatic(): List<String>
+    suspend fun getAllSuperTasksStatic(): List<String>
 
     @Query(GET_SUPER_TASK)
-    fun getSuperTask(subTask: String): Flow<String?>
+    fun getSuperTask(subTask: String): Flow<String>
     @Query(GET_SUPER_TASK)
-    fun getSuperTaskStatic(subTask: String): String?
+    suspend fun getSuperTaskStatic(subTask: String): String
 
-    //Insert
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(task: SubTaskEntity)
+    @Query(GET_All_TOP_SUPER_TASK)
+    fun getAllTopSuperTask(): Flow<List<String>>
+    @Query(GET_All_TOP_SUPER_TASK)
+    suspend fun getAllTopSuperTaskStatic(): List<String>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg list: SubTaskEntity)
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(list: Iterable<SubTaskEntity>)
+    @Query(EXISTS_SUB_SASK)
+    suspend fun existsSubTask(key: String): Boolean
+    @Query(NOT_EXISTS_SUB_SASK)
+    suspend fun notExistsSubTask(key: String): Boolean
+    @Query(EXISTS_SUPER_SASK)
+    suspend fun existsSuperTask(superTask: String): Boolean
+    @Query(NOT_EXISTS_SUPER_SASK)
+    suspend fun notExistsSuperTask(superTask: String): Boolean
 
-    //Delete
-    @Delete
-    suspend fun delete(key: SubTaskEntity)
+    @Query(IS_TOP_SUPER_TASK)
+    suspend fun isTopSuperTask(subTask: String): Boolean
+    @Query(IS_NOT_TOP_SUPER_TASK)
+    suspend fun isNotTopSuperTask(subTask: String): Boolean
 
-    @Query(DELETE_ALL)
-    suspend fun deleteAll()
+    @Query(GET_ALL_FATHERS_BY_SUPER_TASK)
+    suspend fun getAllFathersBySuperTask(superTask: String): List<SubTaskEntity>
+    @Query(GET_ALL_FATHERS)
+    suspend fun getAllFathers(subTask: String): List<SubTaskEntity>
+    @Query(GET_ALL_SUPER_TASKS_OF_TASK)
+    suspend fun getAllSuperTasks(subTask: String): List<String>
 
-    @Query(DELETE_SUB)
-    suspend fun deleteSubTask(subTask: String)
+    @Query(GET_ALL_CHILDREN_BY_SUB_TASK)
+    suspend fun getAllChildrenBySubTask(subTask: String): List<SubTaskEntity>
+    @Query(GET_ALL_CHILDREN)
+    suspend fun getAllChildren(superTask: String): List<SubTaskEntity>
+    @Query(GET_ALL_SUB_TASKS)
+    suspend fun getAllSubTasks(superTask: String): List<String>
 
-    @Query(DELETE_SUPER)
-    suspend fun deleteSuperTask(superTask: String)
+    @Query(GET_TOP_SUPER_TASK_OF_TASK)
+    suspend fun getTopSuperTask(subTask: String): String
 
 }

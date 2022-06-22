@@ -4,17 +4,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 
 class EventTrigger {
-    private val liveData = MutableLiveData<Unit?>(null)
+    private val eventManager = MutableLiveData<Unit?>(null)
 
     fun triggerEvent() {
-        liveData.value = Unit
+        eventManager.value = Unit
     }
 
     //inline operator fun invoke() = triggerEvent()
 
     fun setEvent(owner: LifecycleOwner, onEvent: ()-> Unit) {
-        liveData.value = null
-        liveData.observe(owner) event@{
+        eventManager.value = null
+        eventManager.observe(owner) event@{
             it?: return@event
             onEvent()
         }

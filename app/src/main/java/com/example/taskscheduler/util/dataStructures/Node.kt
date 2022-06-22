@@ -33,6 +33,18 @@ class Node<T>(
         }
     }
 
+    inline fun forEach(consumer: (T) -> Unit) {
+        consumer(this.elem)
+
+        var currentNode = this.next
+
+        while (currentNode != null) {
+            consumer(currentNode.elem)
+            currentNode = currentNode.next
+        }
+    }
+
+
     companion object {
         class NodeIterator<T>(firstNode: Node<T>?, initNode: Int = 0): MutableIterator<Node<T>> {
             var first = firstNode
@@ -106,6 +118,9 @@ class Node<T>(
         inline fun<T> createChain(iterable: Iterable<T>): Pair<Node<T>, Node<T>>? {
             return createChain(iterable.iterator())
         }
+        inline fun<T> createChainAndGetSize(iterable: Iterable<T>): Triple<Node<T>, Node<T>, Int>? {
+            return createChainAndGetSize(iterable.iterator())
+        }
 
         inline fun<T, R> createTransformedChain(
             iterable: Iterable<T>, transform: (T)-> R
@@ -132,6 +147,22 @@ class Node<T>(
             }
 
             return first to last
+        }
+
+        fun<T> createChainAndGetSize(iterator: Iterator<T>): Triple<Node<T>, Node<T>, Int>? {
+            val first = if (iterator.hasNext()) Node(iterator.next()) else return null
+            var size = 1
+            var last = first
+
+            while (iterator.hasNext()) {
+                Node(iterator.next()).also { newNode ->
+                    last.next = newNode
+                    last = newNode
+                }
+                size++
+            }
+
+            return Triple(first, last, size)
         }
 
 //        inline fun add(generator: ()-> T?) {

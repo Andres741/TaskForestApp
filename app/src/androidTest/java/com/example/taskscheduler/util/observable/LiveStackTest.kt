@@ -84,7 +84,7 @@ class LiveStackTest: TestCase() {
         launch {
             withContext(Dispatchers.Main) {
 
-                delay(timeMillis); addToBoth("0")
+                addToBoth("0")
                 delay(timeMillis); addToBoth("1")
                 delay(timeMillis); addToBoth("2")
                 delay(timeMillis); popBoth()

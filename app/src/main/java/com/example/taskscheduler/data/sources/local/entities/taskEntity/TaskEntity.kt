@@ -21,7 +21,7 @@ data class TaskEntity(
     @ColumnInfo(name = DESCRIPTIONa)
     val description: String,
     @ColumnInfo(name = IS_DONEa)
-    val isDone: Boolean = false,
+    val isDone: Boolean,
     @ColumnInfo(name = DATEa)
     val date: Long,
 ) {

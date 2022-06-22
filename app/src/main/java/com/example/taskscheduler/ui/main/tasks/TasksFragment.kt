@@ -13,7 +13,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.FragmentTasksBinding
-import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskTypeAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
@@ -62,7 +61,7 @@ class TasksFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         tasksAdapterViewModel.apply {
-            taskStack.observe(viewLifecycleOwner) { task ->
+            taskTitleStack.observe(viewLifecycleOwner) { task ->
                 task ?: return@observe
 
                 view.findNavController().navigate(
@@ -92,7 +91,7 @@ class TasksFragment: Fragment() {
             }
         }
         viewModel.apply {
-            lifecycleScope.launch{
+            lifecycleScope.launch {
                 taskTypeDataFlow.collectLatest(taskTypeAdapter::submitData)
             }
         }

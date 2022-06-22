@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-const val SUBTASK_TABLE = "subtaskTable"
+const val SUBTASK_TABLE = "subTaskTable"
 const val SUB_TASK_ID = "subTaskID"
 const val SUPER_TASKa = "superTask_a"
 
@@ -14,5 +14,9 @@ data class SubTaskEntity(
     val superTask: String,
     @ColumnInfo(name = SUB_TASK_ID) @PrimaryKey //A task only can be a sub task once
     val subTask: String,
-)
+) {
+    constructor(subTask: String): this(superTask = "", subTask = subTask)
+
+    val hasSuperTask get() = superTask.isNotEmpty()
+}
 

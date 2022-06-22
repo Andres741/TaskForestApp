@@ -24,15 +24,15 @@ object LocalModule {
 
     @Singleton
     @Provides
-    fun providesADao(db: LocalDataBase) = db.aDao
-
-    @Singleton
-    @Provides
     fun providesTaskDao(db: LocalDataBase) = db.taskDao
 
     @Singleton
     @Provides
     fun providesSubTaskDao(db: LocalDataBase) = db.subTaskDao
+
+    @Singleton
+    @Provides
+    fun providesTaskAndSubTaskDao(db: LocalDataBase) = db.taskAndSubTaskDao
 
     @Singleton
     @Provides   /* The local repository can be changed easily*/

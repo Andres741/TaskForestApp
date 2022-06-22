@@ -1,6 +1,8 @@
 <resources>
-    <string name="mucho_texto">My task consist in create this application, I can do it because I am the best.\nI do not know what to put extra here, but I need a long text.</string>
-    <string name="mucho_texto_1">Object oriented programming (OOP):\nIs a programming paradigm based on the concept of objects, which can contain data and code: data in data in the form of fields (often known as attributes or properties), and code, in the form of procedures (often known as methods).</string>
+    <string name="mucho_texto_1">My task consist in create this application, I can do it because I am the best.\nI do not know what to put extra here, but I need a long text.</string>
+    <string name="mucho_texto">Object oriented programming (OOP):\nIs a programming paradigm based on the concept of objects, which can contain data and code: data in data in the form of fields (often known as attributes or properties), and code, in the form of procedures (often known as methods).</string>
+    <string name="no_mucho_texto">Object oriented programming (OOP)</string>
+    <string name="nada_texto">.</string>
 
 
     <string name="app_name">Task scheduler</string>
@@ -91,5 +93,9 @@
 
 
     <string name="bye">Bye!!!</string>
+    <string name="discard">discard</string>
+    <string name="save_change">save</string>
+    <string name="new_value">New value:</string>
+    <string name="old_value">Old value:</string>
 
 </resources>

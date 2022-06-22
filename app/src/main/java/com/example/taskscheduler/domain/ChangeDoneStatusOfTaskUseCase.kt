@@ -1,6 +1,8 @@
 package com.example.taskscheduler.domain
 
 import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.domain.models.ITaskTitleOwner
+import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.ifTrue
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Singleton
 class ChangeDoneStatusOfTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
+    private val getTaskByTitle: GetTaskByTitleUseCase
 ) {
     private val mutex: Mutex = Mutex()
 
@@ -26,5 +29,14 @@ class ChangeDoneStatusOfTaskUseCase @Inject constructor(
                 task.apply { isDone = !isDone }
             }
         }
+    }
+
+    suspend operator fun invoke(taskTitle: SimpleTaskTitleOwner): TaskModel = withContext (
+        Dispatchers.Default + NonCancellable
+    ) {
+
+        val task = getTaskByTitle.static(taskTitle.taskTitle)
+        invoke(task)
+        task
     }
 }

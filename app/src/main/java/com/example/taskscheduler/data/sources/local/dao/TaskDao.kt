@@ -12,20 +12,16 @@ interface TaskDao {
     companion object {
         const val GET =
             "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID = :key"
-
         const val GET_BY_SUPER_TASK =
-            "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET})"
+            "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_SUB_TASKS_OF_SUPER_TASK})"
         //Shows the same item the same times as number of items that should show. A SQLite bug?
 //            "SELECT $TASK_TABLE.* FROM $TASK_TABLE INNER JOIN $SUBTASK_TABLE " +
 //                    "ON $TASK_TABLE.$TITLE_ID = $SUBTASK_TABLE.$SUPER_TASKa " +
 //                    "WHERE $TASK_TABLE.$TITLE_ID = :superTask"
-
         const val GET_BY_TASK_TYPE =
             "SELECT * FROM $TASK_TABLE WHERE $TYPEa = :typeName ORDER BY $TITLE_ID"
-
         const val GET_ALL =
             "SELECT * FROM $TASK_TABLE ORDER BY $TITLE_ID"
-
         const val GET_TYPE =
             "SELECT $TYPEa FROM $TASK_TABLE WHERE $TITLE_ID = :key"
 
@@ -41,8 +37,16 @@ interface TaskDao {
         const val CONTAINS =
             "SELECT EXISTS(SELECT 1 FROM $TASK_TABLE WHERE $TITLE_ID = :key)"
 
-        const val CHANGE_DONE =
+        const val UPDATE_DONE =
             "UPDATE $TASK_TABLE SET $IS_DONEa = :newValue WHERE $TITLE_ID = :key"
+
+        const val UPDATE_DESCRIPTION =
+            "UPDATE $TASK_TABLE SET $DESCRIPTIONa = :newValue WHERE $TITLE_ID = :key"
+
+
+        const val UPDATE_TYPE =
+            "UPDATE $TASK_TABLE SET $TYPEa = :newValue WHERE $TYPEa = :oldValue"
+
 
         const val DELETE =
             "DELETE FROM $TASK_TABLE WHERE $TITLE_ID = :key"
@@ -146,16 +150,14 @@ interface TaskDao {
     suspend fun containsStatic(key: String): Boolean
 
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(data: TaskEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg entities: TaskEntity)
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(entities: Iterable<TaskEntity>)
-
-    @Query(CHANGE_DONE)
+    @Query(UPDATE_DONE)
     suspend fun changeDone(key: String, newValue: Boolean): Int
+
+    @Query(UPDATE_DESCRIPTION)
+    suspend fun changeDescription(key: String, newValue: String): Int
+
+    @Query(UPDATE_TYPE)
+    suspend fun updateType(oldValue: String, newValue: String): Int
 
     @Query(DELETE)
     suspend fun delete(key: String)
@@ -180,14 +182,4 @@ interface TaskDao {
     @Query(GET_All_TYPES_FROM_DB)
     fun getTaskTypePagingSource(): PagingSource<Int, TaskTypeFromDB>
 
-    @Transaction
-    suspend fun refresh(vararg data: TaskEntity) {
-        deleteAll()
-        insertAll(*data)
-    }
-    @Transaction
-    suspend fun refresh(data: Iterable<TaskEntity>) {
-        deleteAll()
-        insertAll(data)
-    }
 }

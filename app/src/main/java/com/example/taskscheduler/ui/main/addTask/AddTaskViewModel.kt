@@ -6,9 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskscheduler.domain.CreateValidTaskUseCase
-import com.example.taskscheduler.domain.GetTaskByNameUseCase
 import com.example.taskscheduler.domain.SaveNewTaskUseCase
-import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.FirstToSecond
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -18,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AddTaskViewModel @Inject constructor(
     private val saveNewTaskUseCase: SaveNewTaskUseCase,
-    private val getTaskByNameUseCase: GetTaskByNameUseCase,
 ): ViewModel() {
 
     val title = MutableLiveData<String>()
@@ -33,8 +30,6 @@ class AddTaskViewModel @Inject constructor(
 
     private val _taskHasBeenSaved = MutableLiveData<CreateValidTaskUseCase.Response>()
     val taskHasBeenSaved: LiveData<CreateValidTaskUseCase.Response> = _taskHasBeenSaved
-
-    lateinit var flow: Flow<TaskModel>
 
     /** This method must be called in the onCreateView() method of the fragment. */
     fun onCreate(args: AddTaskFragmentArgs) {

@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 typealias TaskDataFlow = Flow<PagingData<TaskModel>>
 typealias TaskTypeDataFlow = Flow<PagingData<TaskTypeModel>>
 typealias OnClickTaskTypeVH = (TaskTypeModel?) -> Unit
-
+typealias CallbackAndName = Pair<()->Unit, String>
 

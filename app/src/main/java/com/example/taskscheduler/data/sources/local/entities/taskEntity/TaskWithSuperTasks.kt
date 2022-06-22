@@ -10,7 +10,7 @@ data class TaskWithSuperTask(
         parentColumn = TITLE_ID,
         entityColumn = SUB_TASK_ID
     )
-    val superTaskEntity: SubTaskEntity?
+    val superTaskEntity: SubTaskEntity
 ) {
     fun toModel() = TaskModel (this)
 

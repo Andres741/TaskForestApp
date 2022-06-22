@@ -33,4 +33,12 @@
         <item name="android:layout_marginHorizontal">@dimen/rcy_marginHorizontal</item>
         <item name="android:layout_marginVertical">@dimen/rcy_marginVertical</item>
     </style>
+
+    <style name="button_save_pop_up">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">@dimen/saveButtonMarginHorizontal</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

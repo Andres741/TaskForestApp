@@ -13,10 +13,10 @@ class SaveNewTaskUseCase @Inject constructor(
     private val createValidTaskUseCase: CreateValidTaskUseCase,
 ) {
 
-    //TODO: decide which one I will use.
-    private val saveTaskContext: CoroutineContext = newSingleThreadContext("saveTaskThread") + NonCancellable
-    private val saveTaskContext1: CoroutineContext = Dispatchers.Default.limitedParallelism(1) + NonCancellable
-    private val saveTaskContext2: CoroutineContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher() + NonCancellable
+    //TODO: decide which one I will use and fix the synchronization in domain layer.
+    private val saveTaskContext = newSingleThreadContext("saveTaskThread")// + NonCancellable
+    private val saveTaskContext1 = Dispatchers.Default.limitedParallelism(1)// + NonCancellable
+    private val saveTaskContext2 = Executors.newSingleThreadExecutor().asCoroutineDispatcher() + NonCancellable
 
     /**
      * This function must be used as the constructor of TaskModel in the IU layer.
@@ -40,14 +40,3 @@ class SaveNewTaskUseCase @Inject constructor(
     }
     class SavedTask(successfulResponse: Successful): CreateValidTaskUseCase.Response.Successful(successfulResponse.task)
 }
-
-//final int sizeArr = 7
-//int* myArray = new int[sizeArr];
-//int primerNum = myArray[0];
-//int segNum = (myArray+1)*;
-//int terNum = (myArray+2)*;
-//int quintNum = myArray[4];
-//int sepNum = myArray[6];
-//int noMyNum = myArray[77];
-//myArray[77] = 77;
-//delete myArray;

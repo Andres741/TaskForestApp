@@ -7,9 +7,11 @@ import com.example.taskscheduler.util.dataStructures.MyLinkedList
  * Union between LiveData and Stack where like a stack FILO logic is implemented and the top of the stack
  * is observable.
  */
-class LiveStack<T>: LiveData<T>(), Collection<T> {
-    private val stack = MyLinkedList<T>()
-    val elements: List<T> = stack
+class LiveStack<T> private constructor(
+    private val stack: MyLinkedList<T>
+): LiveData<T>(), List<T> by stack {
+
+    constructor(): this( MyLinkedList() )
 
     override fun getValue(): T? {
         return stack.getFirst()
@@ -20,7 +22,10 @@ class LiveStack<T>: LiveData<T>(), Collection<T> {
         super.setValue(value)
     }
 
-    fun remove() { stack.removeFirst(); super.setValue(stack.getFirst()) }
+    fun remove() {
+        stack.removeFirst()
+        super.setValue(stack.getFirst())
+    }
 
     fun pop() = stack.pop().also { super.setValue(stack.getFirst()) }
 
@@ -29,18 +34,14 @@ class LiveStack<T>: LiveData<T>(), Collection<T> {
         super.setValue(null)
     }
 
-    fun notifyObserveAgain() { value = value }
+    fun changeTop(newValue: T) {
+        stack.setFirst(newValue)
+        super.setValue(newValue)
+    }
 
-    override fun isEmpty() = stack.isEmpty()
+    fun notifyObserveAgain() {
+        value = value
+    }
 
-    fun isNotEmpty() = stack.isNotEmpty()
-
-    override val size = stack.size
-
-    override fun contains(element: T) = stack.contains(element)
-
-    override fun containsAll(elements: Collection<T>) = stack.containsAll(elements)
-
-    override fun iterator(): Iterator<T> = stack.iterator()
-
+    override fun iterator() = stack.normalIterator()
 }

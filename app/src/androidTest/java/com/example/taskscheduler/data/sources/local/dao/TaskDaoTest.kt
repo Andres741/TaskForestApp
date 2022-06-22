@@ -6,11 +6,12 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.taskscheduler.data.sources.local.LocalDataBase
-import com.example.taskscheduler.data.sources.local.entities.AEntity
-import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
+import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
+import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.domain.models.toTaskEntities
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.flow.first
@@ -19,12 +20,99 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.system.measureTimeMillis
 
 @RunWith(AndroidJUnit4::class)
 class TaskDaoTest {
+
+    private val taskModels = listOf<TaskModel>(
+        //as
+        TaskModel(
+            title = "a", type = "a", description = "",
+            superTask = "".toTaskTitle(), subTasks = listOf(
+                "aa".toTaskTitle()
+            )
+        ),
+        TaskModel(
+            title = "aa", type = "a", description = "",
+            superTask = "a".toTaskTitle(), subTasks = listOf(
+                "aaa".toTaskTitle()
+            )
+        ),
+        TaskModel(
+            title = "aaa", type = "a", description = "",
+            superTask = "aa".toTaskTitle(), subTasks = emptyList()
+        ),
+
+        //bs
+        TaskModel(
+            title = "b", type = "b", description = "",
+            superTask = "".toTaskTitle(), subTasks = listOf(
+                "bb", "bbb"
+            ).toTaskTitle()
+        ),
+        TaskModel(
+            title = "bb", type = "b", description = "",
+            superTask = "b".toTaskTitle(), subTasks = emptyList()
+        ),
+        TaskModel(
+            title = "bbb", type = "b", description = "",
+            superTask = "b".toTaskTitle(), subTasks = emptyList()
+        ),
+
+
+        //cs
+        TaskModel(
+            title = "c", type = "c", description = "",
+            superTask = "".toTaskTitle(), subTasks = listOf(
+                "cc"
+            ).toTaskTitle()
+        ),
+        TaskModel(
+            title = "cc", type = "c", description = "",
+            superTask = "c".toTaskTitle(), subTasks = listOf(
+                "ccc", "cccc", "ccccc"
+            ).toTaskTitle()
+        ),
+        TaskModel(
+            title = "ccc", type = "c", description = "",
+            superTask = "cc".toTaskTitle(), subTasks = emptyList()
+        ),
+        TaskModel(
+            title = "cccc", type = "c", description = "",
+            superTask = "cc".toTaskTitle(), subTasks = emptyList()
+        ),
+        TaskModel(
+            title = "ccccc", type = "c", description = "",
+            superTask = "cc".toTaskTitle(), subTasks = emptyList()
+        ),
+
+
+        TaskModel(
+            title = "x", type = "x", description = "",
+            superTask = "".toTaskTitle(), subTasks = emptyList()
+        ),
+        TaskModel(
+            title = "xx", type = "x", description = "",
+            superTask = "".toTaskTitle(), subTasks = emptyList()
+        ),
+
+        TaskModel(
+            title = "y", type = "y", description = "",
+            superTask = "".toTaskTitle(), subTasks = emptyList()
+        ),
+        TaskModel(
+            title = "z", type = "z", description = "",
+            superTask = "".toTaskTitle(), subTasks = emptyList()
+        ),
+    )
+
+    private val taskEntities = taskModels.toTaskEntities()
+
     private lateinit var db: LocalDataBase
-    private lateinit var taskDao: TaskDao
-    private lateinit var subTaskDao: SubTaskDao
+    private val taskDao get() = db.taskDao
+    private val subTaskDao get() = db.subTaskDao
+    private val taskAndSubTaskDao get() = db.taskAndSubTaskDao
 
     private lateinit var listDBTasks: MutableList<TaskEntity>
 
@@ -35,32 +123,20 @@ class TaskDaoTest {
         db = Room.inMemoryDatabaseBuilder(
             context, LocalDataBase::class.java
         ).build()
-        taskDao = db.taskDao
-        subTaskDao = db.subTaskDao
     }
 
     private fun setUpTasks() = runBlocking {
-        val list = mutableListOf<TaskEntity>()
-        taskDao.insertAll(List(numTaskEntities, Int::taskNum).also { list.addAll(it) })
-        listDBTasks = list
+        taskAndSubTaskDao.insertAllPairs(taskEntities)
+
+        listDBTasks = mutableListOf()
     }
 
-    private fun setUpSubTasks() = runBlocking {
-        val titles = taskDao.getAllStatic().map { it.title }
-
-        subTaskDao.insertAll(listDBTasks.subList(1, numTaskEntities-1).map { SubTaskEntity(titles[0], it.title) })
-
-        subTaskDao.insertAll(listDBTasks.subList(0, 4).map { SubTaskEntity(titles[3], it.title) })
-
-        subTaskDao.insertAll(listDBTasks.subList(4, 7).map { SubTaskEntity(titles[9], it.title) })
-    }
 
     @Before
     fun onBefore() {
         "\n/-----------------------------------------\\\n".log()
         createDb()
         setUpTasks()
-        setUpSubTasks()
     }
 
     private fun closeDb() {
@@ -73,28 +149,34 @@ class TaskDaoTest {
         closeDb()
     }
 
-    @Test
-    fun itWorks(): Unit = runBlocking {
-
-        db.aDao.insertAll((listOf("Hello", "world", "of", "room").map { AEntity(data = it) }))
-
-        db.aDao.getAll().forEach { it.log() }; "\n".log()
-
-        "At least the database works.".log()
+    fun getAllModels() = runBlocking {
+        taskDao.getAllTasksWithSuperAndSubTasksStatic().toModel()
     }
 
-    @Test
-    fun simple_Write_And_Read_TaskEntity_Test(): Unit = runBlocking {
-        taskDao.deleteAll()
-        (0..3).forEach {
-            taskDao.insert(it.taskNum())
+    fun showAll() = runBlocking {
+        getAllModels().run {
+            onEach {
+                it.log()
+                "".log()
+            }
         }
-        taskDao.insertAll(List<TaskEntity>(7) {
-            (it + 3).taskNum()
-        })
-
-        taskDao.getAllStatic().forEach(TaskEntity::log)
     }
+
+    @Test
+    fun staticVSFlow(): Unit = runBlocking {
+        val searched = "a"
+        repeat(10) { i ->
+            taskDao.changeDescription(searched, i.toString())
+            assertEquals(taskDao[searched].first(), taskDao.getStatic(searched))
+        }
+    }
+
+    @Test
+    fun dataRecuperation_test(): Unit = runBlocking  {
+        val recuperated = showAll()
+        assertEquals(taskModels, recuperated)
+    }
+
 
     @Test
     fun taskDao_size_test(): Unit = runBlocking {
@@ -126,7 +208,7 @@ class TaskDaoTest {
     }
 
     @Test
-    fun getAllSubTasks_test(): Unit = runBlocking  {
+    fun getAllSubTasksEntities_test(): Unit = runBlocking  {
         subTaskDao.getAllStatic().forEach(SubTaskEntity::log)
     }
 
@@ -140,20 +222,6 @@ class TaskDaoTest {
         subTaskDao.getSubTaskEntitiesStatic("t9").forEach(SubTaskEntity::log)
     }
 
-    @Test
-    fun deleteSub_test(): Unit = runBlocking  {
-        subTaskDao.deleteSubTask("t1")
-        subTaskDao.deleteSubTask("t5")
-        subTaskDao.deleteSubTask("t55")
-
-        subTaskDao.getAllStatic().forEach(SubTaskEntity::log)
-    }
-
-    @Test
-    fun deleteSuper_test(): Unit = runBlocking  {
-        subTaskDao.deleteSuperTask("t3")
-        subTaskDao.getAllStatic().forEach(SubTaskEntity::log)
-    }
 
     @Test
     fun getAllSuperTasks_test(): Unit = runBlocking  {
@@ -162,22 +230,10 @@ class TaskDaoTest {
     }
 
     @Test
-    fun getAllTaskWithSuperAndSubTasks_test(): Unit = runBlocking  {
-        taskDao.getAllTasksWithSuperAndSubTasks().first().forEach { taskWithSuperAndSubTasks ->
-            val task = taskWithSuperAndSubTasks.toModel()
-            task.log("task")
-            task.superTask.log("super task")
-            "List of sub tasks: ".log()
-            task.subTasks.forEach(String::log)
-            "\n".log()
-        }
-    }
-
-    @Test
     fun getAllTaskWithSuperTask_test(): Unit = runBlocking  {
         taskDao.getAllTasksWithSuperTask().first().forEach { task ->
             task.log("task")
-            task.superTaskEntity?.superTask.log("super task")
+            task.superTaskEntity.superTask.log("super task")
             "\n".log()
         }
     }
@@ -193,26 +249,78 @@ class TaskDaoTest {
     }
 
     @Test
-    fun getAllTypeEntities_test(): Unit = runBlocking {
-        repeat(7){ i ->
-            taskDao.insert(TaskEntity("$i$i", "programming", "$i$i", date = 0L))
+    fun changeTaskType_test(): Unit = runBlocking {
+        val time = measureTimeMillis {
+            taskAndSubTaskDao.changeTaskType("a", "A").log("A count")
+            taskAndSubTaskDao.changeTaskType("bbb", "B").log("B count")
+            taskAndSubTaskDao.changeTaskType("ccccc", "C").log("C count")
+            taskAndSubTaskDao.changeTaskType("x", "X").log("X count")
+            taskAndSubTaskDao.changeTaskType("z", "Z").log("Z count")
         }
-        taskDao.getAllTypesFromDBStatic().forEach { it.log() }
+        showAll()
+        time.log("Time")
     }
 
     @Test
-    fun getTaskByType_test(): Unit = runBlocking {
-        taskDao.getTaskByTypeStatic("t0").forEach { it.log("t0") }
-        taskDao.getTaskByTypeStatic("t1").forEach { it.log("t1") }
-        taskDao.getTaskByTypeStatic("t3").forEach { it.log("t3") }
-        taskDao.getTaskByTypeStatic("t9").forEach { it.log("t9") }
+    fun getAllFathers_test(): Unit = runBlocking {
+        "fathers".bigLog()
+        subTaskDao.getAllFathers("").log("Empty")
+        subTaskDao.getAllFathers("c").log("c")
+        subTaskDao.getAllFathers("cc").log("cc")
+        subTaskDao.getAllFathers("ccccc").log("ccccc")
+        "fathers and self".bigLog()
+        subTaskDao.getAllFathersBySuperTask("").log("Empty")
+        subTaskDao.getAllFathersBySuperTask("c").log("c")
+        subTaskDao.getAllFathersBySuperTask("cc").log("cc")
+        subTaskDao.getAllFathersBySuperTask("ccccc").log("ccccc")
+        "all super tasks".bigLog()
+        subTaskDao.getAllSuperTasks("").log("Empty")
+        subTaskDao.getAllSuperTasks("c").log("c")
+        subTaskDao.getAllSuperTasks("cc").log("cc")
+        subTaskDao.getAllSuperTasks("ccccc").log("ccccc")
+    }
+
+    @Test
+    fun getAllChildren_test(): Unit = runBlocking {
+        "children".bigLog()
+        subTaskDao.getAllChildren("").log("Empty")
+        subTaskDao.getAllChildren("c").log("c")
+        subTaskDao.getAllChildren("cc").log("cc")
+        subTaskDao.getAllChildren("ccccc").log("ccccc")
+        "children and self".bigLog()
+        subTaskDao.getAllChildrenBySubTask("").log("Empty")
+        subTaskDao.getAllChildrenBySubTask("c").log("c")
+        subTaskDao.getAllChildrenBySubTask("cc").log("cc")
+        subTaskDao.getAllChildrenBySubTask("ccccc").log("ccccc")
+        "sub tasks".bigLog()
+        subTaskDao.getAllSubTasks("").log("Empty")
+        subTaskDao.getAllSubTasks("c").log("c")
+        subTaskDao.getAllSubTasks("cc").log("cc")
+        subTaskDao.getAllSubTasks("ccccc").log("ccccc")
+    }
+
+    @Test
+    fun getTopSuperTask_test(): Unit = runBlocking {
+        val tested = listOf("a", "aaa", "b", "bbb", "c", "cc", "ccccc", "z")
+
+        tested.forEach { subTask ->
+            subTaskDao.getTopSuperTask(subTask).log(subTask)
+        }
     }
 }
 
-private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this", date = 0L)
+private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this", date = 0L, isDone = false)
+
+private fun String.toTaskTitle() = SimpleTaskTitleOwner(this)
+
+private fun Iterable<String>.toTaskTitle() = map(String::toTaskTitle)
 
 //private fun Int.subTaskNum(sub: Int) = TaskEntity("t$this-$sub", "ty$this-$sub", "des$this-$sub", "super$this-$sub",)
 
 private fun<T> T.log(msj: String? = null) = apply {
     Log.d("TaskDaoTest", "${if (msj != null) "$msj: " else ""}${toString()}")
+}
+
+private fun<T> T.bigLog(msj: String? = null) {
+    "".log(); toString().uppercase().log(msj); "".log()
 }

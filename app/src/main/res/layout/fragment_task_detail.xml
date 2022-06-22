@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <data>
         <import type="android.view.View" />
         <variable
             name="tasksAdapterViewModel"
-            type="com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel" />
+            type="com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel"
+            />
+        <variable
+            name="viewmodel"
+            type="com.example.taskscheduler.ui.main.taskDetail.TaskDetailViewModel"
+            />
     </data>
-<!--    <variable-->
-<!--        name="viewmodel"-->
-<!--        type="com.example.taskscheduler.ui.main.taskDetail.TaskDetailViewModel" />-->
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -35,7 +38,6 @@
 
         <EditText
             android:id="@+id/task_title_cont"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
@@ -49,7 +51,7 @@
 
 
             android:hint="@{@string/enter_your_x_here(@string/title)}"
-            android:text="@{tasksAdapterViewModel.taskStack.title}"
+            android:text="@={viewmodel.title}"
 
             tools:text="value 0"
 
@@ -67,18 +69,13 @@
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
 
             android:hint="@{@string/enter_your_x_here(@string/type)}"
-            android:text="@{tasksAdapterViewModel.taskStack.type}"
+            android:text="@={viewmodel.type}"
 
             tools:text="value 1"
 
             style="@style/task_value"
             />
 
-        <!--
-        TODO: add the following when implemented
-
-        android:onClick = "@{() -> viewModel.changeStatus() )}"
-        -->
         <TextView
             android:id="@+id/task_done_cont"
 
@@ -86,8 +83,8 @@
 
             android:layout_height="wrap_content"
 
-            android:text="@{tasksAdapterViewModel.taskStack.isDone ? @string/completed : @string/uncompleted}"
-            android:textColor="@{tasksAdapterViewModel.taskStack.isDone ? @color/done : @color/undone}"
+            android:text="@{viewmodel.task.isDone ? @string/completed : @string/uncompleted}"
+            android:textColor="@{viewmodel.task.isDone ? @color/done : @color/undone}"
 
             app:layout_constraintBottom_toTopOf="@+id/superTask_cont"
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
@@ -113,58 +110,55 @@
 
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
 
-            app:layout_constraintBottom_toTopOf="@+id/task_description_cont"
+            app:layout_constraintBottom_toTopOf="@+id/task_description_cont_SV"
             app:layout_constraintTop_toBottomOf="@+id/task_done_cont"
 
-            android:text="@{tasksAdapterViewModel.taskStack.hasSuperTask ? tasksAdapterViewModel.taskStack.superTask : @string/doesn_t_have}"
+            android:text="@{viewmodel.task.hasSuperTask ? viewmodel.task.superTaskTitle : @string/doesn_t_have}"
 
-            android:onClick="@{()-> tasksAdapterViewModel.removeFromStack()}"
+            android:onClick="@{()-> tasksAdapterViewModel.removeFromStackIfMoreThanOneElement()}"
 
-            tools:text="Learning" />
+            tools:text="Learning"
+            />
 
+        <ScrollView
+            android:id="@+id/task_description_cont_SV"
 
-        <EditText
-            android:id="@+id/task_description_cont"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="@dimen/attributes_marginVertical"
 
-
             app:layout_constraintStart_toStartOf="@+id/task_title_cont"
             app:layout_constraintEnd_toEndOf="parent"
 
             app:layout_constraintBottom_toTopOf="@id/subtasksRcy"
 
-            android:hint="@{@string/enter_your_x_here(@string/description)}"
+            app:layout_constraintHeight_max="@dimen/description_max_height"
+            app:layout_constrainedHeight="true"
+            >
 
-            android:text="@{tasksAdapterViewModel.taskStack.hasDescription ? tasksAdapterViewModel.taskStack.description : @string/doesn_t_have}"
+            <EditText
+                android:id="@+id/task_description_cont2"
 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-            tools:text="@string/mucho_texto_1"
+                android:hint="@{@string/enter_your_x_here(@string/description)}"
+                android:text="@={viewmodel.description}"
 
-            tools:visibility="visible"
+                tools:text="@string/mucho_texto"
+                tools:visibility="visible"
 
-            style="@style/task_value"
-            />
+                style="@style/task_value"
+                />
+
+        </ScrollView>
+
         <!--visible gone-->
+        <!--mucho_texto mucho_texto_1 no_mucho_texto nada_texto-->
 <!--        tools:text="textView3"-->
 <!--        tools:text="@string/mucho_texto"-->
-
-        <Button
-            android:id="@+id/add_subtask_button"
-
-
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-
-            android:text="@string/add_subtask"
-            style="@style/lower_button"
-        />
-
 
         <!--
         The following TextView may be changed by images.
@@ -225,9 +219,11 @@
             android:layout_height="wrap_content"
             android:text="@string/description_att"
 
+            app:layout_constraintBottom_toBottomOf="@+id/task_description_cont_SV"
             app:layout_constraintStart_toStartOf="@+id/task_title"
+            app:layout_constraintTop_toTopOf="@+id/task_description_cont_SV"
 
-            app:layout_constraintBaseline_toBaselineOf="@id/task_description_cont"
+            app:layout_constraintVertical_bias="0.0"
             />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -235,7 +231,9 @@
 
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:maxHeight="@dimen/subtasksRcyMaxHeight"
+            app:layout_constraintHeight_max="@dimen/subtasksRcyMaxHeight"
+            app:layout_constrainedHeight="true"
+
             tools:layout_height="300dp"
 
             app:layout_constraintStart_toStartOf="parent"
@@ -247,5 +245,16 @@
             style="@style/recyclerTasks"
             />
 
+        <Button
+            android:id="@+id/add_subtask_button"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            android:text="@string/add_subtask"
+            style="@style/lower_button"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

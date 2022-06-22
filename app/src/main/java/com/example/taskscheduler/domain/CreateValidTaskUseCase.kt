@@ -1,6 +1,7 @@
 package com.example.taskscheduler.domain
 
 import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,28 +24,36 @@ class CreateValidTaskUseCase @Inject constructor(
     ): Response = withContext(Dispatchers.Default) res@ {
 
         val (newSuperTask, newType) = if (superTask.isNullOrBlank()) { // There is not super task
-            "" to (type?.validateField() ?: return@res Response.WrongType)
+            "" to (type?.validateType() ?: return@res Response.WrongType)
         } else {
             (superTask.validateSuperTask() ?: return@res Response.WrongSuperTask) to taskRepository.local.getTaskTypeByTitleStatic(superTask)
         }
 
-        val newTitle = title?.validateName() ?: return@res Response.WrongTitle
-        val newDescription = description?.validateField() ?: ""
+        val newTitle = title?.validateTitle() ?: return@res Response.WrongTitle
+        val newDescription = description?.validateDescription() ?: ""
 
         return@res Response.Successful( TaskModel (
-            title = newTitle, type = newType, description = newDescription, superTask = newSuperTask
+            title = newTitle, type = newType, description = newDescription, superTask = SimpleTaskTitleOwner(newSuperTask)
         ))
     }
 
-    private fun String.validateField(): String? = ifBlank { null }
+    private inline fun String.validateField(): String? = ifBlank { null }
+    private inline fun String.validateShortField(): String? = validateField()?.takeIf { field ->
+        field.length < 35
+    }
 
-    private suspend fun String.validateName(): String? = validateField()?.let { newTitle ->
+
+    suspend fun String.validateTitle(): String? = validateShortField()?.let { newTitle ->
         if(existsTaskWithTitleUseCase.not(newTitle)) this else null
     }
 
-    private suspend fun String.validateSuperTask(): String? = validateField()?.let { newSuperTask ->
+    fun String.validateType() = validateShortField()
+
+    private suspend fun String.validateSuperTask(): String? = validateShortField()?.let { newSuperTask ->
             if(existsTaskWithTitleUseCase(newSuperTask)) this else return null
     } ?: ""
+
+    fun String.validateDescription(): String? = validateField()
 
     sealed class Response {
         open class Successful(val task: TaskModel): Response()

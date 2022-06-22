@@ -68,8 +68,11 @@
 
             android:visibility="@{ viewmodel.existsSuperTask ? View.GONE : View.VISIBLE }"
 
+            tools:visibility="visible"
+
             style="@style/new_task_value"
         />
+        <!--visible gone-->
 
         <EditText
             android:id="@+id/description"

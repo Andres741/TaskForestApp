@@ -10,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.navigation.ui.navigateUp
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.ActivityMainBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel

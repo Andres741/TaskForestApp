@@ -1,6 +1,8 @@
 package com.example.taskscheduler.util.dataStructures
 
+import android.util.Log
 import com.example.taskscheduler.util.containsInConstantTime
+import com.example.taskscheduler.util.dataStructures.Node.Companion.createChainAndGetSize
 import com.example.taskscheduler.util.errors.outOfBoundsOf
 import com.example.taskscheduler.util.notContainsInConstantTime
 
@@ -25,7 +27,7 @@ class MyLinkedList<T>(): MutableList<T> {
 
     override fun isEmpty() = size == 0
 
-    fun isNotEmpty() = !isEmpty()
+    fun isNotEmpty() = size > 0
 
     constructor(first: Node<T>, last: Node<T>, size: Int) : this() {
         this.first = first
@@ -75,6 +77,23 @@ class MyLinkedList<T>(): MutableList<T> {
 
     fun getLast() = last?.elem
 
+    fun setFirst(element: T): T {
+        val first = first
+        val res: T = first!!.elem
+
+        first.elem = element
+        return res
+    }
+
+    fun setLast(element: T): T {
+        val last = last
+        val res: T = last!!.elem
+
+        last.elem = element
+        return res
+    }
+
+
     override fun equals(other: Any?): Boolean {
         if (other !is MyLinkedList<*>) return false
 
@@ -99,7 +118,7 @@ class MyLinkedList<T>(): MutableList<T> {
         return getNodeOrNull(index)?.elem
     }
 
-    fun clearListAndAdd(element: T){
+    fun clearListAndAdd(element: T) {
         Node(element).apply {
             first = this
             last = this
@@ -140,8 +159,7 @@ class MyLinkedList<T>(): MutableList<T> {
     }
 
     fun addFirst(value: T) {
-        val newFirst = Node(value)
-        newFirst.next = first
+        val newFirst = Node(value, first)
         first = newFirst
 
         if (isEmpty()) {
@@ -153,27 +171,16 @@ class MyLinkedList<T>(): MutableList<T> {
     }
 
     fun addAll(values: Iterable<T>) {
-        val it = values.iterator()
-        if (!it.hasNext()) {
-            return
-        }
-
-        val firstNewNode = Node(it.next())
-        var lastNewNode = firstNewNode
-
-        while (it.hasNext()) {
-            lastNewNode.next = Node(it.next())
-            lastNewNode = lastNewNode.next!!
-        }
-
+        val (firstNode, lastNode, chainSize) = createChainAndGetSize(values) ?: return
         if (isEmpty()) {
-            first = firstNewNode
-            last = lastNewNode
+            first = firstNode
+            last = lastNode
+            size = chainSize
             return
         }
-
-        last!!.next = firstNewNode
-        last = lastNewNode
+        last!! += firstNode
+        last = lastNode
+        size += chainSize
     }
 
     override fun set(index: Int, element: T): T {
@@ -252,16 +259,13 @@ class MyLinkedList<T>(): MutableList<T> {
 
         override fun next(): T {
             val res = currentNode!!.elem
-
             currentNode = currentNode!!.next
-
             return res
         }
     }
 
     inline fun<R> mapMyLinkedList(transform: (T)-> R): MyLinkedList<R> {
         val (firstNode, lastNode) =
-
             Node.createTransformedChain(normalIterator(), transform) ?: return MyLinkedList()
         return MyLinkedList(firstNode, lastNode, size)
     }
@@ -503,5 +507,18 @@ class MyLinkedList<T>(): MutableList<T> {
         }
         return somethingHasBeenRemoved
     }
+
+    fun forEach(consumer: (T) -> Unit) {
+        first?.forEach(consumer)
+    }
+
+    fun onEach(consumer: (T) -> Unit) = apply {
+        first?.forEach(consumer)
+    }
+
+    private inline fun<T> T.log(msj: String? = null) = apply {
+        Log.i("MyLinkedList", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
+
 }
 

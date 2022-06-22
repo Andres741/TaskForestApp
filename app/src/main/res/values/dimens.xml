@@ -10,7 +10,7 @@
     <dimen name="zero">0dp</dimen>
     <dimen name="goToSubtaskButtonTextSize">12sp</dimen>
     <dimen name="marginCheckButton">4dp</dimen>
-    <dimen name="marginHorizontalTaskType">10dp</dimen>
+    <dimen name="marginHorizontalTaskType">8dp</dimen>
     <dimen name="marginVerticalTaskItem">4dp</dimen>
     <dimen name="marginTopTitle">32dp</dimen>
     <dimen name="marginBottomButton">10dp</dimen>
@@ -19,5 +19,10 @@
     <dimen name="subtasksRcyMaxHeight">300dp</dimen>
     <dimen name="add_task_fab">12dp</dimen>
     <dimen name="attributes_marginVertical">20dp</dimen>
+    <dimen name="card_margin">4dp</dimen>
+    <dimen name="description_max_height">120dp</dimen>
+    <dimen name="values_margin_horizontal">100dp</dimen>
+    <dimen name="saveButtonMarginHorizontal">8dp</dimen>
+    <dimen name="save_changes_values_marg_hor">32dp</dimen>
     <!--    <dimen name="titleTask">(@dimen/checkButton)/2</dimen>-->
 </resources>
