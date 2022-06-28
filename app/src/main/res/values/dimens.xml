@@ -1,5 +1,5 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin">12dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -10,8 +10,8 @@
     <dimen name="zero">0dp</dimen>
     <dimen name="goToSubtaskButtonTextSize">12sp</dimen>
     <dimen name="marginCheckButton">4dp</dimen>
-    <dimen name="marginHorizontalTaskType">8dp</dimen>
-    <dimen name="marginVerticalTaskItem">4dp</dimen>
+    <dimen name="paddingHorizontalTaskType">8dp</dimen>
+    <dimen name="paddingVerticalTaskItem">4dp</dimen>
     <dimen name="marginTopTitle">32dp</dimen>
     <dimen name="marginBottomButton">10dp</dimen>
     <dimen name="rcy_marginHorizontal">14dp</dimen>
@@ -24,5 +24,9 @@
     <dimen name="values_margin_horizontal">100dp</dimen>
     <dimen name="saveButtonMarginHorizontal">8dp</dimen>
     <dimen name="save_changes_values_marg_hor">32dp</dimen>
+    <dimen name="home_button_margin">8dp</dimen>
+    <dimen name="circular_radio">1000000dp</dimen>
+    <dimen name="round_radio">1000000dp</dimen>
+    <dimen name="progress_bar_size">200dp</dimen>
     <!--    <dimen name="titleTask">(@dimen/checkButton)/2</dimen>-->
 </resources>

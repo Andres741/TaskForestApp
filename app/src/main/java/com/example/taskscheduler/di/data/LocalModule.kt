@@ -1,9 +1,6 @@
 package com.example.taskscheduler.di.data
 
 import android.content.Context
-import androidx.room.Room
-import com.example.taskscheduler.data.ALocalRepository
-import com.example.taskscheduler.data.Converters
 import com.example.taskscheduler.data.sources.local.ILocalTaskRepository
 import com.example.taskscheduler.data.sources.local.LocalDataBase
 import com.example.taskscheduler.data.sources.local.RoomTaskRepository

@@ -7,7 +7,7 @@ import com.example.taskscheduler.util.dataStructures.MyLinkedList
  * Union between LiveData and Stack where like a stack FILO logic is implemented and the top of the stack
  * is observable.
  */
-class LiveStack<T> private constructor(
+open class LiveStack<T> private constructor(
     private val stack: MyLinkedList<T>
 ): LiveData<T>(), List<T> by stack {
 

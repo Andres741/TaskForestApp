@@ -12,7 +12,7 @@ class OneScopeAtOnceProvider (
     val newScope: CoroutineScope
         get() {
             currentScope?.cancel()
-            return CoroutineScope(Job() + dispatcher).also { currentScope = it }//(::scope.setter) does not work due to private set
+            return CoroutineScope(Job() + dispatcher).also { currentScope = it }//(::currentScope.setter) does not work due to private set
         }
 
     fun cancel(): Boolean = currentScope?.run {

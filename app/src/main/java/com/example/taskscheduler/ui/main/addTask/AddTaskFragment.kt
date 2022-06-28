@@ -77,9 +77,6 @@ class AddTaskFragment : Fragment() {
                     .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
             }
         }
-        tasksAdapterViewModel.onUpButtonPressedEvent.setEvent(viewLifecycleOwner) {
-            view.findNavController().popBackStack()
-        }
     }
 
     override fun onDestroy() {

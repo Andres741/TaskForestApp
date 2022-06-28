@@ -31,7 +31,6 @@ abstract class TaskAndSubTaskDao {
             "DELETE FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask"
         const val DELETE_SUPER =
             "DELETE FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask"
-
     }
 
     @Query(SubTaskDao.GET_SUB_TASKS_OF_SUPER_TASK)
@@ -86,7 +85,7 @@ abstract class TaskAndSubTaskDao {
     @Query(UPDATE_TASK_TITLE)
     protected abstract suspend fun updateTaskTitle(oldValue: String, newValue: String): Int
     @Query(UPDATE_ONE_TASK_TYPE)
-    protected abstract suspend fun updateOneTaskType(key: String, newValue: String): Int  //Reverse order does not work for some reason
+    protected abstract suspend fun updateOneTaskType(key: String, newValue: String): Int  //Reverse order in arguments does not work for some reason
     @Query(UPDATE_MULTIPLE_TASK_TYPE)
     protected abstract suspend fun updateMultipleTaskType(keys: List<String>, newValue: String): Int
 
@@ -115,8 +114,8 @@ abstract class TaskAndSubTaskDao {
 
         val childTitlesList = getSubTasksOfSuperTask(task)
 
-        return numChanged + childTitlesList.fold(0) { sum, elem ->
-            sum + changeTaskTypeHelper(elem, newValue)
+        return numChanged + childTitlesList.fold(0) { sum, child ->
+            sum + changeTaskTypeHelper(child, newValue)
         }
     }
 

@@ -2,10 +2,9 @@ package com.example.taskscheduler.ui.main.tasks
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,14 +15,13 @@ import com.example.taskscheduler.databinding.FragmentTasksBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskTypeAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
+import com.example.taskscheduler.util.notImplementedToastFactory
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
+
 @AndroidEntryPoint
 class TasksFragment: Fragment() {
 
@@ -32,8 +30,8 @@ class TasksFragment: Fragment() {
 
     private val viewModel: TasksViewModel by viewModels()
     private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
-    //Impossible to initialize here adapter because the view model is not available until onCreateView
-//    private var _adapter: TasksAdapter? = null  //This provokes null pointer exception sometimes
+
+
     private val tasksAdapter by lazy { TasksAdapter(tasksAdapterViewModel) }
     private val taskTypeAdapter by lazy { TaskTypeAdapter(tasksAdapterViewModel.selectedTaskTypeName::setValue) }
 
@@ -45,6 +43,8 @@ class TasksFragment: Fragment() {
     ): View {
 
         val root = inflater.inflate(R.layout.fragment_tasks, container, false)
+
+        setHasOptionsMenu(true)
 
         return FragmentTasksBinding.bind(root).let {
             _binding = it
@@ -59,6 +59,12 @@ class TasksFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.apply {
+            lifecycleScope.launch {
+                taskTypeDataFlow.collectLatest(taskTypeAdapter::submitData)
+            }
+        }
 
         tasksAdapterViewModel.apply {
             taskTitleStack.observe(viewLifecycleOwner) { task ->
@@ -83,6 +89,7 @@ class TasksFragment: Fragment() {
                 taskTypeAdapter.selectViewHolder(it)
             }
         }
+
         binding.also {
             it.newTaskButton.setOnClickListener {
                 findNavController().navigate(
@@ -90,11 +97,23 @@ class TasksFragment: Fragment() {
                 )
             }
         }
-        viewModel.apply {
-            lifecycleScope.launch {
-                taskTypeDataFlow.collectLatest(taskTypeAdapter::submitData)
-            }
+//        notImplementedToastFactory(context, "none")()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.filter_tasks_options, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val notImplementedToastBuilder = notImplementedToastFactory(context)  //TODO
+        when (item.itemId) {
+            R.id.all -> notImplementedToastBuilder()
+            R.id.active -> notImplementedToastBuilder()
+            R.id.completed -> notImplementedToastBuilder()
+            R.id.only_super -> notImplementedToastBuilder()
+            else -> return super.onOptionsItemSelected(item)
         }
+        return true
     }
 
     override fun onDestroyView() {

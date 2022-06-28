@@ -25,6 +25,12 @@ abstract class LocalDataBase: RoomDatabase() {
         fun build(context: Context) = Room.databaseBuilder(
             context, LocalDataBase::class.java, DATABASE_NAME
         )/*.addTypeConverter(Converters())*/.addMigrations(
-            Migration(2,3){}, Migration(1,3){}).build()
+            Migration(2,3) {
+                //it.execSQL("TODO: delete AEntity table")
+            },
+            Migration(1,3) {
+
+            }
+        ).build()
     }
 }

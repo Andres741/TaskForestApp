@@ -6,7 +6,7 @@
 
 
     <string name="app_name">Task scheduler</string>
-    <string name="action_logOut">Log out</string>
+    <string name="log_out">Log out</string>
     <!-- Strings used for fragments for navigation -->
     <string name="fragment_tasks_label">Task Fragment</string>
     <string name="fragment_task_detail_label">Task detail Fragment</string>
@@ -97,5 +97,18 @@
     <string name="save_change">save</string>
     <string name="new_value">New value:</string>
     <string name="old_value">Old value:</string>
+
+    <string name="navigation_drawer_open">navigation drawer open</string>
+    <string name="navigation_drawer_close">navigation drawer close</string>
+
+
+    <string name="save_in_hierarchy">save in this hierarchy of tasks</string>
+    <string name="login_out_in_process">Login out in process</string>
+    <string name="all">All</string>
+    <string name="active">active</string>
+    <string name="completed_tasks">completed</string>
+    <string name="only_super_tasks">only super tasks</string>
+    <string name="immediate_children">immediate children</string>
+
 
 </resources>

@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.cachedIn
 import com.example.taskscheduler.domain.ChangeDoneStatusOfTaskUseCase
+import com.example.taskscheduler.domain.GetTaskByTitleUseCase
 import com.example.taskscheduler.domain.GetTaskPagerByTypeUseCase
 import com.example.taskscheduler.domain.GetTaskPagerUseCase
-import com.example.taskscheduler.domain.GetTaskTypeFromTaskUseCase
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
@@ -20,10 +20,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TasksAdapterViewModel @Inject constructor(
-    private val getTaskPagerUseCase: GetTaskPagerUseCase,
-    private val getTaskPagerByTypeUseCase: GetTaskPagerByTypeUseCase,
-    private val changeDoneStatusOfTaskUseCase: ChangeDoneStatusOfTaskUseCase,
-    private val getTaskTypeFromTaskUseCase: GetTaskTypeFromTaskUseCase,
+    private val getTaskPager: GetTaskPagerUseCase,
+    private val getTaskPagerByType: GetTaskPagerByTypeUseCase,
+    private val changeDoneStatusOfTask: ChangeDoneStatusOfTaskUseCase,
+    private val getTaskByTitle: GetTaskByTitleUseCase,
 ): ViewModel() {
     private val _taskTitleStack = LiveStack<ITaskTitleOwner>()
     /**
@@ -31,25 +31,33 @@ class TasksAdapterViewModel @Inject constructor(
      * the top task of this stack.
      */
     val taskTitleStack: LiveData<ITaskTitleOwner> = _taskTitleStack
+//    val taskTitleStack = object: LiveStack<ITaskTitleOwner>(){
+//        override fun add(value: ITaskTitleOwner) {
+//            _taskTitleStack.add(value)
+//            setPagingData(value)
+//        }
+//        override fun remove() {
+//            _taskTitleStack.remove()
+//            setPagingDataFromTopOfStack()
+//        }
+//    }
 
     private val pagingDataScopeProvider = OneScopeAtOnceProvider()
 
     private val _tasksDataFlow = MutableLiveData<TaskDataFlow>().apply {
-        value = getTaskPagerUseCase().cachedIn(pagingDataScopeProvider.newScope)
+        value = getTaskPager().cachedIn(pagingDataScopeProvider.newScope)
     }
     val tasksDataFlow: LiveData<TaskDataFlow> = _tasksDataFlow
 
     val selectedTaskTypeName = MutableLiveData<ITaskTypeNameOwner?>()
 
-    val onUpButtonPressedEvent = EventTrigger()
-
 
     private fun setPagingData(newTask: ITaskTitleOwner?) {
-        _tasksDataFlow.value = getTaskPagerUseCase(newTask).cachedIn(pagingDataScopeProvider.newScope)
+        _tasksDataFlow.value = getTaskPager(newTask).cachedIn(pagingDataScopeProvider.newScope)
     }
 
     private fun setPagingDataFromType(type: ITaskTypeNameOwner) {
-        _tasksDataFlow.value = getTaskPagerByTypeUseCase(type).cachedIn(pagingDataScopeProvider.newScope)
+        _tasksDataFlow.value = getTaskPagerByType(type).cachedIn(pagingDataScopeProvider.newScope)
     }
 
     private fun setPagingDataFromTopOfStack() = setPagingData(_taskTitleStack.value)
@@ -70,9 +78,14 @@ class TasksAdapterViewModel @Inject constructor(
         setPagingData(taskTitle)
     }
 
-    fun removeFromStackIfMoreThanOneElement() {
+    fun goToSuperTask() {
         if (_taskTitleStack.size > 1) {
             removeFromStack()
+        }
+        viewModelScope.launch {
+            val task = getTaskByTitle.static(_taskTitleStack[0].taskTitle)
+            if (! task.hasSuperTask) return@launch
+            changeStackTop(task.superTask)
         }
     }
 
@@ -91,22 +104,20 @@ class TasksAdapterViewModel @Inject constructor(
             return
         }
         if (typeName == null) {
-            setPagingData(null)  // setPagingData(type) // Ugly but works!
+            setPagingData(null)
             return
         }
         setPagingDataFromType(typeName)
     }
 
-    suspend fun changeDoneStatusOf(task: TaskModel) = changeDoneStatusOfTaskUseCase(task)//.log("Status changed")
+    suspend fun changeDoneStatusOf(task: TaskModel) = changeDoneStatusOfTask(task)//.log("Status changed")
 
     fun changeDoneStatusOfTopTask() {
-        viewModelScope.launch {
-            val topTask = _taskTitleStack.value ?: return@launch
-            changeDoneStatusOfTaskUseCase(topTask.toSimpleTaskTitleOwner())
+        val topTask = _taskTitleStack.value ?: return
+        CoroutineScope(Dispatchers.Default).launch {
+            changeDoneStatusOfTask(topTask.toSimpleTaskTitleOwner())
         }
     }
-
-    suspend fun getTaskTypeFromTask(task: TaskModel) = getTaskTypeFromTaskUseCase(task)
 
     override fun onCleared() {
         pagingDataScopeProvider.cancel()

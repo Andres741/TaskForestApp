@@ -34,17 +34,17 @@ class TaskDetailViewModel @Inject constructor(
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
-    fun onSetUp(taskTitle: ITaskTitleOwner) {
+    fun onSetUp(task: ITaskTitleOwner) {
         scopeProvider.newScope.launch {
-            getTaskByTitle(taskTitle.taskTitle).collectLatest { latestTask ->
-                try {
+            try {
+                getTaskByTitle(task.taskTitle).collectLatest { latestTask ->
                     _task.value = latestTask
                     title.value = latestTask.title
                     type.value = latestTask.type
                     description.value = latestTask.description
-                } catch (t: Throwable) {
-                    "Exception in getTaskByTitle(taskTitle.taskTitle).collectLatest".log()
                 }
+            } catch (e: Exception) {
+                e.log("Exception collecting tasks")
             }
         }
     }
@@ -54,7 +54,7 @@ class TaskDetailViewModel @Inject constructor(
         val task = _task.value ?: return
 
         viewModelScope.launch {
-            changeTitle(task, newTitle).also { newTitle ->
+            changeTitle(task, newTitle)?.also { newTitle ->
                 scopeProvider.cancel()
                 _taskTitleChangedEvent.value = newTitle
             }

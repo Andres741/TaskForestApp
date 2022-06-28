@@ -1,12 +1,11 @@
 package com.example.taskscheduler.ui.main.taskDetail
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.navigation.fragment.findNavController
@@ -20,20 +19,18 @@ import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewM
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.CallbackAndName
 import com.example.taskscheduler.util.ifFalse
+import com.example.taskscheduler.util.notImplementedToastFactory
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
+
 @AndroidEntryPoint
 class TaskDetailFragment: Fragment() {
 
     private var _binding: FragmentTaskDetailBinding? = null
     private val binding get() = _binding!!
-
 
     private val viewModel: TaskDetailViewModel by viewModels()
     private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
@@ -43,17 +40,24 @@ class TaskDetailFragment: Fragment() {
 
     private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
-    private var isTitleSaved = true
+    private var isTitleSaved = true  //TODO?: move to ViewModel
     private var isTypeSaved = true
     private var isDescriptionSaved = true
+
+    private val saveInHierMsj by lazy { resources.getString(R.string.save_in_hierarchy) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        "On create view".log()
 
         viewModel.onSetUp(tasksAdapterViewModel.taskTitleStack.value!!)
+
+        requireActivity().apply activity@ {
+            onBackPressedDispatcher.addCallback(viewLifecycleOwner) { tasksAdapterViewModel.removeFromStack() }
+        }
+
+        setHasOptionsMenu(true)
 
         val root = inflater.inflate(R.layout.fragment_task_detail, container, false)
 
@@ -70,63 +74,6 @@ class TaskDetailFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tasksAdapterViewModel.apply {
-            taskTitleStack.observe(viewLifecycleOwner) { taskTitle ->
-                if (taskTitle != null) {
-                    viewModel.onSetUp(taskTitle)
-                    return@observe
-                }
-                view.findNavController().popBackStack()
-                    .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
-            }
-            /** Introduces the data into the adapter.*/
-            tasksDataFlow.observe(viewLifecycleOwner) { flow ->
-                collectPagingDataScopeProvider.newScope.launch {
-                    flow.collectLatest(adapter::submitData)
-                }
-            }
-            onUpButtonPressedEvent.setEvent(viewLifecycleOwner) {
-                removeFromStack()
-            }
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { clearStack() }
-        }
-
-
-        binding.also {
-            it.addSubtaskButton.setOnClickListener {
-                findNavController().navigate(
-                    TaskDetailFragmentDirections.actionFragmentTaskDetailToAddTaskFragment(
-                        tasksAdapterViewModel.taskTitleStack.value?.taskTitle
-                    )
-                )
-            }
-
-            it.taskTitle.setOnClickListener onClick@ {
-                if (isTitleSaved) return@onClick
-                createSaveWindow(
-                    oldValueText = viewModel.task.value!!.title, newValueText = viewModel.title.value!!,
-                    onSavePressed = viewModel::saveNewTitle, viewModel::restoreTitle
-                )
-            }
-
-            it.taskType.setOnClickListener onClick@ {
-                if (isTypeSaved) return@onClick
-                createSaveWindow(
-                    oldValueText = viewModel.task.value!!.type, newValueText = viewModel.type.value!!,
-                    onSavePressed = viewModel::saveNewType, viewModel::restoreType,
-                    other = viewModel::saveNewTypeInTaskHierarchy to "save in this hierarchy of tasks" //TODO: extract string resource
-                )
-            }
-
-            it.taskDescription.setOnClickListener onClick@ {
-                if (isDescriptionSaved) return@onClick
-                createSaveWindow(
-                    oldValueText = viewModel.task.value!!.description, newValueText = viewModel.description.value!!,
-                    onSavePressed = viewModel::saveNewDescription, viewModel::restoreDescription
-                )
-            }
-        }
-
         viewModel.apply {
             title.observe(viewLifecycleOwner) {
                 val title = task.value?.title ?: return@observe
@@ -142,12 +89,85 @@ class TaskDetailFragment: Fragment() {
                 val description = task.value?.description ?: return@observe
                 isDescriptionSaved = setSaveStatusColor(description, it, binding.taskDescription)
             }
+
             taskTitleChangedEvent.observe(viewLifecycleOwner) { newTitle ->
                 newTitle ?: return@observe
                 tasksAdapterViewModel.changeStackTop(newTitle)
             }
         }
+
+        tasksAdapterViewModel.apply {
+            taskTitleStack.observe(viewLifecycleOwner) { taskTitle ->
+                if (taskTitle != null) {
+                    viewModel.onSetUp(taskTitle)
+                    return@observe
+                }
+                view.findNavController().popBackStack()
+                    .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
+            }
+            /** Introduces the data into the adapter.*/
+            tasksDataFlow.observe(viewLifecycleOwner) { flow ->
+                collectPagingDataScopeProvider.newScope.launch {
+                    flow.collectLatest(adapter::submitData)
+                }
+            }
+        }
+
+        binding.also {
+            it.addSubtaskButton.setOnClickListener {
+                findNavController().navigate(
+                    TaskDetailFragmentDirections.actionFragmentTaskDetailToAddTaskFragment(
+                        tasksAdapterViewModel.taskTitleStack.value?.taskTitle
+                    )
+                )
+            }
+
+            it.taskTitle.setOnClickListener onClick@ {
+                if (isTitleSaved) return@onClick
+
+                createSaveWindow(
+                    oldValueText = viewModel.task.value!!.title, newValueText = viewModel.title.value!!,
+                    onSavePressed = viewModel::saveNewTitle, onDiscardPressed = viewModel::restoreTitle
+                )
+            }
+
+            it.taskType.setOnClickListener onClick@ {
+                if (isTypeSaved) return@onClick
+
+                createSaveWindow(
+                    oldValueText = viewModel.task.value!!.type, newValueText = viewModel.type.value!!,
+                    onSavePressed = viewModel::saveNewType, onDiscardPressed = viewModel::restoreType,
+                    optional = viewModel::saveNewTypeInTaskHierarchy to saveInHierMsj
+                )
+            }
+
+            it.taskDescription.setOnClickListener onClick@ {
+                if (isDescriptionSaved) return@onClick
+
+                createSaveWindow(
+                    oldValueText = viewModel.task.value!!.description, newValueText = viewModel.description.value!!,
+                    onSavePressed = viewModel::saveNewDescription, onDiscardPressed = viewModel::restoreDescription
+                )
+            }
+        }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.filter_in_task_detail, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val notImplementedToastBuilder = notImplementedToastFactory(context)  //TODO
+        when (item.itemId) {
+            R.id.all_sub -> notImplementedToastBuilder()
+            R.id.active_sub -> notImplementedToastBuilder()
+            R.id.completed_sub -> notImplementedToastBuilder()
+            R.id.immediate_children -> notImplementedToastBuilder()
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
 
     private fun setSaveStatusColor(savedValue: String, candidateNewValue: String?, textView: TextView): Boolean {
         val isDifferent = savedValue == candidateNewValue
@@ -162,27 +182,29 @@ class TaskDetailFragment: Fragment() {
 
     private fun createSaveWindow(
         oldValueText: String, newValueText: String,
-        onSavePressed: ()-> Unit, onDiscardPressed: () -> Unit,
-        other: CallbackAndName? = null
+        onSavePressed: ()-> Unit, onDiscardPressed: ()-> Unit,
+        optional: CallbackAndName? = null
     ) {
         val dialogBuilder = AlertDialog.Builder(context)
         val winBinding = SaveChangesPopOpWindowBinding.inflate(layoutInflater)
         dialogBuilder.setView(winBinding.root)
-        val dialog = dialogBuilder.create()
-        dialog.show()
+        val popUpWin = dialogBuilder.create()
+        popUpWin.show()
 
-        winBinding.oldValueCont.text = oldValueText
-        winBinding.newValueCont.text = newValueText
+        winBinding.apply {
+            oldValueCont.text = oldValueText
+            newValueCont.text = newValueText
 
-        winBinding.save.setOnClickListener { onSavePressed(); dialog.dismiss() }
-        winBinding.discard.setOnClickListener { onDiscardPressed(); dialog.dismiss() }
+            save.setOnClickListener { onSavePressed(); popUpWin.dismiss() }
+            discard.setOnClickListener { onDiscardPressed(); popUpWin.dismiss() }
+        }
 
-        if (other == null) return
+        optional ?: return
 
-        winBinding.other.apply {
+        winBinding.optionalButton.apply {
             visibility = View.VISIBLE
-            text = other.second
-            setOnClickListener { other.first(); dialog.dismiss() }
+            text = optional.second
+            setOnClickListener { optional.first(); popUpWin.dismiss() }
         }
     }
 

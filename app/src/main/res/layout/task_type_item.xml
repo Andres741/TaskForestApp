@@ -24,29 +24,19 @@
         android:elevation="10dp"
         android:focusable="true"
         app:cardCornerRadius="16dp"
-    >
-        <androidx.constraintlayout.widget.ConstraintLayout
+        >
+
+        <TextView
+            android:id="@+id/type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:layout_marginHorizontal="@dimen/marginHorizontalTaskType"
-            android:layout_marginVertical="@dimen/marginVerticalTaskItem"
-            >
+            android:paddingHorizontal="@dimen/paddingHorizontalTaskType"
+            android:paddingVertical="@dimen/paddingVerticalTaskItem"
 
-            <TextView
-                android:id="@+id/type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            android:text="@{@string/attribute_value_format(taskType.name, taskType.multiplicity)}"
 
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-
-                android:text="@{@string/attribute_value_format(taskType.name, taskType.multiplicity)}"
-
-                tools:text="type name: 5"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            tools:text="type name: 5"
+            />
     </androidx.cardview.widget.CardView>
 </layout>

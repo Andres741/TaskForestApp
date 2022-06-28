@@ -1,6 +1,6 @@
 package com.example.taskscheduler.util.dataStructures
 
-import com.example.taskscheduler.util.unitHashMap
+import com.example.taskscheduler.util.toUnitHashMap
 
 /**
  * Ideal for making list from a property of the objects of a list, otherwise it could be slow.
@@ -20,7 +20,7 @@ class WrapperList<T, R> (
     }
 
     override fun containsAll(elements: Collection<R>): Boolean {
-        val map = elements.unitHashMap()
+        val map = elements.toUnitHashMap()
         originalList.forEach {
             if (!map.containsKey(converter(it))) return false
         }

@@ -34,7 +34,7 @@
 
             style="@style/fragments_title"
 
-        />
+            />
 
         <EditText
             android:id="@+id/task_title_cont"
@@ -48,7 +48,6 @@
             app:layout_constraintStart_toEndOf="@id/task_description"
             app:layout_constraintTop_toBottomOf="@id/textview_second"
             app:layout_constraintHorizontal_bias="0.1"
-
 
             android:hint="@{@string/enter_your_x_here(@string/title)}"
             android:text="@={viewmodel.title}"
@@ -94,11 +93,10 @@
 
             android:onClick = "@{() -> tasksAdapterViewModel.changeDoneStatusOfTopTask() }"
 
-
             tools:textColor="@color/done"
 
             style="@style/task_value"
-            />
+            /> <!--TODO: @+id/superTask_cont ? -->
 
         <TextView
             android:id="@+id/superTask_cont"
@@ -115,7 +113,7 @@
 
             android:text="@{viewmodel.task.hasSuperTask ? viewmodel.task.superTaskTitle : @string/doesn_t_have}"
 
-            android:onClick="@{()-> tasksAdapterViewModel.removeFromStackIfMoreThanOneElement()}"
+            android:onClick="@{()-> tasksAdapterViewModel.goToSuperTask()}"
 
             tools:text="Learning"
             />
@@ -157,11 +155,11 @@
 
         <!--visible gone-->
         <!--mucho_texto mucho_texto_1 no_mucho_texto nada_texto-->
-<!--        tools:text="textView3"-->
-<!--        tools:text="@string/mucho_texto"-->
+        <!--        tools:text="textView3"-->
+        <!--        tools:text="@string/mucho_texto"-->
 
         <!--
-        The following TextView may be changed by images.
+           The following TextView may be changed by images.
         -->
         <TextView
             android:id="@+id/task_title"
@@ -175,7 +173,6 @@
             android:layout_marginStart="32dp"
 
             android:text="@string/title_att"
-
             />
 
         <TextView
@@ -187,7 +184,7 @@
             app:layout_constraintStart_toStartOf="@+id/task_title"
             app:layout_constraintBaseline_toBaselineOf="@id/task_type_cont"
 
-        />
+            />
 
         <TextView
             android:id="@+id/task_done"
@@ -197,8 +194,7 @@
 
             app:layout_constraintStart_toStartOf="@+id/task_title"
             app:layout_constraintBaseline_toBaselineOf="@id/task_done_cont"
-
-        />
+            />
 
         <TextView
             android:id="@+id/superTask"
@@ -256,5 +252,27 @@
             android:text="@string/add_subtask"
             style="@style/lower_button"
             />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/home_button"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+
+            android:layout_margin="@dimen/home_button_margin"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            android:clickable="true"
+
+            app:cardCornerRadius="@dimen/round_radio"
+
+            android:onClick="@{() -> tasksAdapterViewModel.clearStack()}"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@mipmap/home_icon_foreground"
+                />
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
