@@ -102,16 +102,11 @@ class TasksAdapterViewModel @Inject constructor(
             "Impossible to filter by type if the _taskStack is not empty".log()
             return
         }
-        filters.typeFilter = if (typeName == null) defaultTaskFilter
-            else { task -> task equalsType typeName }
+        filters.typeFilterCriteria = typeName
     }
 
     fun filterByIsDone(done: Boolean? = null) {
-        filters.doneFilter = when(done) {
-            true -> { task -> task.isDone }
-            false -> { task -> task.isDone.not() }
-            null -> defaultTaskFilter
-        }
+        filters.doneFilterCriteria = done
     }
 
     fun allInTaskSource() {
@@ -153,14 +148,32 @@ class TasksAdapterViewModel @Inject constructor(
      * The filters of this class should be able to overlap.
      */
     private inner class Filters {
-        var doneFilter = defaultTaskFilter
+
+        var doneFilterCriteria: Boolean? = null
             set(value) {
+                field = value
+                doneFilter = when(value) {
+                    null -> defaultTaskFilter
+                    true -> { task -> task.isDone }
+                    false -> { task -> task.isDone.not() }
+                }
+            }
+
+        var typeFilterCriteria: ITaskTypeNameOwner? = null
+            set(value) {
+                field = value
+                typeFilter = if (value == null) defaultTaskFilter
+                else { task -> task equalsType value }
+            }
+
+        var doneFilter = defaultTaskFilter
+            private set(value) {
                 field = value
                 _tasksDataFlow.observeAgain()
             }
 
         var typeFilter = defaultTaskFilter
-            set(value) {
+            private set(value) {
                 field = value
                 _tasksDataFlow.observeAgain()
             }
