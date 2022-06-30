@@ -40,6 +40,7 @@
         <entry key="app/src/main/res/layout/task_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/task_type_item.xml" value="0.75" />
         <entry key="app/src/main/res/menu/filter_by_done.xml" value="0.35520833333333335" />
+        <entry key="app/src/main/res/menu/filter_by_done_menu.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/filter_in_task_detail.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/filter_tasks_options.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/menu_main.xml" value="0.35625" />

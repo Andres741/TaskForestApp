@@ -15,7 +15,9 @@ interface ILocalTaskRepository {
 
     fun getTaskPagingSourceByTaskType(type: ITaskTypeNameOwner): TaskDataFlow
 
-    fun getSuperTopTasks(): TaskDataFlow
+    fun getTopSuperTasksPagingSource(): TaskDataFlow
+
+    fun getAllChildrenPagingSource(superTask: ITaskTitleOwner): TaskDataFlow
 
 
     fun getTaskTypePagingSource(): TaskTypeDataFlow

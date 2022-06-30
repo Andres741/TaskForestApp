@@ -8,9 +8,7 @@ import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
-import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel.Companion.defaultFilter
 import com.example.taskscheduler.util.TaskDataFlow
-import com.example.taskscheduler.util.and
 import com.example.taskscheduler.util.observable.LiveStack
 import com.example.taskscheduler.util.observeAgain
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
@@ -26,6 +24,7 @@ class TasksAdapterViewModel @Inject constructor(
     private val changeDoneStatusOfTask: ChangeDoneStatusOfTaskUseCase,
     private val getTaskByTitle: GetTaskByTitleUseCase,
     private val getSuperTasks: GetSuperTasksUseCase,
+    private val getAllChildren: GetAllChildrenOfTaskUseCase,
 ): ViewModel() {
     private val _taskTitleStack = LiveStack<ITaskTitleOwner>()
     /**
@@ -103,7 +102,7 @@ class TasksAdapterViewModel @Inject constructor(
             "Impossible to filter by type if the _taskStack is not empty".log()
             return
         }
-        filters.typeFilter = if (typeName == null) defaultFilter
+        filters.typeFilter = if (typeName == null) defaultTaskFilter
             else { task -> task equalsType typeName }
     }
 
@@ -111,7 +110,7 @@ class TasksAdapterViewModel @Inject constructor(
         filters.doneFilter = when(done) {
             true -> { task -> task.isDone }
             false -> { task -> task.isDone.not() }
-            null -> defaultFilter
+            null -> defaultTaskFilter
         }
     }
 
@@ -121,6 +120,11 @@ class TasksAdapterViewModel @Inject constructor(
 
     fun onlySuperTasksInTaskSource() {
         _tasksDataFlow.value = getSuperTasks()
+    }
+
+    fun allTopStackTaskChildren() {
+        val topStackTask = _taskTitleStack.value ?: return
+        _tasksDataFlow.value = getAllChildren(topStackTask)
     }
 
     suspend fun changeDoneStatusOf(task: TaskModel) = changeDoneStatusOfTask(task)//.log("Status changed")
@@ -149,13 +153,13 @@ class TasksAdapterViewModel @Inject constructor(
      * The filters of this class should be able to overlap.
      */
     private inner class Filters {
-        var doneFilter = defaultFilter
+        var doneFilter = defaultTaskFilter
             set(value) {
                 field = value
                 _tasksDataFlow.observeAgain()
             }
 
-        var typeFilter = defaultFilter
+        var typeFilter = defaultTaskFilter
             set(value) {
                 field = value
                 _tasksDataFlow.observeAgain()
@@ -171,6 +175,6 @@ class TasksAdapterViewModel @Inject constructor(
         fun andAll(task: TaskModel) = doneFilter(task) && typeFilter(task) //&& dateFilter(task)
     }
     private companion object {
-        val defaultFilter = { _:TaskModel -> true }
+        val defaultTaskFilter = { _:TaskModel -> true }
     }
 }

@@ -157,12 +157,10 @@ class TaskDetailFragment: Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val notImplementedToastBuilder = notImplementedToastFactory(context)  //TODO
-
         when (item.itemId) {
             R.id.filter_by_done_sub -> filterByDoneMenu.show()
-            R.id.all_sub -> notImplementedToastBuilder()
-            R.id.immediate_children -> notImplementedToastBuilder()
+            R.id.all_sub -> tasksAdapterViewModel.allTopStackTaskChildren()
+            R.id.immediate_children -> tasksAdapterViewModel.allInTaskSource()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
