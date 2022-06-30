@@ -12,10 +12,10 @@ import com.example.taskscheduler.databinding.TaskTypeItemBinding
 import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
-import com.example.taskscheduler.util.OnClickTaskTypeVH
+import com.example.taskscheduler.util.OnClickType
 
 class TaskTypeAdapter (
-    private val onClickCallBack: OnClickTaskTypeVH
+    private val onClickCallBack: OnClickType
 ): PagingDataAdapter<TaskTypeModel, TaskTypeViewHolder>(TaskTypeDiffCallback) {
 
     init {
@@ -67,7 +67,7 @@ class TaskTypeViewHolder private constructor(
             selectedViewHolder = null
         }
 
-        fun create(parent: ViewGroup, onClickCallBack: OnClickTaskTypeVH) = TaskTypeViewHolder(
+        fun create(parent: ViewGroup, onClickCallBack: OnClickType) = TaskTypeViewHolder(
             DataBindingUtil.inflate (
                 LayoutInflater.from(parent.context),
                 R.layout.task_type_item,
@@ -84,7 +84,7 @@ class TaskTypeViewHolder private constructor(
             return selectedTaskType != null && (binding.taskType?.equalsType(selectedTaskType) == true)
         }
 
-    private fun setCallBacks(onClickCallBack: OnClickTaskTypeVH) = apply {
+    private fun setCallBacks(onClickCallBack: OnClickType) = apply {
         binding.root.setOnClickListener onClick@ {
             val taskType = taskTypeInBinding ?: return@onClick
             if (selectedViewHolder?.taskTypeInBinding == taskType) {

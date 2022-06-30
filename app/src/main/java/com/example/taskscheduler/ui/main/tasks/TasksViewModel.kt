@@ -1,9 +1,11 @@
 package com.example.taskscheduler.ui.main.tasks
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.taskscheduler.domain.GetTaskTypePagerUseCase
+import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.util.TaskTypeDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -13,6 +15,10 @@ class TasksViewModel @Inject constructor(
     getTaskTypePagerUseCase: GetTaskTypePagerUseCase,
 ): ViewModel() {
     val taskTypeDataFlow: TaskTypeDataFlow = getTaskTypePagerUseCase().cachedIn(viewModelScope)
+
+    val selectedTaskTypeName = MutableLiveData<ITaskTypeNameOwner?>()
+
+    val isShowingOnlyTopSuperTask = MutableLiveData(false)
 
 //    private fun<T> T.log(msj: String? = null) = apply {
 //        Log.i("TasksViewModel", "${if (msj != null) "$msj: " else ""}${toString()}")

@@ -3,26 +3,26 @@ package com.example.taskscheduler.ui.main.adapters.itemAdapters
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.taskscheduler.R
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.databinding.TaskItemBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskViewHolder.Companion.setTasksAdapterViewModel
+import com.example.taskscheduler.util.OnClickType
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import kotlinx.coroutines.*
 
 class TasksAdapter(
-    viewModel: TasksAdapterViewModel
+    viewModel: TasksAdapterViewModel,
+    private val onTypeClickedCallBack: OnClickType? = null,
 ): PagingDataAdapter<TaskModel, TaskViewHolder>(TaskDiffCallback) {
 
     init {
         setTasksAdapterViewModel(viewModel)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskViewHolder.create(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskViewHolder.create(parent, onTypeClickedCallBack)
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         getItem(position)?.also(holder::bind)
@@ -45,7 +45,7 @@ class TaskViewHolder private constructor(
             viewModel = tasksAdapterViewModel
         }
 
-        fun create(parent: ViewGroup) = TaskViewHolder (
+        fun create(parent: ViewGroup, onTypeClickedCallBack: OnClickType?) = TaskViewHolder (
             TaskItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -57,7 +57,7 @@ class TaskViewHolder private constructor(
 //                parent,
 //                false
 //            )
-        ).apply { setCallBacks() } //(::setCallBacks) // Doesn't work the reference.
+        ).apply { setCallBacks(onTypeClickedCallBack) } //(::setCallBacks) // Doesn't work the reference.
     }
 
     private val scopeProvider = OneScopeAtOnceProvider()
@@ -67,14 +67,15 @@ class TaskViewHolder private constructor(
     private inline val taskInBinding: TaskModel get() = binding.task!!
 
 
-    private fun setCallBacks() {
+    private fun setCallBacks(onTypeClickedCallBack: OnClickType?) {
         binding.apply {
             doneCallBack = DoneCallBack()
             goToSubTaskDetailCallBack = GoToSubTaskDetailCallBack()
 
+            onTypeClickedCallBack ?: return@apply
             taskType.setOnClickListener onClick@ {
                 taskViewHolderScope?.launch {
-                    viewModel.selectedTaskTypeName.value = taskInBinding
+                    onTypeClickedCallBack(taskInBinding)
                 }
             }
         }

@@ -15,7 +15,6 @@ import com.example.taskscheduler.databinding.FragmentTasksBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskTypeAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
-import com.example.taskscheduler.util.notImplementedToastFactory
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -32,8 +31,8 @@ class TasksFragment: Fragment() {
     private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
 
 
-    private val tasksAdapter by lazy { TasksAdapter(tasksAdapterViewModel) }
-    private val taskTypeAdapter by lazy { TaskTypeAdapter(tasksAdapterViewModel.selectedTaskTypeName::setValue) }
+    private val tasksAdapter by lazy { TasksAdapter(tasksAdapterViewModel, viewModel.selectedTaskTypeName::setValue) }
+    private val taskTypeAdapter by lazy { TaskTypeAdapter(viewModel.selectedTaskTypeName::setValue) }
 
     private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
@@ -64,6 +63,21 @@ class TasksFragment: Fragment() {
             lifecycleScope.launch {
                 taskTypeDataFlow.collectLatest(taskTypeAdapter::submitData)
             }
+
+            selectedTaskTypeName.observe(viewLifecycleOwner) { typeName ->
+                tasksAdapterViewModel.filterByType(typeName)
+                if (typeName == null) {
+                    taskTypeAdapter.unselectViewHolder()
+                    return@observe
+                }
+                taskTypeAdapter.selectViewHolder(typeName)
+            }
+
+            isShowingOnlyTopSuperTask.observe(viewLifecycleOwner) { onlyTopSuperTasks ->
+                if (onlyTopSuperTasks) tasksAdapterViewModel.onlySuperTasksInTaskSource()
+                else tasksAdapterViewModel.allInTaskSource()
+
+            }
         }
 
         tasksAdapterViewModel.apply {
@@ -79,14 +93,6 @@ class TasksFragment: Fragment() {
                 collectPagingDataScopeProvider.newScope.launch {
                     flow.collectLatest(tasksAdapter::submitData)
                 }
-            }
-            selectedTaskTypeName.observe(viewLifecycleOwner) {
-                filterByType(it)
-                if (it == null) {
-                    taskTypeAdapter.unselectViewHolder()
-                    return@observe
-                }
-                taskTypeAdapter.selectViewHolder(it)
             }
         }
 
@@ -105,11 +111,10 @@ class TasksFragment: Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         when (item.itemId) {
             R.id.filter_by_done -> filterByDoneMenu.show()
-            R.id.all -> tasksAdapterViewModel.allInTaskSource()
-            R.id.only_super -> tasksAdapterViewModel.onlySuperTasksInTaskSource()
+            R.id.all -> viewModel.isShowingOnlyTopSuperTask.value = false
+            R.id.only_super -> viewModel.isShowingOnlyTopSuperTask.value = true
             else -> return super.onOptionsItemSelected(item)
         }
         return true

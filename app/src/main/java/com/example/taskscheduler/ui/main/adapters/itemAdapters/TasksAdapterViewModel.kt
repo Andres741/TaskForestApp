@@ -50,7 +50,6 @@ class TasksAdapterViewModel @Inject constructor(
 
     val tasksDataFlow: LiveData<TaskDataFlow> = filteredDataFlow
 
-    val selectedTaskTypeName = MutableLiveData<ITaskTypeNameOwner?>()
 
     private fun setPagingData(newTask: ITaskTitleOwner?) {
         _tasksDataFlow.value = getTaskPager(newTask).cachedIn(pagingDataScopeProvider.newScope)
