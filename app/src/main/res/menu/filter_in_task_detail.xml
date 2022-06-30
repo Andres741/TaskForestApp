@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/filter_by_done_sub"
+        android:title="@string/filter_by_done"
+
+        android:icon="@drawable/filter"
+        app:showAsAction="ifRoom"
+        />
     <item
         android:id="@+id/all_sub"
         android:title="@string/all" />
-    <item
-        android:id="@+id/active_sub"
-        android:title="@string/active" />
-    <item
-        android:id="@+id/completed_sub"
-        android:title="@string/completed_tasks" />
     <item
         android:id="@+id/immediate_children"
         android:title="@string/immediate_children" />

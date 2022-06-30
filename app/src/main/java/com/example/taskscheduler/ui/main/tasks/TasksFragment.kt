@@ -3,7 +3,7 @@ package com.example.taskscheduler.ui.main.tasks
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -105,15 +105,31 @@ class TasksFragment: Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val notImplementedToastBuilder = notImplementedToastFactory(context)  //TODO
+
         when (item.itemId) {
-            R.id.all -> notImplementedToastBuilder()
-            R.id.active -> notImplementedToastBuilder()
-            R.id.completed -> notImplementedToastBuilder()
-            R.id.only_super -> notImplementedToastBuilder()
+            R.id.filter_by_done -> filterByDoneMenu.show()
+            R.id.all -> tasksAdapterViewModel.allInTaskSource()
+            R.id.only_super -> tasksAdapterViewModel.onlySuperTasksInTaskSource()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private val filterByDoneMenu by lazy {
+        val view = activity!!.findViewById<View>(R.id.filter_by_done)
+        PopupMenu(context!!, view).apply {
+            menuInflater.inflate(R.menu.filter_by_done_menu, menu)
+
+            setOnMenuItemClickListener setMenu@ {
+                when (it.itemId) {
+                    R.id.all_by_done -> tasksAdapterViewModel.filterByIsDone(null)
+                    R.id.completed -> tasksAdapterViewModel.filterByIsDone(true)
+                    R.id.active -> tasksAdapterViewModel.filterByIsDone(false)
+                    else -> return@setMenu false
+                }
+                true
+            }
+        }
     }
 
     override fun onDestroyView() {

@@ -20,6 +20,9 @@ interface TaskDao {
 //                    "WHERE $TASK_TABLE.$TITLE_ID = :superTask"
         const val GET_BY_TASK_TYPE =
             "SELECT * FROM $TASK_TABLE WHERE $TYPEa = :typeName ORDER BY $TITLE_ID"
+        const val GET_TOP_SUPER_TASKS =
+            "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_All_TOP_SUPER_TASK})"
+
         const val GET_ALL =
             "SELECT * FROM $TASK_TABLE ORDER BY $TITLE_ID"
         const val GET_TYPE =
@@ -101,6 +104,10 @@ interface TaskDao {
     @Transaction
     @Query(GET_BY_TASK_TYPE)
     fun getTaskPagingSourceByType(typeName: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+
+    @Transaction
+    @Query(GET_TOP_SUPER_TASKS)
+    fun getTopSuperTasks(): PagingSource<Int, TaskWithSuperAndSubTasks>
 
 
     @Query(GET_TYPE)

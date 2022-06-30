@@ -15,7 +15,11 @@ interface ILocalTaskRepository {
 
     fun getTaskPagingSourceByTaskType(type: ITaskTypeNameOwner): TaskDataFlow
 
+    fun getSuperTopTasks(): TaskDataFlow
+
+
     fun getTaskTypePagingSource(): TaskTypeDataFlow
+
 
     suspend fun existsTitle(taskTitle: String): Boolean
 

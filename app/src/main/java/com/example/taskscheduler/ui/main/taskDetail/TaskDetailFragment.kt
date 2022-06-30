@@ -1,13 +1,13 @@
 package com.example.taskscheduler.ui.main.taskDetail
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.appcompat.widget.PopupMenu
 import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
 import androidx.fragment.app.activityViewModels
@@ -53,10 +53,6 @@ class TaskDetailFragment: Fragment() {
 
         viewModel.onSetUp(tasksAdapterViewModel.taskTitleStack.value!!)
 
-        requireActivity().apply activity@ {
-            onBackPressedDispatcher.addCallback(viewLifecycleOwner) { tasksAdapterViewModel.removeFromStack() }
-        }
-
         setHasOptionsMenu(true)
 
         val root = inflater.inflate(R.layout.fragment_task_detail, container, false)
@@ -73,6 +69,10 @@ class TaskDetailFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity!!.apply activity@ {
+            onBackPressedDispatcher.addCallback(viewLifecycleOwner) { tasksAdapterViewModel.removeFromStack() }
+        }
 
         viewModel.apply {
             title.observe(viewLifecycleOwner) {
@@ -158,15 +158,33 @@ class TaskDetailFragment: Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val notImplementedToastBuilder = notImplementedToastFactory(context)  //TODO
+
         when (item.itemId) {
+            R.id.filter_by_done_sub -> filterByDoneMenu.show()
             R.id.all_sub -> notImplementedToastBuilder()
-            R.id.active_sub -> notImplementedToastBuilder()
-            R.id.completed_sub -> notImplementedToastBuilder()
             R.id.immediate_children -> notImplementedToastBuilder()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
     }
+
+    private val filterByDoneMenu by lazy {
+        val view = activity!!.findViewById<View>(R.id.filter_by_done_sub)
+        PopupMenu(context!!, view).apply {
+            menuInflater.inflate(R.menu.filter_by_done_menu, menu)
+
+            setOnMenuItemClickListener setMenu@ {
+                when (it.itemId) {
+                    R.id.all_by_done -> tasksAdapterViewModel.filterByIsDone(null)
+                    R.id.completed -> tasksAdapterViewModel.filterByIsDone(true)
+                    R.id.active -> tasksAdapterViewModel.filterByIsDone(false)
+                    else -> return@setMenu false
+                }
+                true
+            }
+        }
+    }
+
 
 
     private fun setSaveStatusColor(savedValue: String, candidateNewValue: String?, textView: TextView): Boolean {

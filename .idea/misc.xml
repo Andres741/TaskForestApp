@@ -12,6 +12,7 @@
         <entry key="app/src/main/res/drawable/circle.xml" value="0.259" />
         <entry key="app/src/main/res/drawable/done.xml" value="0.259" />
         <entry key="app/src/main/res/drawable/edit.xml" value="0.259" />
+        <entry key="app/src/main/res/drawable/filter.xml" value="0.2085" />
         <entry key="app/src/main/res/drawable/home_icon_background.xml" value="0.19" />
         <entry key="app/src/main/res/drawable/home_image.xml" value="0.148" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.259" />
@@ -38,6 +39,7 @@
         <entry key="app/src/main/res/layout/save_changes_pop_up_window.xml" value="0.67" />
         <entry key="app/src/main/res/layout/task_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/task_type_item.xml" value="0.75" />
+        <entry key="app/src/main/res/menu/filter_by_done.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/filter_in_task_detail.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/filter_tasks_options.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/menu_main.xml" value="0.35625" />

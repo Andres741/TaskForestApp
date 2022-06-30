@@ -105,10 +105,11 @@
     <string name="save_in_hierarchy">save in this hierarchy of tasks</string>
     <string name="login_out_in_process">Login out in process</string>
     <string name="all">All</string>
-    <string name="active">active</string>
-    <string name="completed_tasks">completed</string>
+    <string name="active">undone</string>
+    <string name="completed_tasks">done</string>
     <string name="only_super_tasks">only super tasks</string>
     <string name="immediate_children">immediate children</string>
+    <string name="filter_by_done">filter by done</string>
 
 
 </resources>

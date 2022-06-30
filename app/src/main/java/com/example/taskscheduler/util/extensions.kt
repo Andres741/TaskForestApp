@@ -29,4 +29,4 @@ fun<T> Collection<T>.containsInConstantTime(): (T)-> Boolean = toUnitHashMap()::
 
 fun<T> Collection<T>.notContainsInConstantTime(): (T)-> Boolean = toUnitHashMap()::notContainsKey
 
-fun<T> MutableLiveData<T>.notifyObserveAgain() { value = value }
+fun<T> MutableLiveData<T>.observeAgain() { value = value }

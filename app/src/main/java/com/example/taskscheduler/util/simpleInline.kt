@@ -44,3 +44,16 @@ inline fun <K> Map<K, *>.notContainsKey(key: K) = !containsKey(key)
 
 inline fun <T> Collection<T>.notContains(value: T) = !contains(value)
 
+inline fun <T> Iterator<(T)-> Boolean>.or(value: T): Boolean {
+    forEach {
+        if (it(value)) return true
+    }
+    return false
+}
+
+inline fun <T> Iterator<(T)-> Boolean>.and(value: T): Boolean {
+    forEach {
+        if (! it(value)) return false
+    }
+    return true
+}
