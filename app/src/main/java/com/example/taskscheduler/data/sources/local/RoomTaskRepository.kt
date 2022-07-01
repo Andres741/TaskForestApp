@@ -22,16 +22,15 @@ import javax.inject.Singleton
 @Singleton
 class RoomTaskRepository @Inject constructor(
     private val taskDao: TaskDao,
-    private val subTaskDao: SubTaskDao,
     private val taskAndSubTaskDao: TaskAndSubTaskDao,
 ): ILocalTaskRepository {
 
     private val pagingConfig = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE)
 
-    private fun taskDataFlowConstructor(source: () -> PagingSource<Int, TaskWithSuperAndSubTasks>)= Pager(
+    private fun taskDataFlowConstructor(source: () -> PagingSource<Int, TaskWithSuperAndSubTasks>) = Pager(
         config = pagingConfig,
         pagingSourceFactory = source
-    ).flow.map { it.map (::TaskModel) }//.flowOn(Dispatchers.Default)
+    ).flow.flowOn(Dispatchers.Default).map { it.map (::TaskModel) }
 
     override fun getTaskPagingSource() = taskDataFlowConstructor {
         taskDao.getTaskPagingSource()

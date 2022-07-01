@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../../../../../home/andres/.gradle/caches/transforms-3/dfe2a6f57cdcb428867b5aabf07229df/transformed/play-services-base-18.0.1/res/drawable/common_google_signin_btn_icon_dark_focused.xml" value="0.2085" />
         <entry key="../../../../../../../../../../layout/custom_preview.xml" value="0.2078804347826087" />
         <entry key="..\:/Users/acond/Desktop/arcaUbuntu/AndroidStudioProjects/Taskscheduler/app/src/main/res/layout/add_task_fragment.xml" value="0.264" />
         <entry key="..\:/Users/acond/Desktop/arcaUbuntu/AndroidStudioProjects/Taskscheduler/app/src/main/res/layout/task_item.xml" value="0.264" />
@@ -39,6 +40,7 @@
         <entry key="app/src/main/res/layout/save_changes_pop_up_window.xml" value="0.67" />
         <entry key="app/src/main/res/layout/task_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/task_type_item.xml" value="0.75" />
+        <entry key="app/src/main/res/menu/delete_task_options.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/filter_by_done.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/filter_by_done_menu.xml" value="0.35625" />
         <entry key="app/src/main/res/menu/filter_in_task_detail.xml" value="0.35520833333333335" />

@@ -106,8 +106,11 @@
     <string name="all_children">All children</string>
     <string name="active">undone</string>
     <string name="completed_tasks">done</string>
-    <string name="only_super_tasks">only super tasks</string>
+    <string name="only_super_tasks">Only super tasks</string>
     <string name="immediate_children">Immediate children</string>
     <string name="filter_by_done">filter by done</string>
     <string name="all">All</string>
+    <string name="delete_task">delete task</string>
+    <string name="only_this">Only this</string>
+    <string name="also_sub_tasks">Also sub tasks</string>
 </resources>

@@ -4,17 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <item
+        android:id="@+id/menu_delete"
+        android:icon="@drawable/trash_icon"
+        android:title="@string/delete_task"
+        app:showAsAction="ifRoom"
+        />
+    <item
         android:id="@+id/filter_by_done_sub"
         android:title="@string/filter_by_done"
-
         android:icon="@drawable/filter"
         app:showAsAction="ifRoom"
         />
+
     <item
         android:id="@+id/all_sub"
         android:title="@string/all_children"
         />
     <item
         android:id="@+id/immediate_children"
-        android:title="@string/immediate_children" />
+        android:title="@string/immediate_children"
+        />
 </menu>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <item
+        android:id="@+id/only_this"
+        android:title="@string/only_this"
+        />
+    <item
+        android:id="@+id/also_sub_tasks"
+        android:title="@string/also_sub_tasks"
+        />
+</menu>

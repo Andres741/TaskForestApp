@@ -158,6 +158,7 @@ class TaskDetailFragment: Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.menu_delete -> deleteOptionsMenu.show()
             R.id.filter_by_done_sub -> filterByDoneMenu.show()
             R.id.all_sub -> tasksAdapterViewModel.allTopStackTaskChildren()
             R.id.immediate_children -> tasksAdapterViewModel.allInTaskSource()
@@ -183,7 +184,24 @@ class TaskDetailFragment: Fragment() {
         }
     }
 
+    private val deleteOptionsMenu by lazy {
+        val todoToast =
+            notImplementedToastFactory(context, "model layer is not capable to delete tasks")  //TODO
 
+        val view = activity!!.findViewById<View>(R.id.menu_delete)
+        PopupMenu(context!!, view).apply {
+            menuInflater.inflate(R.menu.delete_task_options, menu)
+
+            setOnMenuItemClickListener setMenu@ {
+                when (it.itemId) {
+                    R.id.only_this -> todoToast()
+                    R.id.also_sub_tasks -> todoToast()
+                    else -> return@setMenu false
+                }
+                true
+            }
+        }
+    }
 
     private fun setSaveStatusColor(savedValue: String, candidateNewValue: String?, textView: TextView): Boolean {
         val isDifferent = savedValue == candidateNewValue

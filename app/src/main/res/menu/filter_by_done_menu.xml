@@ -9,11 +9,9 @@
     <item
         android:id="@+id/completed"
         android:title="@string/completed_tasks"
-        android:icon="@drawable/done"
         />
     <item
         android:id="@+id/active"
         android:title="@string/active"
-        android:icon="@drawable/undone"
         />
 </menu>

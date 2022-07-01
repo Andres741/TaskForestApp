@@ -39,7 +39,7 @@ class TasksAdapterViewModel @Inject constructor(
         getTaskPager().cachedIn(pagingDataScopeProvider.newScope)
     )
 
-    private var filters = Filters()
+    private var filters = TaskFilters()
 
     private val filteredDataFlow = _tasksDataFlow.map { taskDataFlow ->
         taskDataFlow.map { pagingData ->
@@ -105,7 +105,7 @@ class TasksAdapterViewModel @Inject constructor(
         filters.typeFilterCriteria = typeName
     }
 
-    fun filterByIsDone(done: Boolean? = null) {
+    fun filterByIsDone(done: Boolean?) {
         filters.doneFilterCriteria = done
     }
 
@@ -147,7 +147,7 @@ class TasksAdapterViewModel @Inject constructor(
      * This class makes easy put new filters.
      * The filters of this class should be able to overlap.
      */
-    private inner class Filters {
+    private inner class TaskFilters {
 
         var doneFilterCriteria: Boolean? = null
             set(value) {
@@ -180,7 +180,7 @@ class TasksAdapterViewModel @Inject constructor(
 
 //        TODO:
 //        var dateFilter = defaultFilter
-//            set(value) {
+//            private set(value) {
 //                field = value
 //                _tasksDataFlow.observeAgain()
 //            }
@@ -188,6 +188,6 @@ class TasksAdapterViewModel @Inject constructor(
         fun andAll(task: TaskModel) = doneFilter(task) && typeFilter(task) //&& dateFilter(task)
     }
     private companion object {
-        val defaultTaskFilter = { _:TaskModel -> true }
+        val defaultTaskFilter = { _ :TaskModel -> true }
     }
 }
