@@ -51,6 +51,11 @@ interface ILocalTaskRepository {
 
     suspend fun getTaskTypeFromTask(task: TaskModel): TaskTypeModel
 
+
+    suspend fun deleteSingleTask(task: ITaskTitleOwner): Boolean
+
+    suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner): Boolean
+
     companion object {
         const val PAGE_SIZE = 30
     }

@@ -91,7 +91,10 @@ class TaskDetailFragment: Fragment() {
             }
 
             taskTitleChangedEvent.observe(viewLifecycleOwner) { newTitle ->
-                newTitle ?: return@observe
+                newTitle ?: run {
+                    tasksAdapterViewModel.removeFromStack()
+                    return@observe
+                }
                 tasksAdapterViewModel.changeStackTop(newTitle)
             }
 
@@ -193,8 +196,6 @@ class TaskDetailFragment: Fragment() {
     }
 
     private val deleteOptionsMenu by lazy {
-        val todoToast =
-            notImplementedToastFactory(context, "model layer is not capable to delete tasks")  //TODO
 
         val view = activity!!.findViewById<View>(R.id.menu_delete)
         PopupMenu(context!!, view).apply {
@@ -202,8 +203,8 @@ class TaskDetailFragment: Fragment() {
 
             setOnMenuItemClickListener setMenu@ {
                 when (it.itemId) {
-                    R.id.only_this -> todoToast()
-                    R.id.also_sub_tasks -> todoToast()
+                    R.id.only_this -> viewModel.deleteOnlyTopStackTask()
+                    R.id.also_sub_tasks -> viewModel.deleteTopStackTaskAndChildren()
                     else -> return@setMenu false
                 }
                 true
@@ -213,11 +214,9 @@ class TaskDetailFragment: Fragment() {
 
     private fun setSaveStatusColor(savedValue: String, candidateNewValue: String?, textView: TextView): Boolean {
         val isDifferent = savedValue == candidateNewValue
-        val color = if (isDifferent) {
-            resources.getColor(R.color.black)
-        } else{
-            resources.getColor(R.color.unsaved)
-        }
+        val color = if (isDifferent) resources.getColor(R.color.black)
+        else resources.getColor(R.color.unsaved)
+
         textView.setTextColor(color)
         return isDifferent
     }

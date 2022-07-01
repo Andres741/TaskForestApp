@@ -54,12 +54,6 @@ interface TaskDao {
             "UPDATE $TASK_TABLE SET $TYPEa = :newValue WHERE $TYPEa = :oldValue"
 
 
-        const val DELETE =
-            "DELETE FROM $TASK_TABLE WHERE $TITLE_ID = :key"
-
-        const val DELETE_ALL =
-            "DELETE FROM $TASK_TABLE"
-
         const val GET_TYPE_FROM_DB_BY_TASK =
             "SELECT $TYPEa, COUNT($TYPEa) AS $COUNT_OF_TYPEa FROM $TASK_TABLE WHERE $TYPEa = :type GROUP BY $TYPEa"
 
@@ -173,11 +167,6 @@ interface TaskDao {
     @Query(UPDATE_TYPE)
     suspend fun updateType(oldValue: String, newValue: String): Int
 
-    @Query(DELETE)
-    suspend fun delete(key: String)
-
-    @Query(DELETE_ALL)
-    suspend fun deleteAll()
 
     @Query(GET_TYPE_FROM_DB_BY_TASK)
     fun getTypeFromDBByTask(type: String): Flow<TaskTypeFromDB>

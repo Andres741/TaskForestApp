@@ -2,10 +2,7 @@ package com.example.taskscheduler.ui.main.taskDetail
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.example.taskscheduler.domain.ChangeTaskDescriptionUseCase
-import com.example.taskscheduler.domain.ChangeTaskTitleUseCase
-import com.example.taskscheduler.domain.ChangeTaskTypeUseCase
-import com.example.taskscheduler.domain.GetTaskByTitleUseCase
+import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.TaskModel
@@ -22,7 +19,8 @@ class TaskDetailViewModel @Inject constructor(
     private val changeTitle: ChangeTaskTitleUseCase,
     private val changeType: ChangeTaskTypeUseCase,
     private val changeDescription: ChangeTaskDescriptionUseCase,
-    private val getTaskByTitle: GetTaskByTitleUseCase
+    private val getTaskByTitle: GetTaskByTitleUseCase,
+    private val deleteTask: DeleteTaskUseCase,
 ): ViewModel() {
 
     val title = MutableLiveData<String>()
@@ -32,8 +30,8 @@ class TaskDetailViewModel @Inject constructor(
     private val _task = MutableLiveData<TaskModel>()
     val task: LiveData<TaskModel> = _task
 
-    private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner>()
-    val taskTitleChangedEvent: LiveData<ITaskTitleOwner> = _taskTitleChangedEvent
+    private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner?>()
+    val taskTitleChangedEvent: LiveData<ITaskTitleOwner?> = _taskTitleChangedEvent
 
     private val _typeChangedEvent = MutableLiveData<ITaskTypeNameOwner>()
     val typeChangedEvent: LiveData<ITaskTypeNameOwner> = _typeChangedEvent
@@ -108,6 +106,26 @@ class TaskDetailViewModel @Inject constructor(
     }
     fun restoreDescription() {
         description.value = _task.value!!.description
+    }
+
+    fun deleteOnlyTopStackTask() {
+        val task = _task.value ?: return
+        viewModelScope.launch {
+            deleteTask(task).ifTrue {
+                scopeProvider.cancel()
+                _taskTitleChangedEvent.value = null
+            }
+        }
+    }
+
+    fun deleteTopStackTaskAndChildren() {
+        val task = _task.value ?: return
+        viewModelScope.launch {
+            deleteTask.alsoChildren(task).ifTrue {
+                scopeProvider.cancel()
+                _taskTitleChangedEvent.value = null
+            }
+        }
     }
 
     override fun onCleared() {
