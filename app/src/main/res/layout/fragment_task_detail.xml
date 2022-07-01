@@ -113,7 +113,7 @@
 
             android:text="@{viewmodel.task.hasSuperTask ? viewmodel.task.superTaskTitle : @string/doesn_t_have}"
 
-            android:onClick="@{()-> tasksAdapterViewModel.goToSuperTask()}"
+            android:onClick="@{()-> tasksAdapterViewModel.goToSuperTask(viewmodel.task)}"
 
             tools:text="Learning"
             />

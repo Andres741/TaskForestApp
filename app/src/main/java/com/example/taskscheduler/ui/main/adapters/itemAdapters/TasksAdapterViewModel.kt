@@ -78,16 +78,16 @@ class TasksAdapterViewModel @Inject constructor(
         setPagingData(taskTitle)
     }
 
-    fun goToSuperTask() {
+    fun goToSuperTask(currentTask: TaskModel) {
         if (_taskTitleStack.size > 1) {
+            val secondTaskInStack = _taskTitleStack[1]
+            if (! secondTaskInStack.equalsTitle(currentTask.superTask)) _taskTitleStack.setNotTop(1, currentTask.superTask)
             removeFromStack()
         } else if (_taskTitleStack.size == 1) {
-            viewModelScope.launch {
-                val task = getTaskByTitle.static(_taskTitleStack[0].taskTitle)
-                if (! task.hasSuperTask) return@launch
-                changeStackTop(task.superTask)
-            }
+            if (! currentTask.hasSuperTask) return
+            changeStackTop(currentTask.superTask)
         }
+        //if _taskTitleStack.size < 1 nothing
     }
 
     fun popStack(): ITaskTitleOwner? {
@@ -183,10 +183,10 @@ class TasksAdapterViewModel @Inject constructor(
         val defaultTaskFilter = { _ :TaskModel -> true }
     }
 
-//    private fun<T> T.log(msj: String? = null) = apply {
-//        Log.i(
-//            "TasksAdapterViewModel",
-//            "${if (msj != null) "$msj: " else ""}${toString()}"
-//        )
-//    }
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i(
+            "TasksAdapterViewModel",
+            "${if (msj != null) "$msj: " else ""}${toString()}"
+        )
+    }
 }

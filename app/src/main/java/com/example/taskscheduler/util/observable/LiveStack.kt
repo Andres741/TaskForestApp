@@ -39,6 +39,11 @@ open class LiveStack<T> private constructor(
         super.setValue(newValue)
     }
 
+    fun setNotTop(index: Int, value: T) {
+        val selected = index.takeIf { it > 0 } ?: 1
+        stack[selected] = value
+    }
+
     fun notifyObserveAgain() {
         value = value
     }
