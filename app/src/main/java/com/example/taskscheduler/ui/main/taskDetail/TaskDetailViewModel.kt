@@ -7,8 +7,9 @@ import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.ifTrue
-import com.example.taskscheduler.util.observable.EventTrigger
+import com.example.taskscheduler.util.observable.DataEventTrigger
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.NoMoreWithTaskDetedType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ class TaskDetailViewModel @Inject constructor(
     private val changeDescription: ChangeTaskDescriptionUseCase,
     private val getTaskByTitle: GetTaskByTitleUseCase,
     private val deleteTask: DeleteTaskUseCase,
+    private val existsTaskWithType: ExistsTaskWithTypeUseCase,
 ): ViewModel() {
 
     val title = MutableLiveData<String>()
@@ -30,11 +32,13 @@ class TaskDetailViewModel @Inject constructor(
     private val _task = MutableLiveData<TaskModel>()
     val task: LiveData<TaskModel> = _task
 
-    private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner?>()
-    val taskTitleChangedEvent: LiveData<ITaskTitleOwner?> = _taskTitleChangedEvent
+    private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner>()
+    val taskTitleChangedEvent: LiveData<ITaskTitleOwner> = _taskTitleChangedEvent
 
     private val _typeChangedEvent = MutableLiveData<ITaskTypeNameOwner>()
     val typeChangedEvent: LiveData<ITaskTypeNameOwner> = _typeChangedEvent
+
+    val taskDeletedEvent = DataEventTrigger<NoMoreWithTaskDetedType>()
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
@@ -113,7 +117,7 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             deleteTask(task).ifTrue {
                 scopeProvider.cancel()
-                _taskTitleChangedEvent.value = null
+                taskDeletedEvent.triggerEvent(existsTaskWithType(task.type))
             }
         }
     }
@@ -123,7 +127,7 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             deleteTask.alsoChildren(task).ifTrue {
                 scopeProvider.cancel()
-                _taskTitleChangedEvent.value = null
+                taskDeletedEvent.triggerEvent(existsTaskWithType(task.type))
             }
         }
     }

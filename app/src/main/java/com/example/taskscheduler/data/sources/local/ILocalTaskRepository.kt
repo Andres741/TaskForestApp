@@ -25,6 +25,8 @@ interface ILocalTaskRepository {
 
     suspend fun existsTitle(taskTitle: String): Boolean
 
+    suspend fun existsType(taskType: String): Boolean
+
 
     suspend fun changeDone(task: ITaskTitleOwner, newValue: Boolean): Boolean
 

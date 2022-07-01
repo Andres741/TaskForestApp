@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -15,7 +14,6 @@ import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.AddTaskFragmentBinding
 import com.example.taskscheduler.domain.CreateValidTaskUseCase
 import com.example.taskscheduler.domain.SaveNewTaskUseCase
-import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
 import com.example.taskscheduler.util.ifFalse
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,7 +25,6 @@ class AddTaskFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: AddTaskViewModel by viewModels()
-    private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
 
     private val args: AddTaskFragmentArgs by navArgs()
 

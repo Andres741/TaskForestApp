@@ -57,6 +57,9 @@ class RoomTaskRepository @Inject constructor(
 
     override suspend fun existsTitle(taskTitle: String): Boolean = taskDao.containsStatic(taskTitle)
 
+    override suspend fun existsType(taskType: String): Boolean = taskDao.existsTypeStatic(taskType)
+
+
     override suspend fun changeDone(task: ITaskTitleOwner, newValue: Boolean) = taskDao.
         changeDone(task.taskTitle, newValue) > 0
 

@@ -26,6 +26,7 @@ data class TaskModel (
     val hasDescription get() = description.isNotBlank()
     val hasSuperTask get() = superTask.isNotBlank()
     val hasSubTasks get() = subTasks.isNotEmpty()
+    val hasFamily get() = hasSubTasks || hasSuperTask
     val numSubTasks get() = subTasks.size
     override val typeName: String get() = type
     override val taskTitle: String get() = title

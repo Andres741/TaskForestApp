@@ -43,6 +43,9 @@ interface TaskDao {
         const val CONTAINS =
             "SELECT EXISTS(SELECT 1 FROM $TASK_TABLE WHERE $TITLE_ID = :key)"
 
+        const val EXISTS_TYPE =
+            "SELECT EXISTS(SELECT 1 FROM $TASK_TABLE WHERE $TYPEa = :type LIMIT 1)"
+
         const val UPDATE_DONE =
             "UPDATE $TASK_TABLE SET $IS_DONEa = :newValue WHERE $TITLE_ID = :key"
 
@@ -160,6 +163,11 @@ interface TaskDao {
     fun contains(key: String): Flow<Boolean>
     @Query(CONTAINS)
     suspend fun containsStatic(key: String): Boolean
+
+    @Query(EXISTS_TYPE)
+    fun existsType(type: String): Flow<Boolean>
+    @Query(EXISTS_TYPE)
+    suspend fun existsTypeStatic(type: String): Boolean
 
 
     @Query(UPDATE_DONE)

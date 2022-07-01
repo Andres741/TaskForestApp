@@ -91,15 +91,21 @@ class TaskDetailFragment: Fragment() {
             }
 
             taskTitleChangedEvent.observe(viewLifecycleOwner) { newTitle ->
-                newTitle ?: run {
-                    tasksAdapterViewModel.removeFromStack()
-                    return@observe
-                }
+                newTitle ?: return@observe
                 tasksAdapterViewModel.changeStackTop(newTitle)
             }
 
             typeChangedEvent.observe(viewLifecycleOwner) {
                 tasksAdapterViewModel.selectedTaskTypeName.value = it
+            }
+
+            taskDeletedEvent.setEvent(viewLifecycleOwner) { areMoreWithType ->
+                if (areMoreWithType.not()) {
+                    tasksAdapterViewModel.selectedTaskTypeName.apply {
+                        if (value != null) value = null
+                    }
+                }
+                tasksAdapterViewModel.removeFromStack()
             }
         }
 

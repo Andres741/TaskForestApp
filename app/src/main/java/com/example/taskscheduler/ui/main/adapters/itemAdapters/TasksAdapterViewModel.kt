@@ -134,13 +134,6 @@ class TasksAdapterViewModel @Inject constructor(
         super.onCleared()
     }
 
-    private fun<T> T.log(msj: String? = null) = apply {
-        Log.i(
-            "TasksAdapterViewModel",
-            "${if (msj != null) "$msj: " else ""}${toString()}"
-        )
-    }
-
     /**
      * This class makes easy put new filters.
      * The filters of this class should be able to overlap.
@@ -178,7 +171,6 @@ class TasksAdapterViewModel @Inject constructor(
                 _tasksDataFlow.observeAgain()
             }
 
-//        TODO:
 //        var dateFilter = defaultFilter
 //            private set(value) {
 //                field = value
@@ -190,4 +182,11 @@ class TasksAdapterViewModel @Inject constructor(
     private companion object {
         val defaultTaskFilter = { _ :TaskModel -> true }
     }
+
+//    private fun<T> T.log(msj: String? = null) = apply {
+//        Log.i(
+//            "TasksAdapterViewModel",
+//            "${if (msj != null) "$msj: " else ""}${toString()}"
+//        )
+//    }
 }
