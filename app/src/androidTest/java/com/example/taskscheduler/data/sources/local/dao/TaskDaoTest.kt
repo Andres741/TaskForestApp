@@ -84,7 +84,11 @@ class TaskDaoTest {
         ),
         TaskModel(
             title = "ccccc", type = "c", description = "",
-            superTask = "cc".toTaskTitle(), subTasks = emptyList()
+            superTask = "cc".toTaskTitle(), subTasks = listOf("cccccc").toTaskTitle()
+        ),
+        TaskModel(
+            title = "cccccc", type = "c", description = "",
+            superTask = "ccccc".toTaskTitle(), subTasks = emptyList()
         ),
 
 
@@ -187,7 +191,7 @@ class TaskDaoTest {
     fun taskDao_isEmpty_or_not_test(): Unit = runBlocking {
         assertFalse(taskDao.isEmptyStatic())
         assert(taskDao.isNotEmptyStatic())
-        taskDao.deleteAll()
+        taskAndSubTaskDao.deleteAll()
         assert(taskDao.isEmptyStatic())
         assertFalse(taskDao.isNotEmptyStatic())
     }
@@ -197,14 +201,6 @@ class TaskDaoTest {
         val aaa = taskDao.getStatic("t77").log()
         (aaa == null).log("Is null")  //Are you sure is always false?
         taskDao.getStatic("t3").log()
-    }
-
-    @Test
-    fun taskDao_delete_test(): Unit = runBlocking {
-        taskDao.delete("t77")
-        taskDao.delete("t7")
-        taskDao.delete("t3")
-        taskDao.getAllStatic().forEach(TaskEntity::log)
     }
 
     @Test
@@ -306,6 +302,31 @@ class TaskDaoTest {
         tested.forEach { subTask ->
             subTaskDao.getTopSuperTask(subTask).log(subTask)
         }
+    }
+
+    @Test
+    fun deleteSingleTask(): Unit = runBlocking {
+        "Original".bigLog()
+        showAll()
+        taskAndSubTaskDao.deleteTask("cc")
+        "After deletion".bigLog()
+        showAll()
+        val superTask = "c"
+        taskDao.getBySuperTask(superTask).first().toModel().forEach { task ->
+            assertEquals(task.superTaskTitle, superTask)
+        }
+    }
+
+    @Test
+    fun deleteTaskAndChildren(): Unit = runBlocking {
+        "Original".bigLog()
+        showAll()
+        taskAndSubTaskDao.deleteTaskAndAllChildren("cc")
+        "After deletion".bigLog()
+        showAll()
+        val superTask = "c"
+        val numSubTasks = taskDao.getAllChildren(superTask).first().toModel().size
+        assertEquals(numSubTasks, 0)
     }
 }
 

@@ -159,10 +159,10 @@ abstract class TaskAndSubTaskDao {
 
     //Delete
     @Delete
-    protected abstract suspend fun delete(key: SubTaskEntity)
+    protected abstract suspend fun deleteSubTaskEntity(key: SubTaskEntity)
 
     @Query(DELETE_ALL_SUPER_TASK)
-    protected abstract suspend fun deleteAll(): Int
+    protected abstract suspend fun deleteAllSubTaskEntities(): Int
 
     @Query(DELETE_SUB)
     protected abstract suspend fun deleteSubTask(subTask: String): Int
@@ -195,5 +195,11 @@ abstract class TaskAndSubTaskDao {
     open suspend fun deleteTaskAndAllChildren(task: String): Int {
         deleteSubTask(task)
         return deleteTaskFromTaskTable(task) + deleteAllTaskChildren(task)
+    }
+
+    @Transaction
+    open suspend fun deleteAll(): Int {
+        deleteAllSubTaskEntities()
+        return deleteAllTasks()
     }
 }

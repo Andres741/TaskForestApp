@@ -2,7 +2,6 @@ package com.example.taskscheduler.data.sources.local
 
 import androidx.paging.*
 import com.example.taskscheduler.data.sources.local.ILocalTaskRepository.Companion.PAGE_SIZE
-import com.example.taskscheduler.data.sources.local.dao.SubTaskDao
 import com.example.taskscheduler.data.sources.local.dao.TaskAndSubTaskDao
 import com.example.taskscheduler.data.sources.local.dao.TaskDao
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
@@ -10,9 +9,7 @@ import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWith
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperTask
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
-import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
-import com.example.taskscheduler.util.TaskDataFlow
 import com.example.taskscheduler.util.TaskTypeDataFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -49,7 +46,7 @@ class RoomTaskRepository @Inject constructor(
     }
 
     override fun getAllChildrenPagingSource(superTask: ITaskTitleOwner) = taskDataFlowConstructor {
-        taskDao.getAllChildren(superTask.taskTitle)
+        taskDao.getAllChildrenPagingSource(superTask.taskTitle)
     }
 
 

@@ -106,9 +106,13 @@ interface TaskDao {
     @Query(GET_TOP_SUPER_TASKS)
     fun getTopSuperTasks(): PagingSource<Int, TaskWithSuperAndSubTasks>
 
+
     @Transaction
     @Query(GET_ALL_CHILDREN)
-    fun getAllChildren(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+    fun getAllChildren(superTask: String): Flow<List<TaskWithSuperAndSubTasks>>
+    @Transaction
+    @Query(GET_ALL_CHILDREN)
+    fun getAllChildrenPagingSource(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
 
 
     @Query(GET_TYPE)
