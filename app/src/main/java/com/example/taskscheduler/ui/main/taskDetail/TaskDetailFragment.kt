@@ -94,6 +94,10 @@ class TaskDetailFragment: Fragment() {
                 newTitle ?: return@observe
                 tasksAdapterViewModel.changeStackTop(newTitle)
             }
+
+            typeChangedEvent.observe(viewLifecycleOwner) {
+                tasksAdapterViewModel.selectedTaskTypeName.value = it
+            }
         }
 
         tasksAdapterViewModel.apply {
@@ -110,6 +114,10 @@ class TaskDetailFragment: Fragment() {
                 collectPagingDataScopeProvider.newScope.launch {
                     flow.collectLatest(adapter::submitData)
                 }
+            }
+
+            selectedTaskTypeName.observe(viewLifecycleOwner) { typeName ->
+                tasksAdapterViewModel.filterByType(typeName)
             }
         }
 

@@ -49,6 +49,8 @@ class TasksAdapterViewModel @Inject constructor(
 
     val tasksDataFlow: LiveData<TaskDataFlow> = filteredDataFlow
 
+    val selectedTaskTypeName = MutableLiveData<ITaskTypeNameOwner?>()
+
 
     private fun setPagingData(newTask: ITaskTitleOwner?) {
         _tasksDataFlow.value = getTaskPager(newTask).cachedIn(pagingDataScopeProvider.newScope)
@@ -98,10 +100,6 @@ class TasksAdapterViewModel @Inject constructor(
     }
 
     fun filterByType(typeName: ITaskTypeNameOwner?) {
-        if (_taskTitleStack.isNotEmpty()) {
-            "Impossible to filter by type if the _taskStack is not empty".log()
-            return
-        }
         filters.typeFilterCriteria = typeName
     }
 
@@ -151,6 +149,7 @@ class TasksAdapterViewModel @Inject constructor(
 
         var doneFilterCriteria: Boolean? = null
             set(value) {
+                if (field == value) return
                 field = value
                 doneFilter = when(value) {
                     null -> defaultTaskFilter
@@ -161,6 +160,7 @@ class TasksAdapterViewModel @Inject constructor(
 
         var typeFilterCriteria: ITaskTypeNameOwner? = null
             set(value) {
+                if (field == value) return
                 field = value
                 typeFilter = if (value == null) defaultTaskFilter
                 else { task -> task equalsType value }

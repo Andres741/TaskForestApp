@@ -7,7 +7,10 @@ import com.example.taskscheduler.domain.ChangeTaskTitleUseCase
 import com.example.taskscheduler.domain.ChangeTaskTypeUseCase
 import com.example.taskscheduler.domain.GetTaskByTitleUseCase
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
+import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.util.ifTrue
+import com.example.taskscheduler.util.observable.EventTrigger
 import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -31,6 +34,9 @@ class TaskDetailViewModel @Inject constructor(
 
     private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner>()
     val taskTitleChangedEvent: LiveData<ITaskTitleOwner> = _taskTitleChangedEvent
+
+    private val _typeChangedEvent = MutableLiveData<ITaskTypeNameOwner>()
+    val typeChangedEvent: LiveData<ITaskTypeNameOwner> = _typeChangedEvent
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
@@ -66,7 +72,10 @@ class TaskDetailViewModel @Inject constructor(
         val task = _task.value ?: return
 
         viewModelScope.launch {
-            changeType(task.toSimpleTaskTitleOwner(), newType)
+            changeType(task.toSimpleTaskTitleOwner(), newType).also { newType ->
+                newType ?: return@also
+                _typeChangedEvent.value = newType
+            }
         }
     }
 
@@ -75,7 +84,10 @@ class TaskDetailViewModel @Inject constructor(
         val task = _task.value ?: return
 
         viewModelScope.launch {
-            changeType(task.toSimpleTaskTypeNameOwner(), newType)
+            changeType(task.toSimpleTaskTypeNameOwner(), newType).also { newType ->
+                newType ?: return@also
+                _typeChangedEvent.value = newType
+            }
         }
     }
 

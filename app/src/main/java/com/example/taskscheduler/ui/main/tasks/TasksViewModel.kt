@@ -16,8 +16,6 @@ class TasksViewModel @Inject constructor(
 ): ViewModel() {
     val taskTypeDataFlow: TaskTypeDataFlow = getTaskTypePagerUseCase().cachedIn(viewModelScope)
 
-    val selectedTaskTypeName = MutableLiveData<ITaskTypeNameOwner?>()
-
     val isShowingOnlyTopSuperTask = MutableLiveData(false)
 
 //    private fun<T> T.log(msj: String? = null) = apply {

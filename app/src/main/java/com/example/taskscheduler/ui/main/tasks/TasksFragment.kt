@@ -31,8 +31,8 @@ class TasksFragment: Fragment() {
     private val tasksAdapterViewModel: TasksAdapterViewModel by activityViewModels()
 
 
-    private val tasksAdapter by lazy { TasksAdapter(tasksAdapterViewModel, viewModel.selectedTaskTypeName::setValue) }
-    private val taskTypeAdapter by lazy { TaskTypeAdapter(viewModel.selectedTaskTypeName::setValue) }
+    private val tasksAdapter by lazy { TasksAdapter(tasksAdapterViewModel, tasksAdapterViewModel.selectedTaskTypeName::setValue) }
+    private val taskTypeAdapter by lazy { TaskTypeAdapter(tasksAdapterViewModel.selectedTaskTypeName::setValue) }
 
     private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
@@ -64,15 +64,6 @@ class TasksFragment: Fragment() {
                 taskTypeDataFlow.collectLatest(taskTypeAdapter::submitData)
             }
 
-            selectedTaskTypeName.observe(viewLifecycleOwner) { typeName ->
-                tasksAdapterViewModel.filterByType(typeName)
-                if (typeName == null) {
-                    taskTypeAdapter.unselectViewHolder()
-                    return@observe
-                }
-                taskTypeAdapter.selectViewHolder(typeName)
-            }
-
             isShowingOnlyTopSuperTask.observe(viewLifecycleOwner) { onlyTopSuperTasks ->
                 if (onlyTopSuperTasks) tasksAdapterViewModel.onlySuperTasksInTaskSource()
                 else tasksAdapterViewModel.allInTaskSource()
@@ -93,6 +84,15 @@ class TasksFragment: Fragment() {
                 collectPagingDataScopeProvider.newScope.launch {
                     flow.collectLatest(tasksAdapter::submitData)
                 }
+            }
+
+            selectedTaskTypeName.observe(viewLifecycleOwner) { typeName ->
+                tasksAdapterViewModel.filterByType(typeName)
+                if (typeName == null) {
+                    taskTypeAdapter.unselectViewHolder()
+                    return@observe
+                }
+                taskTypeAdapter.selectViewHolder(typeName)
             }
         }
 

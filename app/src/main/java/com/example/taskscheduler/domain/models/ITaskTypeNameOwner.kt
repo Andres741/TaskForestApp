@@ -8,8 +8,11 @@ sealed interface ITaskTypeNameOwner {
     fun toSimpleTaskTypeNameOwner() = SimpleTaskTypeNameOwner(this)
 }
 
+/**
+ * Constructor should only be called in domain layer.
+ */
 @JvmInline
-value class SimpleTaskTypeNameOwner private constructor(
+value class SimpleTaskTypeNameOwner (
     override val typeName: String
 ): ITaskTypeNameOwner {
     constructor(taskTypeNameOwner: ITaskTypeNameOwner): this(taskTypeNameOwner.typeName)
