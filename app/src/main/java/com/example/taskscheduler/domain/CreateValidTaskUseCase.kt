@@ -44,7 +44,7 @@ class CreateValidTaskUseCase @Inject constructor(
 
 
     suspend fun String.validateTitle(): String? = validateShortField()?.let { newTitle ->
-        if(existsTaskWithTitleUseCase.not(newTitle)) this else null
+        if(existsTaskWithTitleUseCase(newTitle)) null else this
     }
 
     fun String.validateType() = validateShortField()

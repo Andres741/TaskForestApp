@@ -1,8 +1,11 @@
 package com.example.taskscheduler.domain
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
+import com.example.taskscheduler.domain.models.TaskModel
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -11,6 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.robolectric.annotation.Config
+import junit.framework.TestCase.*
 
 @Config(manifest= Config.NONE)
 @RunWith(MockitoJUnitRunner::class)
@@ -18,12 +22,15 @@ class CreateValidTaskUseCaseTest {
 
     @RelaxedMockK
     lateinit var existsTaskWithTitleUseCase: ExistsTaskWithTitleUseCase
+    @RelaxedMockK
+    lateinit var taskRepository: TaskRepository
+
     lateinit var createValidTaskUseCase: CreateValidTaskUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        createValidTaskUseCase = CreateValidTaskUseCase(existsTaskWithTitleUseCase)
+        createValidTaskUseCase = CreateValidTaskUseCase(existsTaskWithTitleUseCase, taskRepository)
 
         "\n/-----------------------------------------\\\n".log()
 
@@ -35,31 +42,45 @@ class CreateValidTaskUseCaseTest {
     }
 
     @Test
-    fun existsTitle(): Unit = runBlocking {
+    fun `creating a task with super task`(): Unit = runBlocking {
+        //Given
+        val title = "t0"
+        val type = "t1"
+        val description = "t2"
+        val superTask = "t3"
+        coEvery { existsTaskWithTitleUseCase(title) } returns false
+        coEvery { existsTaskWithTitleUseCase(superTask) } returns true
+        coEvery { taskRepository.local.getTaskTypeByTitleStatic(superTask) } returns type
 
-        val newTitle = "t0"
-        coEvery { existsTaskWithTitleUseCase(newTitle) } returns false
+        //When
+        val res = createValidTaskUseCase(title, type, description, superTask).log()
+        val createdTask = res as? CreateValidTaskUseCase.Response.Successful
 
-        val res = createValidTaskUseCase("t0", "t0", "t0", "t0").log()
-
-        assert(res == null)
+        //Then
+        assertNotNull("createValidTaskUseCase response is not Successful", createdTask); createdTask!!
+        assertEquals(createdTask.task, TaskModel(title, type, description, SimpleTaskTitleOwner(superTask), dateNum = createdTask.task.dateNum))
     }
 
     @Test
-    fun possibleToCrate (): Unit = runBlocking {
-
+    fun `creating a task without super task`(): Unit = runBlocking {
         // Given
-        val newTitle = "t0"
-        val newSuperTask = "s0"
+        val title = "t0"
+        val type = "t1"
+        val description = "t2"
+        val superTask: String? = null
 
-        coEvery { existsTaskWithTitleUseCase(newTitle) } returns false
-        coEvery { existsTaskWithTitleUseCase(newSuperTask) } returns true
+        coEvery { existsTaskWithTitleUseCase(title) } returns false
 
-        // When
-        val res = createValidTaskUseCase("t0", "ty0", "des0", "s0").log()
+        //When
+        val res = createValidTaskUseCase(title, type, description, superTask).log()
+        val createdTask = res as? CreateValidTaskUseCase.Response.Successful
 
         // Then
-        assert(res != null)
+        coVerify(exactly = 0) { taskRepository.local.getTaskTypeByTitleStatic("") }
+        coVerify(exactly = 0) { existsTaskWithTitleUseCase("") }
+        coVerify(exactly = 1) { existsTaskWithTitleUseCase(title) }
+        assertNotNull("createValidTaskUseCase response is not Successful", createdTask); createdTask!!
+        assertEquals(createdTask.task, TaskModel(title, type, description, SimpleTaskTitleOwner(""), dateNum = createdTask.task.dateNum))
     }
 }
 
