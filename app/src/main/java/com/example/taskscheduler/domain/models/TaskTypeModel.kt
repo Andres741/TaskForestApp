@@ -22,3 +22,23 @@ fun Iterable<TaskTypeModel>.toMultiplicityList() = MultiplicityList(toPair())
 fun IMultiplicityList<String>.allToModel() = elements.map {
         TaskTypeModel(it.key, it.value)
 }
+
+sealed interface ITaskTypeNameOwner {
+    val typeName: String
+
+    fun toSimpleTaskTypeNameOwner() = SimpleTaskTypeNameOwner(this)
+}
+
+infix fun ITaskTypeNameOwner.equalsType(other: ITaskTypeNameOwner) = typeName == other.typeName
+infix fun ITaskTypeNameOwner.notEqualsType(other: ITaskTypeNameOwner) = typeName != other.typeName
+
+/**
+ * Constructor should only be called in domain layer.
+ */
+@JvmInline
+value class SimpleTaskTypeNameOwner (
+    override val typeName: String
+): ITaskTypeNameOwner {
+    constructor(taskTypeNameOwner: ITaskTypeNameOwner): this(taskTypeNameOwner.typeName)
+    override fun toSimpleTaskTypeNameOwner() = this
+}

@@ -1,13 +1,10 @@
 package com.example.taskscheduler.ui.main.adapters.itemAdapters
 
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import com.example.taskscheduler.domain.*
-import com.example.taskscheduler.domain.models.ITaskTitleOwner
-import com.example.taskscheduler.domain.models.TaskModel
-import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
+import com.example.taskscheduler.domain.models.*
 import com.example.taskscheduler.util.TaskDataFlow
 import com.example.taskscheduler.util.observable.LiveStack
 import com.example.taskscheduler.util.observeAgain
@@ -20,9 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TasksAdapterViewModel @Inject constructor(
     private val getTaskPager: GetTaskPagerUseCase,
-    private val getTaskPagerByType: GetTaskPagerByTypeUseCase,
     private val changeDoneStatusOfTask: ChangeDoneStatusOfTaskUseCase,
-    private val getTaskByTitle: GetTaskByTitleUseCase,
     private val getSuperTasks: GetSuperTasksUseCase,
     private val getAllChildren: GetAllChildrenOfTaskUseCase,
 ): ViewModel() {
@@ -56,10 +51,6 @@ class TasksAdapterViewModel @Inject constructor(
         _tasksDataFlow.value = getTaskPager(newTask).cachedIn(pagingDataScopeProvider.newScope)
     }
 
-    private fun setPagingDataFromType(type: ITaskTypeNameOwner) {
-        _tasksDataFlow.value = getTaskPagerByType(type).cachedIn(pagingDataScopeProvider.newScope)
-    }
-
     private fun setPagingDataFromTopOfStack() = setPagingData(_taskTitleStack.value)
 
 
@@ -81,7 +72,7 @@ class TasksAdapterViewModel @Inject constructor(
     fun goToSuperTask(currentTask: TaskModel) {
         if (_taskTitleStack.size > 1) {
             val secondTaskInStack = _taskTitleStack[1]
-            if (! secondTaskInStack.equalsTitle(currentTask.superTask)) _taskTitleStack.setNotTop(1, currentTask.superTask)
+            if (secondTaskInStack notEqualsTitle currentTask.superTask ) _taskTitleStack.setNotTop(1, currentTask.superTask)
             removeFromStack()
         } else if (_taskTitleStack.size == 1) {
             if (! currentTask.hasSuperTask) return
@@ -171,22 +162,16 @@ class TasksAdapterViewModel @Inject constructor(
                 _tasksDataFlow.observeAgain()
             }
 
-//        var dateFilter = defaultFilter
-//            private set(value) {
-//                field = value
-//                _tasksDataFlow.observeAgain()
-//            }
-
         fun andAll(task: TaskModel) = doneFilter(task) && typeFilter(task) //&& dateFilter(task)
     }
     private companion object {
         val defaultTaskFilter = { _ :TaskModel -> true }
     }
 
-    private fun<T> T.log(msj: String? = null) = apply {
-        Log.i(
-            "TasksAdapterViewModel",
-            "${if (msj != null) "$msj: " else ""}${toString()}"
-        )
-    }
+//    private fun<T> T.log(msj: String? = null) = apply {
+//        Log.i(
+//            "TasksAdapterViewModel",
+//            "${if (msj != null) "$msj: " else ""}${toString()}"
+//        )
+//    }
 }

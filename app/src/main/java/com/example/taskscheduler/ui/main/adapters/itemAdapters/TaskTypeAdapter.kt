@@ -12,6 +12,7 @@ import com.example.taskscheduler.databinding.TaskTypeItemBinding
 import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
+import com.example.taskscheduler.domain.models.equalsType
 import com.example.taskscheduler.util.OnClickType
 
 class TaskTypeAdapter (

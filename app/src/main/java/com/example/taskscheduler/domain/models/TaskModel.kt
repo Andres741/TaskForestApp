@@ -79,9 +79,11 @@ fun Iterable<TaskModel>.toTaskEntities() = map(TaskModel::toTaskEntities)
 sealed interface ITaskTitleOwner {
     val taskTitle: String
 
-    infix fun equalsTitle(other: ITaskTitleOwner) = taskTitle == other.taskTitle
     fun toSimpleTaskTitleOwner() = SimpleTaskTitleOwner(this)
 }
+infix fun ITaskTitleOwner.equalsTitle(other: ITaskTitleOwner) = taskTitle == other.taskTitle
+infix fun ITaskTitleOwner.notEqualsTitle(other: ITaskTitleOwner) = taskTitle != other.taskTitle
+
 
 /**Only use the primary constructor in the use cases.*/
 @JvmInline
