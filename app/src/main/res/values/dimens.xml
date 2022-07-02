@@ -28,5 +28,6 @@
     <dimen name="circular_radio">1000000dp</dimen>
     <dimen name="round_radio">1000000dp</dimen>
     <dimen name="progress_bar_size">200dp</dimen>
+    <dimen name="value_min_separation">24dp</dimen>
     <!--    <dimen name="titleTask">(@dimen/checkButton)/2</dimen>-->
 </resources>

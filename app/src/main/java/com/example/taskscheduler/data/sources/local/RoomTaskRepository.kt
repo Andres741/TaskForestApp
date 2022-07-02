@@ -101,7 +101,7 @@ class RoomTaskRepository @Inject constructor(
 
 
     override suspend fun deleteSingleTask(task: ITaskTitleOwner) = taskAndSubTaskDao.
-        deleteTask(task.taskTitle) > 0
+        deleteSingleTask(task.taskTitle) > 0
 
     override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner) = taskAndSubTaskDao.
         deleteTaskAndAllChildren(task.taskTitle) > 0

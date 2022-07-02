@@ -308,7 +308,7 @@ class TaskDaoTest {
     fun deleteSingleTask(): Unit = runBlocking {
         "Original".bigLog()
         showAll()
-        taskAndSubTaskDao.deleteTask("cc")
+        taskAndSubTaskDao.deleteSingleTask("cc")
         "After deletion".bigLog()
         showAll()
         val superTask = "c"

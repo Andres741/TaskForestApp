@@ -38,42 +38,48 @@
 
         <EditText
             android:id="@+id/task_title_cont"
-            android:layout_width="wrap_content"
+            style="@style/task_value"
+            android:layout_width="0dp"
+
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
 
             android:layout_marginTop="@dimen/attributes_marginVertical"
 
+            android:autofillHints=""
+            android:hint="@{@string/enter_your_x_here(@string/title)}"
+            android:inputType="text"
+
+            android:text="@={viewmodel.title}"
             app:layout_constraintEnd_toEndOf="parent"
 
-            app:layout_constraintStart_toEndOf="@id/task_description"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/key_value_separator"
+
             app:layout_constraintTop_toBottomOf="@id/textview_second"
-            app:layout_constraintHorizontal_bias="0.1"
 
-            android:hint="@{@string/enter_your_x_here(@string/title)}"
-            android:text="@={viewmodel.title}"
-
-            tools:text="value 0"
-
-            style="@style/task_value"
-            />
+            tools:text="value 0" />
 
         <EditText
             android:id="@+id/task_type_cont"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/task_value"
+            android:layout_width="0dp"
 
+            android:layout_height="wrap_content"
+            android:hint="@{@string/enter_your_x_here(@string/type)}"
+
+            android:autofillHints=""
+            android:inputType="text"
+
+            android:text="@={viewmodel.type}"
             app:layout_constraintBottom_toTopOf="@id/task_done_cont"
+
+            app:layout_constraintEnd_toEndOf="@+id/task_title_cont"
+            app:layout_constraintStart_toEndOf="@id/key_value_separator"
+
             app:layout_constraintTop_toBottomOf="@id/task_title_cont"
 
-            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
-
-            android:hint="@{@string/enter_your_x_here(@string/type)}"
-            android:text="@={viewmodel.type}"
-
-            tools:text="value 1"
-
-            style="@style/task_value"
-            />
+            tools:text="value 1" />
 
         <TextView
             android:id="@+id/task_done_cont"
@@ -86,7 +92,7 @@
             android:textColor="@{viewmodel.task.isDone ? @color/done : @color/undone}"
 
             app:layout_constraintBottom_toTopOf="@+id/superTask_cont"
-            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
+            app:layout_constraintStart_toEndOf="@id/key_value_separator"
 
             app:layout_constraintTop_toBottomOf="@id/task_type_cont"
             tools:text="completed"
@@ -106,7 +112,7 @@
 
             android:layout_height="wrap_content"
 
-            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
+            app:layout_constraintStart_toEndOf="@id/key_value_separator"
 
             app:layout_constraintBottom_toTopOf="@+id/task_description_cont_SV"
             app:layout_constraintTop_toBottomOf="@+id/task_done_cont"
@@ -124,31 +130,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
 
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="@dimen/attributes_marginVertical"
 
-            app:layout_constraintStart_toStartOf="@+id/task_title_cont"
-            app:layout_constraintEnd_toEndOf="parent"
-
+            app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toTopOf="@id/subtasksRcy"
 
+            app:layout_constraintEnd_toEndOf="@+id/task_title_cont"
+
             app:layout_constraintHeight_max="@dimen/description_max_height"
-            app:layout_constrainedHeight="true"
+            app:layout_constraintStart_toEndOf="@id/key_value_separator"
             >
 
             <EditText
                 android:id="@+id/task_description_cont2"
 
+                style="@style/task_value"
                 android:layout_width="wrap_content"
+
                 android:layout_height="wrap_content"
+                android:autofillHints=""
 
                 android:hint="@{@string/enter_your_x_here(@string/description)}"
+                android:inputType="textMultiLine"
+
                 android:text="@={viewmodel.description}"
-
                 tools:text="@string/mucho_texto"
-                tools:visibility="visible"
-
-                style="@style/task_value"
+                android:paddingBottom="24dp"
                 />
 
         </ScrollView>
@@ -158,68 +165,116 @@
         <!--        tools:text="textView3"-->
         <!--        tools:text="@string/mucho_texto"-->
 
-        <!--
-           The following TextView may be changed by images.
-        -->
+
+        <View
+            android:id="@+id/key_value_separator"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+
+            app:layout_constraintBottom_toTopOf="@+id/subtasksRcy"
+            app:layout_constraintTop_toTopOf="parent"
+
+            app:layout_constraintStart_toEndOf="@id/separator_helper"
+            />
+
         <TextView
             android:id="@+id/task_title"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/task_title_cont"
-
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="@dimen/value_min_separation"
 
             android:text="@string/title_att"
+            app:layout_constraintBaseline_toBaselineOf="@id/task_title_cont"
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+
             />
 
         <TextView
             android:id="@+id/task_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
+            android:layout_marginEnd="@dimen/value_min_separation"
             android:text="@string/type_att"
 
-            app:layout_constraintStart_toStartOf="@+id/task_title"
             app:layout_constraintBaseline_toBaselineOf="@id/task_type_cont"
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+            app:layout_constraintHorizontal_bias="0.0"
 
+            app:layout_constraintStart_toStartOf="@+id/task_title"
             />
 
         <TextView
             android:id="@+id/task_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
+            android:layout_marginEnd="@dimen/value_min_separation"
             android:text="@string/status_att"
 
-            app:layout_constraintStart_toStartOf="@+id/task_title"
             app:layout_constraintBaseline_toBaselineOf="@id/task_done_cont"
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/task_title"
             />
 
         <TextView
-            android:id="@+id/superTask"
+            android:id="@+id/task_superTask"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            app:layout_constraintStart_toStartOf="@+id/task_title"
+            android:layout_marginEnd="@dimen/value_min_separation"
+            android:text="@string/super_task"
 
             app:layout_constraintBaseline_toBaselineOf="@id/superTask_cont"
 
-            android:text="@string/super_task"
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+
             />
 
         <TextView
             android:id="@+id/task_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
+            android:layout_marginEnd="@dimen/value_min_separation"
             android:text="@string/description_att"
 
             app:layout_constraintBottom_toBottomOf="@+id/task_description_cont_SV"
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/task_title"
-            app:layout_constraintTop_toTopOf="@+id/task_description_cont_SV"
 
+            app:layout_constraintTop_toTopOf="@+id/task_description_cont_SV"
             app:layout_constraintVertical_bias="0.0"
+            android:maxLines="1"
+
+            />
+
+        <View
+            android:id="@+id/separator_helper"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+
+            tools:layout_width="48dp"
+            tools:layout_height="24dp"
+
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+            app:layout_constraintHorizontal_bias="0.0"
+
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+            app:layout_constraintTop_toTopOf="parent"
+
+            tools:layout_marginTop="260dp"
             />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -272,6 +327,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@mipmap/home_icon_foreground"
+                android:contentDescription="@string/house_icon"
                 />
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

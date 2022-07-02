@@ -174,7 +174,7 @@ abstract class TaskAndSubTaskDao {
     protected abstract suspend fun deleteSuperTask(superTask: String): Int
 
     @Transaction
-    open suspend fun deleteTask(task: String): Int {
+    open suspend fun deleteSingleTask(task: String): Int {
         val superTask = getSuperTask(task)
         val subTasks = getSubTasksOfSuperTask(task)
 
