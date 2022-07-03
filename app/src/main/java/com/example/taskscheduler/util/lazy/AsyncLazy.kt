@@ -10,7 +10,7 @@ class AsyncLazy<T: Any>(
 
     private var deferred: Deferred<T>? = CoroutineScope(context + NonCancellable).async {
 //        "pre delay".log()
-//        delay(100)  //delay + await = blocked thread
+//        delay(100)  //delay + await = blocked thread, not possible to suspend
 //        "post delay".log()
         initializer().also {
             _value = it

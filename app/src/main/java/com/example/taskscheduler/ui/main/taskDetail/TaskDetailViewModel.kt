@@ -9,7 +9,8 @@ import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.ifTrue
 import com.example.taskscheduler.util.observable.DataEventTrigger
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
-import com.example.taskscheduler.util.NoMoreWithTaskDetedType
+import com.example.taskscheduler.util.NoMoreWithTaskDeletedType
+import com.example.taskscheduler.util.TypeChange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -35,10 +36,10 @@ class TaskDetailViewModel @Inject constructor(
     private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner>()
     val taskTitleChangedEvent: LiveData<ITaskTitleOwner> = _taskTitleChangedEvent
 
-    private val _typeChangedEvent = MutableLiveData<ITaskTypeNameOwner>()
-    val typeChangedEvent: LiveData<ITaskTypeNameOwner> = _typeChangedEvent
+    private val _typeChangedEvent = MutableLiveData<TypeChange>()
+    val typeChangedEvent: LiveData<TypeChange> = _typeChangedEvent
 
-    val taskDeletedEvent = DataEventTrigger<NoMoreWithTaskDetedType>()
+    val taskDeletedEvent = DataEventTrigger<NoMoreWithTaskDeletedType>()
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
@@ -74,9 +75,8 @@ class TaskDetailViewModel @Inject constructor(
         val task = _task.value ?: return
 
         viewModelScope.launch {
-            changeType(task.toSimpleTaskTitleOwner(), newType).also { newType ->
-                newType ?: return@also
-                _typeChangedEvent.value = newType
+            changeType(task.toSimpleTaskTitleOwner(), newType)?.also { newType ->
+                _typeChangedEvent.value = task.toSimpleTaskTypeNameOwner() to newType
             }
         }
     }
@@ -86,9 +86,8 @@ class TaskDetailViewModel @Inject constructor(
         val task = _task.value ?: return
 
         viewModelScope.launch {
-            changeType(task.toSimpleTaskTypeNameOwner(), newType).also { newType ->
-                newType ?: return@also
-                _typeChangedEvent.value = newType
+            changeType(task.toSimpleTaskTypeNameOwner(), newType)?.also{ newType ->
+                _typeChangedEvent.value = task.toSimpleTaskTypeNameOwner() to newType
             }
         }
     }

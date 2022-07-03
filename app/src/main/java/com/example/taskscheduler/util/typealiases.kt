@@ -10,5 +10,5 @@ typealias TaskDataFlow = Flow<PagingData<TaskModel>>
 typealias TaskTypeDataFlow = Flow<PagingData<TaskTypeModel>>
 typealias OnClickType = (ITaskTypeNameOwner?) -> Unit
 typealias CallbackAndName = Pair<()->Unit, String>
-typealias NoMoreWithTaskDetedType = Boolean
-
+typealias NoMoreWithTaskDeletedType = Boolean
+typealias TypeChange = Pair<ITaskTypeNameOwner, ITaskTypeNameOwner>

@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.example.taskscheduler.databinding.FragmentTaskDetailBinding
 import com.example.taskscheduler.databinding.SaveChangesPopOpWindowBinding
+import com.example.taskscheduler.domain.models.equalsType
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.CallbackAndName
@@ -94,8 +95,10 @@ class TaskDetailFragment: Fragment() {
                 tasksAdapterViewModel.changeStackTop(newTitle)
             }
 
-            typeChangedEvent.observe(viewLifecycleOwner) {
-                tasksAdapterViewModel.selectedTaskTypeName.value = it
+            typeChangedEvent.observe(viewLifecycleOwner) { typeChange -> typeChange ?: return@observe
+                val currentType = tasksAdapterViewModel.selectedTaskTypeName.value ?: return@observe
+                if (currentType equalsType typeChange.first)
+                    tasksAdapterViewModel.selectedTaskTypeName.value = typeChange.second
             }
 
             taskDeletedEvent.setEvent(viewLifecycleOwner) { areMoreWithType ->

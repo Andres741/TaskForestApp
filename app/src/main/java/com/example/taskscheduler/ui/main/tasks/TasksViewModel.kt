@@ -5,16 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.example.taskscheduler.domain.GetTaskTypePagerUseCase
-import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.util.TaskTypeDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
-    getTaskTypePagerUseCase: GetTaskTypePagerUseCase,
+    getTaskTypePager: GetTaskTypePagerUseCase,
 ): ViewModel() {
-    val taskTypeDataFlow: TaskTypeDataFlow = getTaskTypePagerUseCase().cachedIn(viewModelScope)
+    val taskTypeDataFlow: TaskTypeDataFlow = getTaskTypePager().cachedIn(viewModelScope)
 
     val isShowingOnlyTopSuperTask = MutableLiveData(false)
 
