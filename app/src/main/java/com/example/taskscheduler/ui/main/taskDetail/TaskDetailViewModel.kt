@@ -8,7 +8,7 @@ import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.ifTrue
 import com.example.taskscheduler.util.observable.DataEventTrigger
-import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.NoMoreWithTaskDetedType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest

@@ -12,8 +12,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.AddTaskFragmentBinding
-import com.example.taskscheduler.domain.CreateValidTaskUseCase
-import com.example.taskscheduler.domain.SaveNewTaskUseCase
+import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.util.ifFalse
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -54,17 +53,17 @@ class AddTaskFragment : Fragment() {
             var isSuccessful = false
 
             val message: Int = when (response) {
-                is CreateValidTaskUseCase.Response.Successful -> {
-                    if (response !is SaveNewTaskUseCase.SavedTask)
+                is ValidTask -> {
+                    if (response !is SavedTask)
                         throw IllegalStateException ("Task has not been saved")
                     isSuccessful = true
                     R.string.new_task_saved
                 }
-                is CreateValidTaskUseCase.Response.WrongSuperTask -> throw IllegalStateException (
+                is WrongSuperTask -> throw IllegalStateException (
                     "The super task for some reason does not exists."
                 )
-                is CreateValidTaskUseCase.Response.WrongTitle -> R.string.new_task_wrong_title
-                is CreateValidTaskUseCase.Response.WrongType -> R.string.new_task_wrong_type
+                is WrongTitle -> R.string.new_task_wrong_title
+                is WrongType -> R.string.new_task_wrong_type
             }
 
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

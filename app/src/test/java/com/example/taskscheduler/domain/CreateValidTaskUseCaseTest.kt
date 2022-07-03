@@ -54,7 +54,7 @@ class CreateValidTaskUseCaseTest {
 
         //When
         val res = createValidTaskUseCase(title, type, description, superTask).log()
-        val createdTask = res as? CreateValidTaskUseCase.Response.Successful
+        val createdTask = res as? CreateValidTaskUseCase.Response.ValidTask
 
         //Then
         assertNotNull("createValidTaskUseCase response is not Successful", createdTask); createdTask!!
@@ -73,7 +73,7 @@ class CreateValidTaskUseCaseTest {
 
         //When
         val res = createValidTaskUseCase(title, type, description, superTask).log()
-        val createdTask = res as? CreateValidTaskUseCase.Response.Successful
+        val createdTask = res as? CreateValidTaskUseCase.Response.ValidTask
 
         // Then
         coVerify(exactly = 0) { taskRepository.local.getTaskTypeByTitleStatic("") }

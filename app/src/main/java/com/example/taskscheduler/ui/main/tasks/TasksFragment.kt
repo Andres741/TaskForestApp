@@ -15,7 +15,7 @@ import com.example.taskscheduler.databinding.FragmentTasksBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskTypeAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
-import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

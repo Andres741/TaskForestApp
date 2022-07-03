@@ -8,7 +8,7 @@ import com.example.taskscheduler.domain.models.*
 import com.example.taskscheduler.util.TaskDataFlow
 import com.example.taskscheduler.util.observable.LiveStack
 import com.example.taskscheduler.util.observeAgain
-import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.map

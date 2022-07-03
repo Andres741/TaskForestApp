@@ -19,8 +19,7 @@ import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewM
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.CallbackAndName
 import com.example.taskscheduler.util.ifFalse
-import com.example.taskscheduler.util.notImplementedToastFactory
-import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

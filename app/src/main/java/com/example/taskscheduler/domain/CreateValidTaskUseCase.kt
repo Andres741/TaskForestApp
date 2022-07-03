@@ -32,7 +32,7 @@ class CreateValidTaskUseCase @Inject constructor(
         val newTitle = title?.validateTitle() ?: return@res Response.WrongTitle
         val newDescription = description?.validateDescription() ?: ""
 
-        return@res Response.Successful( TaskModel (
+        return@res Response.ValidTask( TaskModel (
             title = newTitle, type = newType, description = newDescription, superTask = SimpleTaskTitleOwner(newSuperTask)
         ))
     }
@@ -56,9 +56,14 @@ class CreateValidTaskUseCase @Inject constructor(
     fun String.validateDescription(): String? = validateField()
 
     sealed class Response {
-        open class Successful(val task: TaskModel): Response()
+        open class ValidTask(val task: TaskModel): Response()
         object WrongTitle: Response()
         object WrongType: Response()
         object WrongSuperTask: Response()
     }
 }
+
+typealias ValidTask = CreateValidTaskUseCase.Response.ValidTask
+typealias WrongTitle = CreateValidTaskUseCase.Response.WrongTitle
+typealias WrongType = CreateValidTaskUseCase.Response.WrongType
+typealias WrongSuperTask = CreateValidTaskUseCase.Response.WrongSuperTask

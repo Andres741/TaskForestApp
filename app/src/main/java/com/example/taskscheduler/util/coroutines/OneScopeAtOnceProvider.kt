@@ -1,4 +1,4 @@
-package com.example.taskscheduler.util.scopes
+package com.example.taskscheduler.util.coroutines
 
 import kotlinx.coroutines.*
 

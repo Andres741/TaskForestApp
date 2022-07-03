@@ -10,7 +10,7 @@ import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.databinding.TaskItemBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskViewHolder.Companion.setTasksAdapterViewModel
 import com.example.taskscheduler.util.OnClickType
-import com.example.taskscheduler.util.scopes.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import kotlinx.coroutines.*
 
 class TasksAdapter(
