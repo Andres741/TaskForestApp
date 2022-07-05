@@ -5,8 +5,10 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
-//    private val singleThreadContext1 = newSingleThreadContext("saveTaskThread")   //Unrecommended
-//    private val singleThreadContext2 = Dispatchers.Default.limitedParallelism(1)  //Experimental
+//    private val singleThreadContext1: CoroutineContext
+//        get() = newSingleThreadContext("saveTaskThread")   //Unrecommended
+//    private val singleThreadContext2: CoroutineContext
+//        get() = Dispatchers.Default.limitedParallelism(1)  //Experimental
 
 private val singleThreadContext: CoroutineContext get() =
     Executors.newSingleThreadExecutor().asCoroutineDispatcher()  //The only without warnings

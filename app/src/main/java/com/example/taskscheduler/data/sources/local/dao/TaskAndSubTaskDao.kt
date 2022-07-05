@@ -46,8 +46,6 @@ abstract class TaskAndSubTaskDao {
             "DELETE FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID IN (:subTasks)"
         const val DELETE_SUPER =
             "DELETE FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask"
-        const val DELETE_ALL_TASK_CHILDREN =
-            ""
     }
 
     @Query(SubTaskDao.GET_SUB_TASKS_OF_SUPER_TASK)

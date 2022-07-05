@@ -114,4 +114,5 @@
     <string name="only_this">Only this</string>
     <string name="also_sub_tasks">Also sub tasks</string>
     <string name="house_icon">House icon</string>
+    <string name="login">Login</string>
 </resources>

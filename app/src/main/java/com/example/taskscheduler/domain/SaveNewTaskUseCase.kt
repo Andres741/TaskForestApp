@@ -24,7 +24,7 @@ class SaveNewTaskUseCase @Inject constructor(
         createValidTaskUseCase(
             title, type, description, superTask
         ).also { response ->
-            if (response !is CreateValidTaskUseCase.Response.ValidTask) return@also
+            if (response !is ValidTask) return@also
 
             taskRepository.local.saveNewTask(response.task)
             return@withContext SavedTask(response)

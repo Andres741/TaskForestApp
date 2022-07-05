@@ -128,7 +128,7 @@ class TaskDetailFragment: Fragment() {
             }
 
             selectedTaskTypeName.observe(viewLifecycleOwner) { typeName ->
-                tasksAdapterViewModel.filterByType(typeName)
+                tasksAdapterViewModel.filters.typeFilterCriteria = typeName
             }
         }
 
@@ -193,9 +193,9 @@ class TaskDetailFragment: Fragment() {
 
             setOnMenuItemClickListener setMenu@ {
                 when (it.itemId) {
-                    R.id.all_by_done -> tasksAdapterViewModel.filterByIsDone(null)
-                    R.id.completed -> tasksAdapterViewModel.filterByIsDone(true)
-                    R.id.active -> tasksAdapterViewModel.filterByIsDone(false)
+                    R.id.all_by_done -> tasksAdapterViewModel.filters.doneFilterCriteria = null
+                    R.id.completed -> tasksAdapterViewModel.filters.doneFilterCriteria = true
+                    R.id.active -> tasksAdapterViewModel.filters.doneFilterCriteria = false
                     else -> return@setMenu false
                 }
                 true
