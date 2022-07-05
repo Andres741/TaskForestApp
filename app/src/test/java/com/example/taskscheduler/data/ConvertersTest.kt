@@ -34,7 +34,8 @@ class ConvertersTest : TestCase() {
         val actual = conv.fromJsonArray(jsonArrayOfString)
         val t1 = System.currentTimeMillis()
 
-        println("Time required: ${t1-t0}ms")
+        "testFromJsonArray".log()
+        "Time required: ${t1-t0}ms".log()
 
         assertEquals(expected, actual.apply(::println))
 
@@ -48,8 +49,13 @@ class ConvertersTest : TestCase() {
         val actual = conv.fromArrayList(listOfString)
         val t1 = System.currentTimeMillis()
 
-        println("Time required: ${t1-t0}ms")
+        "testFromArrayList".log()
+        "Time required: ${t1-t0}ms".log()
 
         assertEquals(expected, actual.apply(::println))
     }
+}
+
+private fun<T> T.log(msj: String? = null) = apply {
+    println("${if (msj != null) "$msj: " else ""}${toString()}")
 }

@@ -1,5 +1,6 @@
 package com.example.taskscheduler.data
 
+import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -9,6 +10,7 @@ import java.util.*
 /**
  * Type converters to allow Room to reference complex data types.
  */
+@ProvidedTypeConverter
 class Converters {
     @TypeConverter
     fun calendarToDatestamp(calendar: Calendar): Long = calendar.timeInMillis

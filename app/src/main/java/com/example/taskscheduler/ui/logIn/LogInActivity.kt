@@ -3,6 +3,7 @@ package com.example.taskscheduler.ui.logIn
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import com.example.taskscheduler.R
@@ -12,7 +13,6 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import timber.log.Timber
 
 class LogInActivity : AppCompatActivity() {
 
@@ -34,19 +34,10 @@ class LogInActivity : AppCompatActivity() {
 
         // If there is no signed in user, launch FirebaseUI
         // Otherwise head to MainActivity
-        if (Firebase.auth.currentUser == null) {
-            // Sign in with FirebaseUI, see docs for more details:
-            // https://firebase.google.com/docs/auth/android/firebaseui
-            val signInIntent = AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setLogo(R.mipmap.ic_launcher)
-                .setAvailableProviders(listOf(
-                    AuthUI.IdpConfig.EmailBuilder().build(),
-                    AuthUI.IdpConfig.GoogleBuilder().build(),
-                ))
-                .build()
+        Firebase.auth.currentUser?.displayName.log("Firebase.auth.currentUser")
 
-            signIn.launch(signInIntent)
+        if (Firebase.auth.currentUser == null) {
+            goToSignIn()
         } else {
             goToMainActivity()
         }
@@ -55,27 +46,55 @@ class LogInActivity : AppCompatActivity() {
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         if (result.resultCode == RESULT_OK) {
-            Timber.d("Sign in successful!")
+            "Sign in successful!".logd()
             goToMainActivity()
-        } else {
-            Toast.makeText(
-                this,
-                "There was an error signing in",
-                Toast.LENGTH_LONG
-            ).show()
-
-            val response = result.idpResponse
-            if (response == null) {
-                Timber.w("Sign in canceled")
-            } else {
-                Timber.w("Sign in error ${response.error}")
-            }
+            return
         }
+
+        Toast.makeText(
+            this,
+            "There was an error signing in",
+            Toast.LENGTH_LONG
+        ).show()
+
+        val response = result.idpResponse
+        if (response == null) {
+            "Sign in canceled".logw()
+        } else {
+            "Sign in error ${response.error}".logw()
+        }
+
     }
 
+    private fun goToSignIn() {
+        val providers = listOf(
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.EmailBuilder().build(),
+        )
+        // Sign in with FirebaseUI, see docs for more details:
+        // https://firebase.google.com/docs/auth/android/firebaseui
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setLogo(R.mipmap.ic_launcher)
+            .setAvailableProviders(providers)
+            .build()
+
+        signIn.launch(signInIntent)
+    }
 
     private fun goToMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
+
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i("LogInActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
+    private fun<T> T.logd(msj: String? = null) = apply {
+        Log.d("LogInActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
+    private fun<T> T.logw(msj: String? = null) = apply {
+        Log.w("LogInActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
+
 }

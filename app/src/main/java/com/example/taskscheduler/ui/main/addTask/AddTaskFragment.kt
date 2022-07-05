@@ -1,6 +1,7 @@
 package com.example.taskscheduler.ui.main.addTask
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.AddTaskFragmentBinding
+import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.util.ifFalse
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class AddTaskFragment : Fragment() {
@@ -21,16 +24,17 @@ class AddTaskFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: AddTaskViewModel by viewModels()
+
     private val args: AddTaskFragmentArgs by navArgs()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        viewModel.onCreate(args)
 
         val root = inflater.inflate(R.layout.add_task_fragment, container, false)
-
-        viewModel.onCreate(args.supertask)
 
         return AddTaskFragmentBinding.bind(root).let {
             _binding = it
@@ -43,21 +47,41 @@ class AddTaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.taskHasBeenSaved.observe(viewLifecycleOwner) { saved ->
-            if (saved == true) {
-                Toast.makeText(context, R.string.new_task_error, Toast.LENGTH_LONG).show()
-                view.findNavController().popBackStack().ifFalse { throw Exception("AddTaskFragment has not back stack.")}
-            } else {
-                Toast.makeText(context, R.string.new_task_saved, Toast.LENGTH_LONG).show()
+        viewModel.taskHasBeenSaved.observe(viewLifecycleOwner) { response ->
+            response ?: throw NullPointerException("response is null.")
+
+            var isSuccessful = false
+
+            val message: Int = when (response) {
+                is ValidTask -> {
+                    if (response !is SavedTask)
+                        throw IllegalStateException ("Task has not been saved")
+                    isSuccessful = true
+                    R.string.new_task_saved
+                }
+                is WrongSuperTask -> throw IllegalStateException (
+                    "The super task for some reason does not exists."
+                )
+                is WrongTitle -> R.string.new_task_wrong_title
+                is WrongType -> R.string.new_task_wrong_type
+            }
+
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+            if (isSuccessful) {
+                view.findNavController().popBackStack()
+                    .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
             }
         }
-
-//        binding.apply {
-//        }
     }
 
     override fun onDestroy() {
         _binding = null
         super.onDestroy()
     }
+
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i("AddTaskFragment", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
+
 }

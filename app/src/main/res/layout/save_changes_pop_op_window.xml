@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <FrameLayout
+        android:id="@+id/card_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/oldValueCont"
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginHorizontal="@dimen/save_changes_values_marg_hor"
+
+                android:layout_marginTop="24dp"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/oldValue"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="aaaaa"
+                />
+
+            <TextView
+                android:id="@+id/newValueCont"
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="60dp"
+
+                app:layout_constraintEnd_toEndOf="@+id/oldValueCont"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/oldValueCont"
+                app:layout_constraintTop_toBottomOf="@+id/oldValueCont"
+                tools:text="AAAAA"
+                />
+
+            <TextView
+                android:id="@+id/oldValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:text="@string/old_value"
+
+                app:layout_constraintBaseline_toBaselineOf="@id/oldValueCont"
+
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/newValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/new_value"
+
+                app:layout_constraintBaseline_toBaselineOf="@id/newValueCont"
+
+                app:layout_constraintStart_toStartOf="@+id/oldValue" />
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+
+                app:layout_constraintTop_toBottomOf="@+id/newValueCont"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                android:layout_marginTop="45dp"
+                />
+
+            <Button
+                android:id="@+id/save"
+
+                android:text="@string/save_change"
+
+                app:layout_constraintEnd_toStartOf="@id/optional_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/separator"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                style="@style/button_save_pop_up"
+                />
+
+            <Button
+                android:id="@+id/discard"
+
+                android:text="@string/discard"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/separator"
+                app:layout_constraintStart_toEndOf="@id/optional_button"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                style="@style/button_save_pop_up"
+                />
+
+            <Button
+                android:id="@+id/optional_button"
+
+                app:layout_constraintEnd_toStartOf="@+id/discard"
+                app:layout_constraintStart_toEndOf="@+id/save"
+                app:layout_constraintTop_toBottomOf="@+id/separator"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                android:visibility="gone"
+
+                tools:text="optional button"
+                tools:visibility="visible"
+
+                style="@style/button_save_pop_up"
+                />
+            <!--gone invisible visible-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>

@@ -1,15 +1,17 @@
 package com.example.taskscheduler.util.observable
 
 import androidx.lifecycle.LiveData
-import com.example.taskscheduler.util.dataStructures.LinkedList
+import com.example.taskscheduler.util.dataStructures.MyLinkedList
 
 /**
  * Union between LiveData and Stack where like a stack FILO logic is implemented and the top of the stack
  * is observable.
  */
-class LiveStack<T> : LiveData<T>(), Collection<T> {
-    private val stack = LinkedList<T>()
-    val elements: List<T> = stack
+open class LiveStack<T> private constructor(
+    private val stack: MyLinkedList<T>
+): LiveData<T>(), List<T> by stack {
+
+    constructor(): this( MyLinkedList() )
 
     override fun getValue(): T? {
         return stack.getFirst()
@@ -20,19 +22,31 @@ class LiveStack<T> : LiveData<T>(), Collection<T> {
         super.setValue(value)
     }
 
-    fun remove() = stack.remove().also { super.setValue(stack.getFirst()) }
+    fun remove() {
+        stack.removeFirst()
+        super.setValue(stack.getFirst())
+    }
 
     fun pop() = stack.pop().also { super.setValue(stack.getFirst()) }
 
-    override fun isEmpty() = stack.isEmpty()
-    fun isNotEmpty() = stack.isNotEmpty()
+    fun clear() {
+        stack.clear()
+        super.setValue(null)
+    }
 
-    override val size = stack.size
+    fun changeTop(newValue: T) {
+        stack.setFirst(newValue)
+        super.setValue(newValue)
+    }
 
-    override fun contains(element: T) = stack.contains(element)
+    fun setNotTop(index: Int, value: T) {
+        val selected = index.takeIf { it > 0 } ?: 1
+        stack[selected] = value
+    }
 
-    override fun containsAll(elements: Collection<T>) = stack.containsAll(elements)
+    fun notifyObserveAgain() {
+        value = value
+    }
 
-    override fun iterator(): Iterator<T> = stack.iterator()
-
+    override fun iterator() = stack.normalIterator()
 }

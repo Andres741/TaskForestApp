@@ -1,12 +1,15 @@
 package com.example.taskscheduler.util.dataStructures
 
+import java.lang.Math.*
+import kotlin.math.pow
+
 /**
  * An implementation of the data structure general tree with an indeterminate number of children.
  */
 open class Tree<T>(
     var value: T
 ) {
-    protected open val _children = LinkedList<Tree<T>>()
+    protected open val _children = MyLinkedList<Tree<T>>()
     /**A list with the children of the list.*/
     open val children: List<Tree<T>> get() = _children
 //    val childrenIterator: Iterator<ITree<T>>
@@ -28,7 +31,7 @@ open class Tree<T>(
 
     fun removeChildAt(index: Int) = _children.removeAt(index)
 
-    fun removeChild() = _children.remove()
+    fun removeChild() = _children.removeFirst()
 
     open fun setChild(index: Int, value: T) = _children.set(index, buildChild(value))
 
@@ -50,17 +53,13 @@ open class Tree<T>(
     infix fun contains(value: T): Boolean {
         if (this.value == value) return true
 
-        for (child in children) {
-            if (child.contains(value)) return true
+        for (child in _children.normalIterator()) {
+            if (child contains value) return true
         }
         return false
-//        return contains(value){
-//            this == value
-//        }
     }
 
     fun contains(value: T, eval: T.(T) -> Boolean): Boolean {
-
         if (this.value.eval(value)) return true
 
         for (child in _children) {
@@ -77,17 +76,17 @@ open class Tree<T>(
 
     fun toList(preorder: Boolean = true): List<T> = toLinkedList(preorder)
 
-    protected fun preorder(root: Tree<T> = this, list: LinkedList<T> = LinkedList()): LinkedList<T> {
+    protected fun preorder(root: Tree<T> = this, list: MyLinkedList<T> = MyLinkedList()): MyLinkedList<T> {
         list.add(root.value)
 
-        for (elem in root._children) {
+        for (elem in root._children.normalIterator()) {
             preorder(elem, list)
         }
         return list
     }
 
-    protected fun postorder(root: Tree<T> = this, list: LinkedList<T> = LinkedList()): LinkedList<T> {
-        for (elem in root._children) {
+    protected fun postorder(root: Tree<T> = this, list: MyLinkedList<T> = MyLinkedList()): MyLinkedList<T> {
+        for (elem in root._children.normalIterator()) {
             postorder(elem, list)
         }
         list.add(root.value)

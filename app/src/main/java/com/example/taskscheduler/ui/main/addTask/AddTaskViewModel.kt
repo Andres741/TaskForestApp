@@ -1,41 +1,59 @@
 package com.example.taskscheduler.ui.main.addTask
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskscheduler.domain.SaveTaskUseCase
+import com.example.taskscheduler.domain.CreateValidTaskUseCase
+import com.example.taskscheduler.domain.SaveNewTaskUseCase
+import com.example.taskscheduler.util.FirstToSecond
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class AddTaskViewModel @Inject constructor(
-    private val saveTaskUseCase: SaveTaskUseCase,
+    private val saveNewTaskUseCase: SaveNewTaskUseCase,
 ): ViewModel() {
-
-    private lateinit var superTask: String
 
     val title = MutableLiveData<String>()
     val type = MutableLiveData<String>()
     val description = MutableLiveData<String>()
 
-    private val _taskHasBeenSaved = MutableLiveData<Boolean>()
-    val taskHasBeenSaved: LiveData<Boolean> = _taskHasBeenSaved
+    private val isCrated = FirstToSecond(first = false, second = true)
+
+    private var superTaskTitle: String? = null
+    val existsSuperTask get() = superTaskTitle != null
+
+
+    private val _taskHasBeenSaved = MutableLiveData<CreateValidTaskUseCase.Response>()
+    val taskHasBeenSaved: LiveData<CreateValidTaskUseCase.Response> = _taskHasBeenSaved
 
     /** This method must be called in the onCreateView() method of the fragment. */
-    fun onCreate(superTask: String?) {
-        if (this::superTask.isInitialized) return
+    fun onCreate(args: AddTaskFragmentArgs) {
+        if (isCrated()) return
 
-        this.superTask = superTask ?: ""
+        isCrated.moveToSecond()
+        superTaskTitle = args.supertask
+
+        "AddTaskViewModel created".log()
     }
 
     /** Called in fragment xml */
     fun save() {
         viewModelScope.launch {
-            _taskHasBeenSaved.value = saveTaskUseCase (
-                title.value, type.value, description.value, superTask
-            )!!  //Why don't let me remove this?
+            "Save task coroutine starts".log()
+
+            _taskHasBeenSaved.value = saveNewTaskUseCase(
+                title = title.value, type = type.value,
+                description = description.value, superTask = superTaskTitle
+            ).log("Response")
         }
+    }
+
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i("AddTaskViewModel", "${if (msj != null) "$msj: " else ""}${toString()}")
     }
 }

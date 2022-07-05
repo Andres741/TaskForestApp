@@ -4,7 +4,7 @@ class MultiplicityList<T>() : IMultiplicityList<T> {
     /**
      * The keys are the items of the list, and the value the multiplicity.
      */
-    val _elements = LinkedHashMap<T, Int>()
+    val _elements: MutableMap<T, Int> = LinkedHashMap<T, Int>()
 
     override val elements: Set<Map.Entry<T, Int>> get() = _elements.entries
 
@@ -27,7 +27,7 @@ class MultiplicityList<T>() : IMultiplicityList<T> {
     /**
      * Returns the multiplicity of a item of the list, or null if the list does not contains the item.
      */
-    override infix fun multiplicityOf(item: T) = _elements[item] ?: 0
+    override infix fun multiplicityOf(item: T): Int = _elements[item] ?: 0
 
     override operator fun contains(item: T) = _elements.containsKey(item)
 
@@ -51,9 +51,11 @@ class MultiplicityList<T>() : IMultiplicityList<T> {
     }
 
     override fun iterator() = object: Iterator<Pair<T, Int>> {
-        var itNum = 0
-        override fun hasNext() = itNum < size
-        override fun next() = get(itNum++)
+        val iter = _elements.iterator()
+
+        override fun hasNext() = iter.hasNext()
+
+        override fun next(): Pair<T, Int> = iter.next().toPair()
     }
 
     override fun insertAll(items: Iterable<T>) = items.forEach(::insert)

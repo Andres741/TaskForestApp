@@ -20,23 +20,23 @@ class BDTree<T>(value: T): Tree<T>(value) {
 
 
 //    override val _children = LinkedList<BDTree<T>>()
-    private val bdtChildren = _children as LinkedList<BDTree<T>>
+    private val bdtChildren = _children as MyLinkedList<BDTree<T>>
     override val children: List<BDTree<T>> get() = bdtChildren
 
     override operator fun get(index: Int) = super.get(index) as BDTree
 
     private tailrec fun getLevelHelper(bdTree: BDTree<T> = this, res: Int = 0): Int {
-        val father = bdTree.father
-        return if (father == null) res else getLevelHelper(father, res+1)
+        val superFather = bdTree.father
+        return if (superFather == null) res else getLevelHelper(superFather, res+1)
     }
 
     private tailrec fun getSuperFatherHelper(bdTree: BDTree<T> = this): BDTree<T> {
-        val father = bdTree.father
-        return if (father == null ) bdTree else getSuperFatherHelper(father)
+        val superFather = bdTree.father
+        return if (superFather == null ) bdTree else getSuperFatherHelper(superFather)
     }
 
     /**Transforms the whole tree into a LinkedList, including the higher level nodes.*/
-    fun toLinkedListAll(preorder: Boolean = true): LinkedList<T> {
+    fun toLinkedListAll(preorder: Boolean = true): MyLinkedList<T> {
         return if (preorder) preorder(superFather) else postorder(superFather)
     }
 

@@ -7,10 +7,10 @@ import com.example.taskscheduler.domain.models.TaskModel
 data class TaskWithSuperTask(
     @Embedded val task: TaskEntity,
     @Relation(
-        parentColumn = titleID,
-        entityColumn = subTaskID
+        parentColumn = TITLE_ID,
+        entityColumn = SUB_TASK_ID
     )
-    val superTaskEntity: SubTaskEntity?
+    val superTaskEntity: SubTaskEntity
 ) {
     fun toModel() = TaskModel (this)
 

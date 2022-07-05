@@ -4,27 +4,26 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.taskscheduler.domain.models.TaskModel
-import java.util.*
 
-const val taskTable = "taskTable"
-const val titleID = "titleID"
-const val type_a = "type"
-const val description_a = "description_a"
-const val isDone_a = "isDone_a"
-const val date_a = "date_a"
+const val TASK_TABLE = "taskTable"
+const val TITLE_ID = "titleID"
+const val TYPEa = "type"
+const val DESCRIPTIONa = "description_a"
+const val IS_DONEa = "isDone_a"
+const val DATEa = "date_a"
 
-@Entity(tableName = taskTable)
+@Entity(tableName = TASK_TABLE)
 data class TaskEntity(
-    @ColumnInfo(name = titleID) @PrimaryKey
+    @ColumnInfo(name = TITLE_ID) @PrimaryKey
     val title: String,
-    @ColumnInfo(name = type_a)
+    @ColumnInfo(name = TYPEa)
     val type: String,
-    @ColumnInfo(name = description_a)
+    @ColumnInfo(name = DESCRIPTIONa)
     val description: String,
-    @ColumnInfo(name = isDone_a)
-    val isDone: Boolean = false,
-    @ColumnInfo(name = date_a)
-    val date: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = IS_DONEa)
+    val isDone: Boolean,
+    @ColumnInfo(name = DATEa)
+    val date: Long,
 ) {
     fun toModel() = TaskModel (this)
 }

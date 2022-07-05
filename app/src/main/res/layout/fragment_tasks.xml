@@ -9,10 +9,13 @@
     <data>
         <import type="android.view.View" />
         <variable
-            name="viewmodel"
-            type="com.example.taskscheduler.ui.main.tasks.TasksViewModel"
-            />
+            name="tasksAdapterViewModel"
+            type="com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel" />
     </data>
+<!--    <variable-->
+<!--        name="viewmodel"-->
+<!--        type="com.example.taskscheduler.ui.main.tasks.TasksViewModel"-->
+<!--        />-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -26,7 +29,6 @@
             android:text="@string/your_tasks"
 
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
 
@@ -43,7 +45,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textview_first"
-            app:layout_constraintBottom_toTopOf="@id/tasksTypeView"
+            app:layout_constraintBottom_toTopOf="@id/tasksTypeRcy"
+
+            app:layoutManager="LinearLayoutManager"
 
             style="@style/recyclerTasks"
 
@@ -51,19 +55,19 @@
 
         <!--The items of this RecyclerView should be task_type_item-->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tasksTypeView"
+            android:id="@+id/tasksTypeRcy"
 
             android:layout_width="0dp"
-            android:layout_height="36dp"
-
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/newTaskButton"
 
-            style="@style/recyclerTasks"
+            app:layoutManager="LinearLayoutManager"
+            android:orientation="horizontal"
 
+            style="@style/recyclerTasks"
         />
 
         <Button
