@@ -31,17 +31,6 @@ data class TaskModel (
     override val typeName: String get() = type
     override val taskTitle: String get() = title
 
-    constructor(entity: TaskEntity): this (
-        title = entity.title, type = entity.type, description = entity.description,
-        isDone = entity.isDone, dateNum = entity.date
-    )
-
-    constructor(entity: TaskWithSuperTask): this (
-        title = entity.task.title, type = entity.task.type, description = entity.task.description,
-        isDone = entity.task.isDone, dateNum = entity.task.date,
-        superTask = SimpleTaskTitleOwner(entity.superTaskEntity),
-    )
-
     constructor(entity: TaskWithSuperAndSubTasks): this (
         title = entity.task.title, type = entity.task.type, description = entity.task.description,
         isDone = entity.task.isDone, dateNum = entity.task.date,

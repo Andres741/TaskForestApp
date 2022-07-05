@@ -11,9 +11,4 @@ data class TaskWithSuperTask(
         entityColumn = SUB_TASK_ID
     )
     val superTaskEntity: SubTaskEntity
-) {
-    fun toModel() = TaskModel (this)
-
-}
-
-fun Iterable<TaskWithSuperTask>.toModel(): List<TaskModel> = map(TaskWithSuperTask::toModel)
+)

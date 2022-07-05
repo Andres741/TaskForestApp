@@ -1,7 +1,5 @@
 package com.example.taskscheduler.util.dataStructures
 
-import java.lang.Math.*
-import kotlin.math.pow
 
 /**
  * An implementation of the data structure general tree with an indeterminate number of children.

@@ -76,10 +76,10 @@ class RoomTaskRepository @Inject constructor(
         getAllTasksWithSuperAndSubTasksStatic().map (TaskWithSuperAndSubTasks::toModel)
 
     override fun getTaskByTitle(title: String): Flow<TaskModel> = taskDao.
-        getTaskWithSuperTask(title).map(TaskWithSuperTask::toModel)
+        getTaskWithSuperAndSubTasks(title).map(TaskWithSuperAndSubTasks::toModel)
 
     override suspend fun getTaskByTitleStatic(title: String) = taskDao.
-        getTaskWithSuperTaskStatic(title).toModel()
+        getTaskWithSuperAndSubTasksStatic(title).toModel()
 
     override suspend fun getTaskTypeByTitleStatic(title: String): String = taskDao.
         getTypeStatic(title)

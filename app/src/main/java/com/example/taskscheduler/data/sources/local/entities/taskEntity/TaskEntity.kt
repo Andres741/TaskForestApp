@@ -24,8 +24,4 @@ data class TaskEntity(
     val isDone: Boolean,
     @ColumnInfo(name = DATEa)
     val date: Long,
-) {
-    fun toModel() = TaskModel (this)
-}
-
-fun Iterable<TaskEntity>.toModel(): List<TaskModel> = map(TaskEntity::toModel)
+)
