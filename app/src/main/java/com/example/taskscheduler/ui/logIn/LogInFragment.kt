@@ -14,7 +14,7 @@ class LogInFragment : Fragment() {
         fun newInstance() = LogInFragment()
     }
 
-    private val viewModel: LogInViewModel by viewModels()
+//    private val viewModel: LogInViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

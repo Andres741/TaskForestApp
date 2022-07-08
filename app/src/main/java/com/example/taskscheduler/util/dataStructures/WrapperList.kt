@@ -65,6 +65,20 @@ class WrapperList<T, R> (
         originalList.subList(fromIndex, toIndex), converter
     )
 
+    override fun toString() = buildString {
+        val elemIter = this@WrapperList.iterator()
+        append("WrapperList[")
+
+        if (elemIter.hasNext()) {
+            append(elemIter.next().toString())
+
+            elemIter.forEach { elem ->
+                append(", $elem")
+            }
+        }
+        append(']')
+    }
+
     class WrapperListIterator<T, R>(
         private val originalListIterator: ListIterator<T>,
         private val converter: (T) -> R,
@@ -78,8 +92,10 @@ class WrapperList<T, R> (
     }
 }
 
-inline fun <reified T, reified R> List<Pair<T,R>>.wrapperUnzip(): Pair< WrapperList<Pair<T,R>, T>, WrapperList<Pair<T,R>, R> > {
+inline fun <reified T, reified R> List<Pair<T, R>>.wrapperUnzip(): Pair<List<T>, List<R>> {
     val first = WrapperList(this, Pair<T,R>::first)
     val second = WrapperList(this, Pair<T,R>::second)
     return first to second
 }
+
+fun<T, R> List<T>.asOtherTypeList(converter: (T) -> R): List<R> = WrapperList(this, converter)

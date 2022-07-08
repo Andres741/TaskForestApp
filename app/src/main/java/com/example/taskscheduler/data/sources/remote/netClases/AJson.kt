@@ -1,4 +1,4 @@
-package com.example.taskscheduler.data.sources.remote.jsons
+package com.example.taskscheduler.data.sources.remote.netClases
 
 import com.example.taskscheduler.domain.models.AModel
 import com.squareup.moshi.Json

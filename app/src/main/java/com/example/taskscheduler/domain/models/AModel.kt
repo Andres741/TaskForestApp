@@ -1,8 +1,8 @@
 package com.example.taskscheduler.domain.models
 
 import com.example.taskscheduler.data.sources.local.entities.AEntity
-import com.example.taskscheduler.data.sources.remote.jsons.AJson
-import com.example.taskscheduler.data.sources.remote.jsons.AJsonArray
+import com.example.taskscheduler.data.sources.remote.netClases.AJson
+import com.example.taskscheduler.data.sources.remote.netClases.AJsonArray
 
 data class AModel (
     val data: String,

@@ -3,7 +3,6 @@ package com.example.taskscheduler.data.sources.local.entities.taskEntity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.taskscheduler.domain.models.TaskModel
 
 const val TASK_TABLE = "taskTable"
 const val TITLE_ID = "titleID"

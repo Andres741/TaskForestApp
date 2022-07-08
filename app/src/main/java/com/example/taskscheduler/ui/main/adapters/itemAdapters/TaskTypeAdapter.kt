@@ -23,7 +23,7 @@ class TaskTypeAdapter (
         TaskTypeViewHolder.removeSelected()
     }
 
-    private val bindViewHolderMap = hashMapOf<SimpleTaskTypeNameOwner, TaskTypeViewHolder>()
+    private val bindViewHolderMap: MutableMap<SimpleTaskTypeNameOwner, TaskTypeViewHolder> = HashMap()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = TaskTypeViewHolder.create(
         parent, onClickCallBack

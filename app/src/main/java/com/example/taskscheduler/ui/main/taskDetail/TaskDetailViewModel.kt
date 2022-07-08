@@ -4,13 +4,13 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
-import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.ifTrue
 import com.example.taskscheduler.util.observable.DataEventTrigger
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.NoMoreWithTaskDeletedType
 import com.example.taskscheduler.util.TypeChange
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -136,7 +136,7 @@ class TaskDetailViewModel @Inject constructor(
         super.onCleared()
     }
 
-    private fun<T> T.log(msj: String? = null) = apply {
+    private fun<T> T.log(msj: Any? = null) = apply {
         Log.i("TaskDetailViewModel", "${if (msj != null) "$msj: " else ""}${toString()}")
     }
 }

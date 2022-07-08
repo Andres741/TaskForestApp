@@ -48,11 +48,12 @@ class LiveStackTest: TestCase() {
         "testCoroutines: ".log()
 
         launch {
-            delay(200); "Hola".log(System.currentTimeMillis().toString())
-            delay(200); "desde".log(System.currentTimeMillis().toString())
-            delay(200); "corrutina".log(System.currentTimeMillis().toString())
+            "Hola".log(System.currentTimeMillis().toString())
+            "desde".log(System.currentTimeMillis().toString()); delay(200)
+            "corrutina".log(System.currentTimeMillis().toString())
         }
-        "Hola sin corrutina".log(System.currentTimeMillis().toString())
+        delay(10)
+        "--Hola sin corrutina--".log(System.currentTimeMillis().toString())
         assert(true)
     }
 

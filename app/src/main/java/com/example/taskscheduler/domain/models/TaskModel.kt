@@ -3,12 +3,11 @@ package com.example.taskscheduler.domain.models
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperAndSubTasks
-import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperTask
+import com.example.taskscheduler.data.sources.remote.netClases.TaskJson
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner.Companion.allToSimpleTaskTitleOwner
 import com.example.taskscheduler.util.dataStructures.WrapperList
 import java.util.*
 
-//TODO: implement TaskJson.
 
 data class TaskModel (
     val title: String,
@@ -54,6 +53,13 @@ data class TaskModel (
         SubTaskEntity(superTask = title, subTask = subTask.taskTitle)
     }
 
+    fun toJson() = TaskJson (
+        title = title, type = type, description = description,
+        done = isDone, dateNum = dateNum,
+        superTask = superTaskTitle,
+        subTasks = subTaskTitles
+    )
+
     override fun toString() =
         "TaskModel(title=$title, type=$type, description=$description, isDone=$isDone, date=${date.time}, superTask=$superTask, subTasks=$subTasks)"
 }
@@ -63,6 +69,8 @@ fun Iterable<TaskModel>.toEntity(): List<TaskEntity> = map(TaskModel::toEntity)
 fun Iterable<TaskModel>.toSuperTaskEntity(): List<SubTaskEntity> = map(TaskModel::toSuperTaskEntity)
 
 fun Iterable<TaskModel>.toTaskEntities() = map(TaskModel::toTaskEntities)
+
+fun Iterable<TaskModel>.toJson() = map(TaskModel::toJson)
 
 
 sealed interface ITaskTitleOwner {
@@ -94,3 +102,6 @@ value class SimpleTaskTitleOwner constructor(
         }
     }
 }
+fun String.toTaskTitle() = SimpleTaskTitleOwner(this)
+
+fun Iterable<String>.toTaskTitle() = map(String::toTaskTitle)

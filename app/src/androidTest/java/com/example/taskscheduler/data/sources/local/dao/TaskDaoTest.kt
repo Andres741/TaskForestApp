@@ -9,9 +9,9 @@ import com.example.taskscheduler.data.sources.local.LocalDataBase
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
-import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
-import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.toTaskEntities
+import com.example.taskscheduler.util.lazy.AsyncLazy
+import com.example.taskscheduler.util.taskModelTree
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.flow.first
@@ -25,93 +25,9 @@ import kotlin.system.measureTimeMillis
 @RunWith(AndroidJUnit4::class)
 class TaskDaoTest {
 
-    private val taskModels = listOf<TaskModel>(
-        //as
-        TaskModel(
-            title = "a", type = "a", description = "",
-            superTask = "".toTaskTitle(), subTasks = listOf(
-                "aa".toTaskTitle()
-            )
-        ),
-        TaskModel(
-            title = "aa", type = "a", description = "",
-            superTask = "a".toTaskTitle(), subTasks = listOf(
-                "aaa".toTaskTitle()
-            )
-        ),
-        TaskModel(
-            title = "aaa", type = "a", description = "",
-            superTask = "aa".toTaskTitle(), subTasks = emptyList()
-        ),
+    private val taskModels by AsyncLazy { taskModelTree }
 
-        //bs
-        TaskModel(
-            title = "b", type = "b", description = "",
-            superTask = "".toTaskTitle(), subTasks = listOf(
-                "bb", "bbb"
-            ).toTaskTitle()
-        ),
-        TaskModel(
-            title = "bb", type = "b", description = "",
-            superTask = "b".toTaskTitle(), subTasks = emptyList()
-        ),
-        TaskModel(
-            title = "bbb", type = "b", description = "",
-            superTask = "b".toTaskTitle(), subTasks = emptyList()
-        ),
-
-
-        //cs
-        TaskModel(
-            title = "c", type = "c", description = "",
-            superTask = "".toTaskTitle(), subTasks = listOf(
-                "cc"
-            ).toTaskTitle()
-        ),
-        TaskModel(
-            title = "cc", type = "c", description = "",
-            superTask = "c".toTaskTitle(), subTasks = listOf(
-                "ccc", "cccc", "ccccc"
-            ).toTaskTitle()
-        ),
-        TaskModel(
-            title = "ccc", type = "c", description = "",
-            superTask = "cc".toTaskTitle(), subTasks = emptyList()
-        ),
-        TaskModel(
-            title = "cccc", type = "c", description = "",
-            superTask = "cc".toTaskTitle(), subTasks = emptyList()
-        ),
-        TaskModel(
-            title = "ccccc", type = "c", description = "",
-            superTask = "cc".toTaskTitle(), subTasks = listOf("cccccc").toTaskTitle()
-        ),
-        TaskModel(
-            title = "cccccc", type = "c", description = "",
-            superTask = "ccccc".toTaskTitle(), subTasks = emptyList()
-        ),
-
-
-        TaskModel(
-            title = "x", type = "x", description = "",
-            superTask = "".toTaskTitle(), subTasks = emptyList()
-        ),
-        TaskModel(
-            title = "xx", type = "x", description = "",
-            superTask = "".toTaskTitle(), subTasks = emptyList()
-        ),
-
-        TaskModel(
-            title = "y", type = "y", description = "",
-            superTask = "".toTaskTitle(), subTasks = emptyList()
-        ),
-        TaskModel(
-            title = "z", type = "z", description = "",
-            superTask = "".toTaskTitle(), subTasks = emptyList()
-        ),
-    )
-
-    private val taskEntities = taskModels.toTaskEntities()
+    private val taskEntities by lazy { taskModels.toTaskEntities() }
 
     private lateinit var db: LocalDataBase
     private val taskDao get() = db.taskDao
@@ -157,7 +73,7 @@ class TaskDaoTest {
         taskDao.getAllTasksWithSuperAndSubTasksStatic().toModel()
     }
 
-    fun showAll() = runBlocking {
+    fun showAllFromDB() = runBlocking {
         getAllModels().run {
             onEach {
                 it.log()
@@ -177,7 +93,7 @@ class TaskDaoTest {
 
     @Test
     fun dataRecuperation_test(): Unit = runBlocking  {
-        val recuperated = showAll()
+        val recuperated = showAllFromDB()
         assertEquals(taskModels, recuperated)
     }
 
@@ -253,7 +169,7 @@ class TaskDaoTest {
             taskAndSubTaskDao.changeTaskType("x", "X").log("X count")
             taskAndSubTaskDao.changeTaskType("z", "Z").log("Z count")
         }
-        showAll()
+        showAllFromDB()
         time.log("Time")
     }
 
@@ -307,10 +223,10 @@ class TaskDaoTest {
     @Test
     fun deleteSingleTask(): Unit = runBlocking {
         "Original".bigLog()
-        showAll()
+        showAllFromDB()
         taskAndSubTaskDao.deleteSingleTask("cc")
         "After deletion".bigLog()
-        showAll()
+        showAllFromDB()
         val superTask = "c"
         taskDao.getBySuperTask(superTask).first().toModel().forEach { task ->
             assertEquals(task.superTaskTitle, superTask)
@@ -320,10 +236,10 @@ class TaskDaoTest {
     @Test
     fun deleteTaskAndChildren(): Unit = runBlocking {
         "Original".bigLog()
-        showAll()
+        showAllFromDB()
         taskAndSubTaskDao.deleteTaskAndAllChildren("cc")
         "After deletion".bigLog()
-        showAll()
+        showAllFromDB()
         val superTask = "c"
         val numSubTasks = taskDao.getAllChildren(superTask).first().toModel().size
         assertEquals(numSubTasks, 0)
@@ -332,9 +248,6 @@ class TaskDaoTest {
 
 private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this", date = 0L, isDone = false)
 
-private fun String.toTaskTitle() = SimpleTaskTitleOwner(this)
-
-private fun Iterable<String>.toTaskTitle() = map(String::toTaskTitle)
 
 //private fun Int.subTaskNum(sub: Int) = TaskEntity("t$this-$sub", "ty$this-$sub", "des$this-$sub", "super$this-$sub",)
 
