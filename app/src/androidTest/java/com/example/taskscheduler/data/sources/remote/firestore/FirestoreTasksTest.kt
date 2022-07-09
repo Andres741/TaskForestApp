@@ -4,15 +4,15 @@ import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.taskscheduler.data.sources.remote.netClases.IFirestoreDocument
 import com.example.taskscheduler.data.sources.remote.netClases.TaskJson
-import com.example.taskscheduler.di.data.FirestoreForTasks
 import com.example.taskscheduler.domain.models.toJson
 import com.example.taskscheduler.util.await
 import com.example.taskscheduler.util.lazy.AsyncLazy
 import com.example.taskscheduler.util.taskModelTree
 import com.example.taskscheduler.util.taskModelTree_c
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.ktx.Firebase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -32,10 +32,10 @@ class FirestoreTasksTest {
     private val taskJsons_c by AsyncLazy { taskModels_c.toJson() }
     private val taskTitles_c by AsyncLazy { taskJsons_c.map(TaskJson::obtainDocumentName) }
 
-    private val collectionPath = "test/test_doc/tasks"
-    private val firestoreForTasks =
-        FirestoreForTasks(FirebaseFirestore.getInstance(), collectionPath)
-    private val firestoreTasks = FirestoreTasks(firestoreForTasks)
+//    private val collectionPath = "test/test_doc/tasks"
+    private val collectionPath = "users/zzz_test/tasks"
+    //private val collectionPath = "users/zz_test/tasks" //Grown
+    private val firestoreTasks = FirestoreTasks(Firebase.firestore.collection(collectionPath))
 
     @Before
     fun onBefore(): Unit = runBlocking {
@@ -46,14 +46,14 @@ class FirestoreTasksTest {
     @After
     fun onAfter(): Unit = runBlocking {
         "\n\\-----------------------------------------/\n".log()
-        firestoreTasks.deleteAll(taskTitles_c)
+        firestoreTasks.deleteAllTasks()
     }
 
     @Test
     fun getTask_test(): Unit = runBlocking {
         val savedTask = tasksJsons[9].log("JSON saved")
-        firestoreTasks.save(savedTask).onFailure {
-            assert(false) { "save task failed" }
+        firestoreTasks.save(savedTask).onFailure { throwable ->
+            assert(false) { "save task failed: $throwable" }
         }
 
         "non Existent Task Title".bigLog()

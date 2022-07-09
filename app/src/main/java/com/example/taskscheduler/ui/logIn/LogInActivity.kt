@@ -34,9 +34,12 @@ class LogInActivity : AppCompatActivity() {
 
         // If there is no signed in user, launch FirebaseUI
         // Otherwise head to MainActivity
-        Firebase.auth.currentUser?.displayName.log("Firebase.auth.currentUser")
+        val currentUser = Firebase.auth
+            .apply { uid.log("user uid") }
+            .currentUser
+            .also { it?.displayName.log("user name") }
 
-        if (Firebase.auth.currentUser == null) {
+        if (currentUser == null) {
             goToSignIn()
         } else {
             goToMainActivity()
@@ -45,6 +48,7 @@ class LogInActivity : AppCompatActivity() {
 
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
+        "onSignInResult".logd()
         if (result.resultCode == RESULT_OK) {
             "Sign in successful!".logd()
             goToMainActivity()
@@ -53,7 +57,7 @@ class LogInActivity : AppCompatActivity() {
 
         Toast.makeText(
             this,
-            "There was an error signing in",
+            R.string.error_signing_in,
             Toast.LENGTH_LONG
         ).show()
 
@@ -67,6 +71,8 @@ class LogInActivity : AppCompatActivity() {
     }
 
     private fun goToSignIn() {
+        "goToSignIn".logd()
+
         val providers = listOf(
             AuthUI.IdpConfig.GoogleBuilder().build(),
             AuthUI.IdpConfig.EmailBuilder().build(),

@@ -4,10 +4,11 @@ import com.example.taskscheduler.data.sources.remote.netClases.IFirestoreDocumen
 import com.example.taskscheduler.data.sources.remote.netClases.SimpleFirestoreDocument
 import com.example.taskscheduler.data.sources.remote.netClases.TaskJson
 import com.example.taskscheduler.data.sources.remote.netClases.setDoc
-import com.example.taskscheduler.di.data.FirestoreForTasks
+import com.example.taskscheduler.di.data.FirestoreCollectionForTasks
 import com.example.taskscheduler.util.asFlow
 import com.example.taskscheduler.util.await
 import com.example.taskscheduler.util.dataStructures.asOtherTypeList
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
@@ -16,18 +17,17 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
-class FirestoreTasks @Inject constructor(
-    firestoreForTasks: FirestoreForTasks
+class FirestoreTasks(
+    val tasksCollection: CollectionReference
 ) {
-    val firestore = firestoreForTasks.firestore
-    val tasksCollection = firestoreForTasks.collection
+    val firestore = tasksCollection.firestore
 
     suspend fun save(task: TaskJson) = kotlin.runCatching {
         tasksCollection.setDoc(task).await()
     }
-    suspend fun saveAll(vararg tasks: TaskJson) = kotlin.runCatching {
-        saveAll(tasks.asList())
-    }
+    suspend fun saveAll(vararg tasks: TaskJson) = saveAll(tasks.asList())
+
+
     suspend fun saveAll(tasks: List<TaskJson>) = kotlin.runCatching {
         firestore.runBatch {
             tasks.forEach { task ->
@@ -91,13 +91,13 @@ class FirestoreTasks @Inject constructor(
     suspend fun delete(taskTitle: String) = kotlin.runCatching {
         tasksCollection.document(taskTitle).delete().await()
     }
-    suspend fun deleteAll(vararg taskTitles: String) {
-        deleteAll(taskTitles.asList())
-    }
-    suspend fun deleteAll(taskTitles: List<String>) {
-        firestore.runBatch {
+    suspend fun deleteAll(vararg taskTitles: String) = deleteAll(taskTitles.asList())
+
+
+    suspend fun deleteAll(taskTitles: Iterable<String>) {
+        firestore.runBatch { batch ->
             taskTitles.forEach { title ->
-                tasksCollection.document(title).delete()
+                batch.delete(tasksCollection.document(title))
             }
         }.await()
     }
@@ -111,4 +111,15 @@ class FirestoreTasks @Inject constructor(
 //    private fun<T> T.log(msj: Any? = null) = apply {
 //        Log.i("FirestoreTasks", "${if (msj != null) "$msj: " else ""}${toString()}")
 //    }
+}
+
+/**
+ * Contains a FirestoreTasks instance if the user is signed in, or null if does not.
+ */
+class FirestoreTasksAuth @Inject constructor(
+    firestoreCollectionForTasks: FirestoreCollectionForTasks
+) {
+    val firestoreTasks: FirestoreTasks? = firestoreCollectionForTasks.collection?.let {
+        FirestoreTasks(it)
+    }
 }

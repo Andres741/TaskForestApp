@@ -1,6 +1,8 @@
 package com.example.taskscheduler.ui.main
 
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -14,6 +16,8 @@ class MainActivity: AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
 //    private val tasksAdapterViewModel: TasksAdapterViewModel by viewModels()
+
+    private val tasksAdapterViewModel: MainActivityViewModel by viewModels()
 
     private val navController by lazy { findNavController(R.id.nav_host_fragment_content_main) }
 
@@ -29,6 +33,13 @@ class MainActivity: AppCompatActivity() {
 
         NavigationUI.setupActionBarWithNavController(this, navController, binding.drawerLayout)
         NavigationUI.setupWithNavController(binding.navView, navController)
+
+
+        if (tasksAdapterViewModel.taskRepository.initEasyFiresoreSynchronization()) {
+            "firesoreSynchronization starts".log()
+        } else {
+            "firesoreSynchronization not possible".log()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -39,5 +50,15 @@ class MainActivity: AppCompatActivity() {
                 true
             }
         }
+    }
+
+    override fun onDestroy() {
+        tasksAdapterViewModel.taskRepository.finishEasyFireSoreSynchronization()
+        "firesoreSynchronization ends".log()
+        super.onDestroy()
+    }
+
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i("MainActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
     }
 }

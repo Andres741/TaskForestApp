@@ -64,8 +64,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.5'
-    implementation 'com.google.firebase:firebase-auth:21.0.5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'junit:junit:4.12'
@@ -156,6 +154,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
+
+//    implementation 'com.google.firebase:firebase-auth-ktx:21.0.5'  // Useless
 
 
     // Firebase UI
