@@ -7,7 +7,7 @@ import javax.inject.Inject
 class ExistsTaskWithTypeUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
-    suspend operator fun invoke(type: String): Boolean = taskRepository.local.existsType(type)
+    suspend operator fun invoke(type: String): Boolean = taskRepository.existsType(type)
 
     suspend fun not(type: String) = invoke(type).not()
 

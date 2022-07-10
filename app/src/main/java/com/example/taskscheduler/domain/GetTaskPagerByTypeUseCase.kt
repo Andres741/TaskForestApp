@@ -8,6 +8,5 @@ class GetTaskPagerByTypeUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
 
-    operator fun invoke(type: ITaskTypeNameOwner) = taskRepository
-        .local.getTaskPagingSourceByTaskType(type)
+    operator fun invoke(type: ITaskTypeNameOwner) = taskRepository.getTaskPagingSourceByTaskType(type)
 }

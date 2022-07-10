@@ -2,23 +2,15 @@ package com.example.taskscheduler.data.sources.remote.netClases
 
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
-import com.google.gson.annotations.SerializedName
 
-data class TaskJson(
-    @SerializedName(value = "title")
+data class TaskDocument(
     val title: String? = null,
-    @SerializedName(value = "type")
     val type: String? = null,
-    @SerializedName(value = "description")
     val description: String? = null,
-    @SerializedName(value = "super_task")
     val superTask: String? = null,
-    @SerializedName(value = "sub_tasks")
     val subTasks: List<String>? = null,
 //    @field:JvmField // -> isDone
-    @SerializedName(value = "is_done")
     val done: Boolean? = null,
-    @SerializedName(value = "date_num")
     val dateNum: Long? = null,
 ): IFirestoreDocument {
 
@@ -40,6 +32,6 @@ data class TaskJson(
     }
 }
 
-fun Iterable<TaskJson>.toModel() = mapNotNull(TaskJson::toModelOrNull)
+fun Iterable<TaskDocument>.toModel() = mapNotNull(TaskDocument::toModelOrNull)
 
-fun Iterable<TaskJson>.toModelOrException() = map(TaskJson::toModel)
+fun Iterable<TaskDocument>.toModelOrException() = map(TaskDocument::toModel)

@@ -3,8 +3,8 @@ package com.example.taskscheduler.data.sources.remote.firestore
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.taskscheduler.data.sources.remote.netClases.IFirestoreDocument
-import com.example.taskscheduler.data.sources.remote.netClases.TaskJson
-import com.example.taskscheduler.domain.models.toJson
+import com.example.taskscheduler.data.sources.remote.netClases.TaskDocument
+import com.example.taskscheduler.domain.models.toDocument
 import com.example.taskscheduler.util.await
 import com.example.taskscheduler.util.lazy.AsyncLazy
 import com.example.taskscheduler.util.taskModelTree
@@ -27,10 +27,10 @@ import kotlin.system.measureTimeMillis
 class FirestoreTasksTest {
 
     private val taskModels by AsyncLazy { taskModelTree }
-    private val tasksJsons by AsyncLazy { taskModels.toJson() }
+    private val tasksJsons by AsyncLazy { taskModels.toDocument() }
     private val taskModels_c by AsyncLazy { taskModelTree_c }
-    private val taskJsons_c by AsyncLazy { taskModels_c.toJson() }
-    private val taskTitles_c by AsyncLazy { taskJsons_c.map(TaskJson::obtainDocumentName) }
+    private val taskJsons_c by AsyncLazy { taskModels_c.toDocument() }
+    private val taskTitles_c by AsyncLazy { taskJsons_c.map(TaskDocument::obtainDocumentName) }
 
 //    private val collectionPath = "test/test_doc/tasks"
     private val collectionPath = "users/zzz_test/tasks"
@@ -76,7 +76,7 @@ class FirestoreTasksTest {
             fireTask.log("From firestore")
             assert(true)
 
-            assertNotNull(document.toObject<TaskJson>())
+            assertNotNull(document.toObject<TaskDocument>())
         }) { t ->
             "get ${savedTask.title} failed".log()
             t.log()
@@ -155,7 +155,7 @@ class FirestoreTasksTest {
 
         val tasks = (0 until numTasks).map { index ->
             val strIndex = index.toString()
-            TaskJson(
+            TaskDocument(
                 title = observedTask, type = strIndex, description = strIndex
             )
         }
@@ -292,7 +292,7 @@ class FirestoreTasksTest {
         //firestoreTasks.deleteAll(taskTitles_c)
         firestoreTasks.saveAll(tasksJsons)
         block()
-        firestoreTasks.deleteAll(tasksJsons.map(TaskJson::obtainDocumentName))
+        firestoreTasks.deleteAll(tasksJsons.map(TaskDocument::obtainDocumentName))
     }
 
     private suspend inline fun withNotValidDataInFiresore(block: () -> Unit) {
@@ -326,9 +326,9 @@ class FirestoreTasksTest {
         getTasks("Extra data deleted")
     }
 }
-private fun TaskJson.toPair() = obtainDocumentName() to this
+private fun TaskDocument.toPair() = obtainDocumentName() to this
 
-private fun Iterable<TaskJson>.toPair() = map(TaskJson::toPair)
+private fun Iterable<TaskDocument>.toPair() = map(TaskDocument::toPair)
 
 private fun<T> T.log(msj: Any? = null) = apply {
     Log.d("FirestoreTasksTest", "${if (msj != null) "$msj: " else ""}${toString()}")
@@ -341,9 +341,9 @@ private fun Throwable.log() = apply  {
     "Throwable: $this".log()
 }
 
-private fun Int.toTaskJson(): TaskJson {
+private fun Int.toTaskJson(): TaskDocument {
     val numStr = toString()
-    return TaskJson(
+    return TaskDocument(
         title = numStr, type = numStr, description = numStr
     )
 }

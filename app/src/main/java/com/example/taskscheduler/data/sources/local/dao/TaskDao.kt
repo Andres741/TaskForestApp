@@ -20,11 +20,20 @@ interface TaskDao {
 //                    "WHERE $TASK_TABLE.$TITLE_ID = :superTask"
         const val GET_BY_TASK_TYPE =
             "SELECT * FROM $TASK_TABLE WHERE $TYPEa = :typeName ORDER BY $TITLE_ID"
+        const val GET_TOP_SUPER_TASK_BY_TYPE =
+            "SELECT * FROM $TASK_TABLE WHERE $TYPEa = :typeName AND $TITLE_ID in (${SubTaskDao.GET_All_TOP_SUPER_TASK})"
+        const val GET_TOP_SUPER_TASK_TITLE_BY_TYPE =
+            "SELECT $TITLE_ID FROM $TASK_TABLE WHERE $TYPEa = :typeName AND $TITLE_ID in (${SubTaskDao.GET_All_TOP_SUPER_TASK})"
+        const val GET_TITLES_BY_TASK_TYPE =
+            "SELECT $TITLE_ID FROM $TASK_TABLE WHERE $TYPEa = :typeName ORDER BY $TITLE_ID"
         const val GET_TOP_SUPER_TASKS =
             "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_All_TOP_SUPER_TASK})"
 
         const val GET_ALL_CHILDREN =
             "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_ALL_SUB_TASKS})"
+
+        const val GET_ALL_CHILDREN_TITLES =
+            "SELECT $TITLE_ID FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_ALL_SUB_TASKS})"
 
         const val GET_ALL =
             "SELECT * FROM $TASK_TABLE ORDER BY $TITLE_ID"
@@ -97,13 +106,29 @@ interface TaskDao {
 
     @Transaction
     @Query(GET_BY_TASK_TYPE)
-    fun getTaskByType(typeName: String): Flow<List<TaskWithSuperAndSubTasks>>
+    fun getTasksByType(typeName: String): Flow<List<TaskWithSuperAndSubTasks>>
     @Transaction
     @Query(GET_BY_TASK_TYPE)
-    fun getTaskByTypeStatic(typeName: String): List<TaskWithSuperAndSubTasks>
+    fun getTasksByTypeStatic(typeName: String): List<TaskWithSuperAndSubTasks>
     @Transaction
     @Query(GET_BY_TASK_TYPE)
     fun getTaskPagingSourceByType(typeName: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+
+    @Transaction
+    @Query(GET_TOP_SUPER_TASK_BY_TYPE)
+    fun getTopSuperTaskByTypeStatic(typeName: String): TaskWithSuperAndSubTasks
+    @Transaction
+    @Query(GET_TOP_SUPER_TASK_TITLE_BY_TYPE)
+    fun getTopSuperTaskTileByTypeStatic(typeName: String): String
+
+    @Query(GET_TITLES_BY_TASK_TYPE)
+    fun getTaskTitlesByTypeStatic(typeName: String): List<String>
+
+    @Transaction
+    fun getTitlesOfHierarchyOfTaskByTypeStatic(type: String): List<String> {
+        val topTask = getTopSuperTaskTileByTypeStatic(type)
+        return getAllChildrenTitlesStatic(topTask)
+    }
 
     @Transaction
     @Query(GET_TOP_SUPER_TASKS)
@@ -116,6 +141,11 @@ interface TaskDao {
     @Transaction
     @Query(GET_ALL_CHILDREN)
     fun getAllChildrenPagingSource(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
+
+    @Transaction
+    @Query(GET_ALL_CHILDREN_TITLES)
+    fun getAllChildrenTitlesStatic(superTask: String): List<String>
+
 
 
     @Query(GET_TYPE)

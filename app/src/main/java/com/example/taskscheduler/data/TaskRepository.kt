@@ -1,32 +1,116 @@
 package com.example.taskscheduler.data
 
 import android.util.Log
-import com.example.taskscheduler.data.sources.local.ILocalTaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.data.sources.remote.firestore.FirestoreTasksAuth
-import com.example.taskscheduler.domain.models.toJson
+import com.example.taskscheduler.domain.models.ITaskTitleOwner
+import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.domain.models.toDocument
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
-import kotlinx.coroutines.CoroutineScope
+import com.example.taskscheduler.util.ifTrue
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+//TODO: make that the dependency returns this class or RoomTaskRepository according if the user is authenticated
 @Singleton
 class TaskRepository @Inject constructor(
-    val local: ILocalTaskRepository,
+    private val local: ITaskRepository,
     firestoreTasksAuth: FirestoreTasksAuth,
-    //TODO: crate remote repository
-) {
-    private val scopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
-    private val firestoreTasks = firestoreTasksAuth.firestoreTasks
-    val isFirestoreAvailable = firestoreTasks != null
-    val isEasyFireSoreSynchronizationWorking get() = scopeProvider.currentScope != null
+): ITaskRepository by local {
+    private val easyFiresoreSynchronizationScopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
+    private val firestoreTasks = firestoreTasksAuth.firestoreTasks!!
+    val isEasyFireSoreSynchronizationWorking get() = easyFiresoreSynchronizationScopeProvider.currentScope != null
+
+    //TODO: check when write methods of firestoreTasks fails.
+
+    override suspend fun saveNewTask(newTask: TaskModel) = coroutineScope {
+        launch {
+            val taskDocument = newTask.toDocument()
+            firestoreTasks.save(taskDocument)
+        }
+        launch {
+            val taskTitle = newTask.title
+            val superTask = newTask.superTaskTitle
+            firestoreTasks.addSubTask(taskTitle, superTask)
+        }
+        //Useless to save newTask.subTaskTitles, because new task doesn't have subtasks.
+        local.saveNewTask(newTask)
+    }
+
+
+    override suspend fun changeDone(task: ITaskTitleOwner, newValue: Boolean) = coroutineScope {
+        launch {
+            firestoreTasks.setTaskIsDone(task.taskTitle, newValue)
+        }
+        local.changeDone(task, newValue)
+    }
+
+    override suspend fun changeTaskDescription(task: ITaskTitleOwner, newValue: String) = coroutineScope {
+        launch {
+            firestoreTasks.setTaskDescription(task.taskTitle, newValue)
+        }
+        local.changeTaskDescription(task, newValue)
+    }
+
+    override suspend fun changeTaskTitle(task: ITaskTitleOwner, newValue: String) =
+        local.changeTaskTitle(task, newValue).ifTrue {
+            val previousTaskTitle = task.taskTitle
+            val changedTask = local.getTaskByTitleStatic(previousTaskTitle)
+            withContext(Dispatchers.Unconfined) {
+                launch {
+                    changedTask.subTasks.forEach {
+                        launch {
+                            val subTaskTitle = it.taskTitle
+                            firestoreTasks.setSupertask(
+                                superTask = newValue, itsSubTask = subTaskTitle
+                            )
+                        }
+                    }
+                }
+                launch {
+                    firestoreTasks.delete(previousTaskTitle)
+                    firestoreTasks.save(changedTask.toDocument())
+                }
+                firestoreTasks.removeSubTask(
+                    subTask = previousTaskTitle, itsSuperTask = changedTask.superTaskTitle
+                )
+                firestoreTasks.addSubTask(
+                    subTask = changedTask.taskTitle, itsSuperTask = changedTask.superTaskTitle
+                )
+            }
+        }
+
+    override suspend fun changeType(newValue: String, oldValue: String) =
+        local.changeType(newValue, oldValue).ifTrue {
+            local.getTaskTitlesByTypeStatic(newValue).forEach { modifyedTaskTitle ->
+                firestoreTasks.setType(newValue, modifyedTaskTitle)
+            }
+        }
+
+    override suspend fun changeTypeInTaskHierarchy(task: String, newValue: String) =
+        local.changeTypeInTaskHierarchy(task, newValue).ifTrue {
+
+        }
+
+    //Delete
+    override suspend fun deleteSingleTask(task: ITaskTitleOwner): Boolean {
+        TODO()
+    }
+
+    override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner): Boolean {
+        TODO()
+    }
+
+
 
     fun initEasyFiresoreSynchronization(): Boolean {
         val firestoreTasks = firestoreTasks ?: return false
-        return null != scopeProvider.newScopeNotCancelCurrentOrNull?.launch {
+        return null != easyFiresoreSynchronizationScopeProvider.newScopeNotCancelCurrentOrNull?.launch {
             local.getAllTasks().collectLatest {
 
                 firestoreTasks.getAllTasks().fold({ tasks ->
@@ -37,7 +121,7 @@ class TaskRepository @Inject constructor(
 
                 firestoreTasks.deleteAllTasks()
 
-                val newTasks = it.toJson()
+                val newTasks = it.toDocument()
 
                 "\nNew tasks".log()
                 newTasks.forEach { task ->
@@ -54,7 +138,7 @@ class TaskRepository @Inject constructor(
     }
 
     fun finishEasyFireSoreSynchronization() {
-        scopeProvider.cancel()
+        easyFiresoreSynchronizationScopeProvider.cancel()
     }
 
     private fun<T> T.log(msj: Any? = null) = apply {

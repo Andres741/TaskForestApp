@@ -7,5 +7,5 @@ import javax.inject.Inject
 class GetAllChildrenOfTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
-    operator fun invoke(taskTitle: ITaskTitleOwner) = taskRepository.local.getAllChildrenPagingSource(taskTitle)
+    operator fun invoke(taskTitle: ITaskTitleOwner) = taskRepository.getAllChildrenPagingSource(taskTitle)
 }

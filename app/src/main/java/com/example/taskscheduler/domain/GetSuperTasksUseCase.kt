@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetSuperTasksUseCase  @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
-    operator fun invoke() = taskRepository.local.getTopSuperTasksPagingSource()
+    operator fun invoke() = taskRepository.getTopSuperTasksPagingSource()
 }

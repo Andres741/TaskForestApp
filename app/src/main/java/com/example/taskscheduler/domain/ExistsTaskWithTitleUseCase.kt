@@ -10,7 +10,7 @@ import javax.inject.Singleton
 class ExistsTaskWithTitleUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
-    suspend operator fun invoke(title: String): Boolean = taskRepository.local.existsTitle(title)
+    suspend operator fun invoke(title: String): Boolean = taskRepository.existsTitle(title)
 
     suspend fun not(title: String) = invoke(title).not()
 

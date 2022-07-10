@@ -11,6 +11,6 @@ class GetTaskPagerUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
     operator fun invoke(superTask: ITaskTitleOwner? = null) =
-        if (superTask == null) taskRepository.local.getTaskPagingSource()
-        else taskRepository.local.getTaskPagingSourceBySuperTask(superTask)
+        if (superTask == null) taskRepository.getTaskPagingSource()
+        else taskRepository.getTaskPagingSourceBySuperTask(superTask)
 }

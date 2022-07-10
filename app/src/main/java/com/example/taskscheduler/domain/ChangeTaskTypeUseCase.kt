@@ -19,7 +19,7 @@ class ChangeTaskTypeUseCase @Inject constructor(
         val validType = createValidTaskUseCase.run {
             newValue.validateType()
         } ?: return@withContext null
-        taskRepository.local.changeTypeInTaskHierarchy(task.taskTitle, validType).ifTrue {
+        taskRepository.changeTypeInTaskHierarchy(task.taskTitle, validType).ifTrue {
             return@withContext SimpleTaskTypeNameOwner(newValue)
         }
         null
@@ -29,7 +29,7 @@ class ChangeTaskTypeUseCase @Inject constructor(
         val validType = createValidTaskUseCase.run {
             newValue.validateType()
         } ?: return@withContext null
-        taskRepository.local.changeType(oldValue.typeName, validType).ifTrue {
+        taskRepository.changeType(oldValue.typeName, validType).ifTrue {
             return@withContext SimpleTaskTypeNameOwner(newValue)
         }
         null

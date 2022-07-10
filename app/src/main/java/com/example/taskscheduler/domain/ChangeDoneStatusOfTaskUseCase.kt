@@ -17,7 +17,7 @@ class ChangeDoneStatusOfTaskUseCase @Inject constructor(
     private val saveTaskContext: SaveTaskContext,
 ) {
     suspend operator fun invoke(task: TaskModel): Boolean = withContext(saveTaskContext) {
-        taskRepository.local.changeDone(task, task.isDone.not()).ifTrue {
+        taskRepository.changeDone(task, task.isDone.not()).ifTrue {
             task.apply { isDone = !isDone }
         }
     }

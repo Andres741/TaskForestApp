@@ -11,6 +11,6 @@ class GetTaskTypeFromTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
     suspend operator fun invoke(task: TaskModel) = withContext(Dispatchers.Default){
-        taskRepository.local.getTaskTypeFromTask(task)
+        taskRepository.getTaskTypeFromTask(task)
     }
 }

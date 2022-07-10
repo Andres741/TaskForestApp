@@ -2,7 +2,7 @@ package com.example.taskscheduler.data.sources.remote.firestore
 
 import com.example.taskscheduler.data.sources.remote.netClases.IFirestoreDocument
 import com.example.taskscheduler.data.sources.remote.netClases.SimpleFirestoreDocument
-import com.example.taskscheduler.data.sources.remote.netClases.TaskJson
+import com.example.taskscheduler.data.sources.remote.netClases.TaskDocument
 import com.example.taskscheduler.data.sources.remote.netClases.setDoc
 import com.example.taskscheduler.di.data.FirestoreCollectionForTasks
 import com.example.taskscheduler.util.asFlow
@@ -10,6 +10,7 @@ import com.example.taskscheduler.util.await
 import com.example.taskscheduler.util.dataStructures.asOtherTypeList
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
 import kotlinx.coroutines.flow.filterNotNull
@@ -22,25 +23,39 @@ class FirestoreTasks(
 ) {
     val firestore = tasksCollection.firestore
 
-    suspend fun save(task: TaskJson) = kotlin.runCatching {
+    suspend fun save(task: TaskDocument) = kotlin.runCatching {
         tasksCollection.setDoc(task).await()
     }
-    suspend fun saveAll(vararg tasks: TaskJson) = saveAll(tasks.asList())
+    suspend fun saveAll(vararg tasks: TaskDocument) = saveAll(tasks.asIterable())
 
+    suspend fun saveAll(tasks: Iterable<TaskDocument>) = kotlin.runCatching {
+        tasks.forEach { task ->
+            tasksCollection.setDoc(task).await()
+        }
+    }
 
-    suspend fun saveAll(tasks: List<TaskJson>) = kotlin.runCatching {
-        firestore.runBatch {
-            tasks.forEach { task ->
-                tasksCollection.setDoc(task)
-            }
-        }.await()
+    suspend fun addSubTask(subTask: String, itsSuperTask: String) = kotlin.runCatching {
+        tasksCollection.document(itsSuperTask)
+            .update("subTasks", FieldValue.arrayUnion(subTask)).await()
+    }
+    suspend fun removeSubTask(subTask: String, itsSuperTask: String) = kotlin.runCatching {
+        tasksCollection.document(itsSuperTask)
+            .update("subTasks", FieldValue.arrayRemove(subTask)).await()
+    }
+
+    suspend fun setSupertask(superTask: String, itsSubTask: String) = kotlin.runCatching {
+        tasksCollection.document(itsSubTask).update("superTask", superTask).await()
+    }
+
+    suspend fun setType(type: String, itsTaskTitle: String) = kotlin.runCatching {
+        tasksCollection.document(itsTaskTitle).update("type", type).await()
     }
 
     suspend fun getTaskDocument(taskTitle: String) = kotlin.runCatching {
         tasksCollection.document(taskTitle).get().await()
     }
     suspend fun getTask(taskTitle: String) = getTaskDocument(taskTitle).mapCatching { doc ->
-        doc.toObject<TaskJson>() ?: kotlin.run {
+        doc.toObject<TaskDocument>() ?: kotlin.run {
             if (doc?.data.isNullOrEmpty()) throw IllegalArgumentException("Task does not exists")
             throw ClassCastException("${doc.data} impossible to cast to TaskJson")
         }
@@ -48,14 +63,14 @@ class FirestoreTasks(
 
     fun getTaskDocumentsFlow(taskTitle: String) = tasksCollection.document(taskTitle).asFlow()
     fun getTasksFlow(taskTitle: String) = getTaskDocumentsFlow(taskTitle).map { doc ->
-        doc.toObject<TaskJson>()
+        doc.toObject<TaskDocument>()
     }.filterNotNull()
 
     suspend fun getTasksQuery() = kotlin.runCatching {
         tasksCollection.get().await()
     }
     suspend fun getAllTasks() = getTasksQuery().mapCatching { query ->
-        query.toObjects<TaskJson>()
+        query.toObjects<TaskDocument>()
     }
     suspend fun getAllTasksTitle() = getTasksQuery().mapCatching { query ->
         query.documents
@@ -67,7 +82,7 @@ class FirestoreTasks(
 
     fun getTasksQueryFlow() = tasksCollection.asFlow()
     fun getAllTasksFlow() = getTasksQueryFlow().map { query ->
-        query.toObjects<TaskJson>()
+        query.toObjects<TaskDocument>()
     }
     fun getAllTasksTitleFlow() = getTasksQueryFlow().map { query ->
         query.documents
@@ -84,8 +99,18 @@ class FirestoreTasks(
     fun getTasksPageFlow(
         previousTask: IFirestoreDocument? = null, perPage: Int
     ) = getTasksPageQueryFlow(previousTask, perPage).map { query ->
-        query.toObjects<TaskJson>()
+        query.toObjects<TaskDocument>()
     }
+
+    suspend fun setTaskIsDone(task: String, newValue: Boolean) = kotlin.runCatching {
+        tasksCollection.document(task).update("done", newValue).await()
+    }
+
+    suspend fun setTaskDescription(task: String, newValue: String) = kotlin.runCatching {
+        tasksCollection.document(task).update("description", newValue).await()
+    }
+
+
 
 
     suspend fun delete(taskTitle: String) = kotlin.runCatching {

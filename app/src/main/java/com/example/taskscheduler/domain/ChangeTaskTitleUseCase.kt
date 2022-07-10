@@ -20,13 +20,13 @@ class ChangeTaskTitleUseCase @Inject constructor(
             newValue.validateTitle()
         } ?: return@withContext null
 
-        val isSaved = taskRepository.local.changeTaskTitle(task, validTitle)
+        val isSaved = taskRepository.changeTaskTitle(task, validTitle)
         if (isSaved) SimpleTaskTitleOwner(newValue) else null
     }
 
     suspend fun withUpdated(task: ITaskTitleOwner, newValue: String) = withContext(saveTaskContext) {
         invoke(task, newValue)?.let {
-            taskRepository.local.getTaskByTitle(it.taskTitle)
+            taskRepository.getTaskByTitle(it.taskTitle)
         }
     }
 }

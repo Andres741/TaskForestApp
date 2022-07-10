@@ -3,7 +3,7 @@ package com.example.taskscheduler.domain.models
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.SubTaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEntity
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperAndSubTasks
-import com.example.taskscheduler.data.sources.remote.netClases.TaskJson
+import com.example.taskscheduler.data.sources.remote.netClases.TaskDocument
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner.Companion.allToSimpleTaskTitleOwner
 import com.example.taskscheduler.util.dataStructures.WrapperList
 import java.util.*
@@ -53,7 +53,7 @@ data class TaskModel (
         SubTaskEntity(superTask = title, subTask = subTask.taskTitle)
     }
 
-    fun toJson() = TaskJson (
+    fun toDocument() = TaskDocument (
         title = title, type = type, description = description,
         done = isDone, dateNum = dateNum,
         superTask = superTaskTitle,
@@ -70,7 +70,7 @@ fun Iterable<TaskModel>.toSuperTaskEntity(): List<SubTaskEntity> = map(TaskModel
 
 fun Iterable<TaskModel>.toTaskEntities() = map(TaskModel::toTaskEntities)
 
-fun Iterable<TaskModel>.toJson() = map(TaskModel::toJson)
+fun Iterable<TaskModel>.toDocument() = map(TaskModel::toDocument)
 
 
 sealed interface ITaskTitleOwner {

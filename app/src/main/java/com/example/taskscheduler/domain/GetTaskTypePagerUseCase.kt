@@ -9,5 +9,5 @@ import javax.inject.Singleton
 class GetTaskTypePagerUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
-    operator fun invoke(): TaskTypeDataFlow = taskRepository.local.getTaskTypePagingSource()
+    operator fun invoke(): TaskTypeDataFlow = taskRepository.getTaskTypePagingSource()
 }

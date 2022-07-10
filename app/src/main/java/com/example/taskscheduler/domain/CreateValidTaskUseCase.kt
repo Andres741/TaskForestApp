@@ -26,7 +26,7 @@ class CreateValidTaskUseCase @Inject constructor(
         val (newSuperTask, newType) = if (superTask.isNullOrBlank()) { // There is not super task
             "" to (type?.validateType() ?: return@res Response.WrongType)
         } else {
-            (superTask.validateSuperTask() ?: return@res Response.WrongSuperTask) to taskRepository.local.getTaskTypeByTitleStatic(superTask)
+            (superTask.validateSuperTask() ?: return@res Response.WrongSuperTask) to taskRepository.getTaskTypeByTitleStatic(superTask)
         }
 
         val newTitle = title?.validateTitle() ?: return@res Response.WrongTitle

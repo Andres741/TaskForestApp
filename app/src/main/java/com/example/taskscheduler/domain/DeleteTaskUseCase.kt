@@ -8,8 +8,8 @@ class DeleteTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
 ) {
     suspend operator fun invoke(taskTitle: ITaskTitleOwner) =
-        taskRepository.local.deleteSingleTask(taskTitle)
+        taskRepository.deleteSingleTask(taskTitle)
 
     suspend fun alsoChildren(taskTitle: ITaskTitleOwner) =
-        taskRepository.local.deleteTaskAndAllChildren(taskTitle)
+        taskRepository.deleteTaskAndAllChildren(taskTitle)
 }

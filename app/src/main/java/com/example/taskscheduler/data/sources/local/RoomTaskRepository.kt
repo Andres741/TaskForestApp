@@ -1,11 +1,12 @@
 package com.example.taskscheduler.data.sources.local
 
 import androidx.paging.*
-import com.example.taskscheduler.data.sources.local.ILocalTaskRepository.Companion.PAGE_SIZE
+import com.example.taskscheduler.data.sources.local.ITaskRepository.Companion.PAGE_SIZE
 import com.example.taskscheduler.data.sources.local.dao.TaskAndSubTaskDao
 import com.example.taskscheduler.data.sources.local.dao.TaskDao
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperAndSubTasks
+import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
@@ -19,7 +20,7 @@ import javax.inject.Singleton
 class RoomTaskRepository @Inject constructor(
     private val taskDao: TaskDao,
     private val taskAndSubTaskDao: TaskAndSubTaskDao,
-): ILocalTaskRepository {
+): ITaskRepository {
 
     private val pagingConfig = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE)
 
@@ -85,6 +86,16 @@ class RoomTaskRepository @Inject constructor(
 
     override suspend fun getTaskTypeFromTask(task: TaskModel) = taskDao.
         getTypeFromDBByTaskStatic(task.type).toModel()
+
+    override suspend fun getTasksByTypeStatic(type: String) =
+        taskDao.getTasksByTypeStatic(type).toModel()
+
+    override suspend fun getTaskTitlesByTypeStatic(type: String) =
+        taskDao.getTaskTitlesByTypeStatic(type)
+
+    override suspend fun getTitlesOfHierarchyOfTaskByTypeStatic(type: String) =
+        taskDao.getTitlesOfHierarchyOfTaskByTypeStatic(type)
+
 
     override suspend fun changeTaskDescription(task: ITaskTitleOwner, newValue: String) = taskDao.
         changeDescription(task.taskTitle, newValue) > 0

@@ -18,7 +18,7 @@ class ChangeTaskDescriptionUseCase  @Inject constructor(
             newValue.validateDescription()
         } ?: return@withContext false
 
-        taskRepository.local.changeTaskDescription(task, validDescription).ifTrue {
+        taskRepository.changeTaskDescription(task, validDescription).ifTrue {
             if (task is TaskModel) {
                 task.description = validDescription
             }
