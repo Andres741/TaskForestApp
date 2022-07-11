@@ -1,10 +1,10 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import javax.inject.Inject
 
 class GetTaskByTitleUseCase @Inject constructor(
-    private val taskRepository: TaskRepository,
+    private val taskRepository: ITaskRepository,
 ) {
     operator fun invoke(title: String) = taskRepository.getTaskByTitle(title)
 

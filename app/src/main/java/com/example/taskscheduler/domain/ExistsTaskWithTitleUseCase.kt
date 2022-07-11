@@ -1,14 +1,13 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
-import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ExistsTaskWithTitleUseCase @Inject constructor(
-    private val taskRepository: TaskRepository,
+    private val taskRepository: ITaskRepository,
 ) {
     suspend operator fun invoke(title: String): Boolean = taskRepository.existsTitle(title)
 

@@ -1,6 +1,6 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.synchronization.SaveTaskContext
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ChangeDoneStatusOfTaskUseCase @Inject constructor(
-    private val taskRepository: TaskRepository,
+    private val taskRepository: ITaskRepository,
     private val getTaskByTitle: GetTaskByTitleUseCase,
     private val saveTaskContext: SaveTaskContext,
 ) {

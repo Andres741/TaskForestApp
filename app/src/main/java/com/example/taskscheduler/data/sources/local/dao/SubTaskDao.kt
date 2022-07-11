@@ -56,11 +56,21 @@ interface SubTaskDao {
         """
 
 
-        const val GET_ALL_CHILDREN_BY_SUB_TASK = """ 
+        const val GET_ALL_IN_HIERARCHY = """ 
             WITH RECURSIVE response AS ( 
                 SELECT * FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :subTask 
                 UNION ALL 
                 SELECT tab.* 
+                    FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res 
+                    ON res.$SUB_TASK_ID = tab.$SUPER_TASKa 
+            ) 
+            SELECT * FROM response 
+        """
+        const val GET_ALL_IN_TITLES_HIERARCHY = """ 
+            WITH RECURSIVE response AS ( 
+                SELECT $SUB_TASK_ID FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID = :superTask 
+                UNION ALL 
+                SELECT tab.$SUB_TASK_ID
                     FROM $SUBTASK_TABLE AS tab INNER JOIN response AS res 
                     ON res.$SUB_TASK_ID = tab.$SUPER_TASKa 
             ) 
@@ -167,8 +177,10 @@ interface SubTaskDao {
     @Query(GET_ALL_SUPER_TASKS_OF_TASK)
     suspend fun getAllSuperTasks(subTask: String): List<String>
 
-    @Query(GET_ALL_CHILDREN_BY_SUB_TASK)
-    suspend fun getAllChildrenBySubTask(subTask: String): List<SubTaskEntity>
+    @Query(GET_ALL_IN_HIERARCHY)
+    suspend fun getAllInHierarchy(subTask: String): List<SubTaskEntity>
+    @Query(GET_ALL_IN_TITLES_HIERARCHY)
+    suspend fun getAllTitlesInHierarchy(superTask: String): List<String>
     @Query(GET_ALL_CHILDREN)
     suspend fun getAllChildren(superTask: String): List<SubTaskEntity>
     @Query(GET_ALL_SUB_TASKS)

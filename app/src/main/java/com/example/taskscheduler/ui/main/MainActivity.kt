@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.taskscheduler.R
+import com.example.taskscheduler.data.TaskRepository
 import com.example.taskscheduler.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,11 +36,11 @@ class MainActivity: AppCompatActivity() {
         NavigationUI.setupWithNavController(binding.navView, navController)
 
 
-        if (tasksAdapterViewModel.taskRepository.initEasyFiresoreSynchronization()) {
-            "firesoreSynchronization starts".log()
-        } else {
-            "firesoreSynchronization not possible".log()
-        }
+//        if ((tasksAdapterViewModel.taskRepository as? TaskRepository)?.initEasyFiresoreSynchronization() == true) {
+//            "firesoreSynchronization starts".log()
+//        } else {
+//            "firesoreSynchronization not possible".log()
+//        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -52,11 +53,11 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        tasksAdapterViewModel.taskRepository.finishEasyFireSoreSynchronization()
-        "firesoreSynchronization ends".log()
-        super.onDestroy()
-    }
+//    override fun onDestroy() {
+//        (tasksAdapterViewModel.taskRepository as? TaskRepository)?.finishEasyFireSoreSynchronization()
+//        "firesoreSynchronization ends".log()
+//        super.onDestroy()
+//    }
 
     private fun<T> T.log(msj: String? = null) = apply {
         Log.i("MainActivity", "${if (msj != null) "$msj: " else ""}${toString()}")

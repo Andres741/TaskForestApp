@@ -1,11 +1,11 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
 import javax.inject.Inject
 
 class ExistsTaskWithTypeUseCase @Inject constructor(
-    private val taskRepository: TaskRepository,
+    private val taskRepository: ITaskRepository,
 ) {
     suspend operator fun invoke(type: String): Boolean = taskRepository.existsType(type)
 

@@ -1,17 +1,16 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
 import com.example.taskscheduler.domain.synchronization.SaveTaskContext
 import com.example.taskscheduler.util.ifTrue
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ChangeTaskTypeUseCase @Inject constructor(
-    private val taskRepository: TaskRepository,
+    private val taskRepository: ITaskRepository,
     private val createValidTaskUseCase: CreateValidTaskUseCase,
     private val saveTaskContext: SaveTaskContext,
 ) {

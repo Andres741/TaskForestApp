@@ -4,6 +4,11 @@ import androidx.room.*
 import com.example.taskscheduler.data.sources.local.dao.SubTaskDao.Companion.GET_TOP_SUPER_TASK_OF_TASK
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
 import com.example.taskscheduler.util.dataStructures.wrapperUnzip
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * This dao contains the UPDATE and INSERT queries that implies taskTable and subTaskTable at the
@@ -142,6 +147,20 @@ abstract class TaskAndSubTaskDao {
 
         return numChanged + childTitlesList.fold(0) { sum, child ->
             sum + changeTaskTypeHelper(child, newValue)
+        }
+    }
+    private suspend fun changeTaskTypeHelperAsync(task: String, newValue: String, channel: Channel<Int>) {
+        withContext(Dispatchers.Default) {
+            launch {
+                val numChanged = updateOneTaskType(task, newValue)
+                channel.send(numChanged)
+            }
+            val childTitlesList = getSubTasksOfSuperTask(task)
+            childTitlesList.forEach { child ->
+                launch {
+                    changeTaskTypeHelperAsync(child, newValue, channel)
+                }
+            }
         }
     }
 

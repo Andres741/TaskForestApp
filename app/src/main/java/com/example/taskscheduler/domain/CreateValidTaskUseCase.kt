@@ -1,6 +1,6 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Singleton
 class CreateValidTaskUseCase @Inject constructor(
     private val existsTaskWithTitleUseCase: ExistsTaskWithTitleUseCase,
-    private val taskRepository: TaskRepository,
+    private val taskRepository: ITaskRepository,
 ) {
     /**
      * Returns a Successful instance with a valid TaskModel ready to be saved in the database or other

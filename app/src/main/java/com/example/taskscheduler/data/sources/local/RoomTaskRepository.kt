@@ -16,11 +16,13 @@ import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface ILocalTaskRepository: ITaskRepository
+
 @Singleton
 class RoomTaskRepository @Inject constructor(
     private val taskDao: TaskDao,
     private val taskAndSubTaskDao: TaskAndSubTaskDao,
-): ITaskRepository {
+): ILocalTaskRepository {
 
     private val pagingConfig = PagingConfig(enablePlaceholders = false, pageSize = PAGE_SIZE)
 
@@ -49,6 +51,9 @@ class RoomTaskRepository @Inject constructor(
         taskDao.getAllChildrenPagingSource(superTask.taskTitle)
     }
 
+    override suspend fun getAllChildrenTitlesStatic(superTask: ITaskTitleOwner) =
+        taskDao.getAllChildrenTitlesStatic(superTask.taskTitle)
+
 
     override fun getTaskTypePagingSource(): TaskTypeDataFlow = Pager(
         config = pagingConfig,
@@ -60,32 +65,31 @@ class RoomTaskRepository @Inject constructor(
     override suspend fun existsType(taskType: String): Boolean = taskDao.existsTypeStatic(taskType)
 
 
-    override suspend fun changeDone(task: ITaskTitleOwner, newValue: Boolean) = taskDao.
-        changeDone(task.taskTitle, newValue) > 0
+    override suspend fun changeDone(task: ITaskTitleOwner, newValue: Boolean) =
+        taskDao.changeDone(task.taskTitle, newValue) > 0
 
-    override suspend fun saveNewTask(newTask: TaskModel) {
+    override suspend fun saveNewTask(newTask: TaskModel) =
         taskAndSubTaskDao.insert(newTask.toTaskEntities())
-    }
 
-    override fun getAllTasks(): Flow<List<TaskModel>> = taskDao.
-        getAllTasksWithSuperAndSubTasks().map {
+    override fun getAllTasks(): Flow<List<TaskModel>> =
+        taskDao.getAllTasksWithSuperAndSubTasks().map {
             it.map (TaskWithSuperAndSubTasks::toModel)
         }
 
-    override suspend fun getAllTasksStatic(): List<TaskModel> = taskDao.
-        getAllTasksWithSuperAndSubTasksStatic().map (TaskWithSuperAndSubTasks::toModel)
+    override suspend fun getAllTasksStatic(): List<TaskModel> =
+        taskDao.getAllTasksWithSuperAndSubTasksStatic().map (TaskWithSuperAndSubTasks::toModel)
 
-    override fun getTaskByTitle(title: String): Flow<TaskModel> = taskDao.
-        getTaskWithSuperAndSubTasks(title).map(TaskWithSuperAndSubTasks::toModel)
+    override fun getTaskByTitle(title: String): Flow<TaskModel> =
+        taskDao.getTaskWithSuperAndSubTasks(title).map(TaskWithSuperAndSubTasks::toModel)
 
-    override suspend fun getTaskByTitleStatic(title: String) = taskDao.
-        getTaskWithSuperAndSubTasksStatic(title).toModel()
+    override suspend fun getTaskByTitleStatic(title: String) =
+        taskDao.getTaskWithSuperAndSubTasksStatic(title).toModel()
 
-    override suspend fun getTaskTypeByTitleStatic(title: String): String = taskDao.
-        getTypeStatic(title)
+    override suspend fun getTaskTypeByTitleStatic(title: String): String =
+        taskDao.getTypeStatic(title)
 
-    override suspend fun getTaskTypeFromTask(task: TaskModel) = taskDao.
-        getTypeFromDBByTaskStatic(task.type).toModel()
+    override suspend fun getTaskTypeFromTask(task: TaskModel) =
+        taskDao.getTypeFromDBByTaskStatic(task.type).toModel()
 
     override suspend fun getTasksByTypeStatic(type: String) =
         taskDao.getTasksByTypeStatic(type).toModel()
@@ -97,24 +101,24 @@ class RoomTaskRepository @Inject constructor(
         taskDao.getTitlesOfHierarchyOfTaskByTypeStatic(type)
 
 
-    override suspend fun changeTaskDescription(task: ITaskTitleOwner, newValue: String) = taskDao.
-        changeDescription(task.taskTitle, newValue) > 0
+    override suspend fun changeTaskDescription(task: ITaskTitleOwner, newValue: String) =
+        taskDao.changeDescription(task.taskTitle, newValue) > 0
 
-    override suspend fun changeTaskTitle(task: ITaskTitleOwner, newValue: String) = taskAndSubTaskDao.
-        updateTitle(task.taskTitle, newValue) > 0
+    override suspend fun changeTaskTitle(task: ITaskTitleOwner, newValue: String) =
+        taskAndSubTaskDao.updateTitle(task.taskTitle, newValue) > 0
 
-    override suspend fun changeType(newValue: String, oldValue: String) = taskDao.
-        updateType(newValue, oldValue) > 0
+    override suspend fun changeType(newValue: String, oldValue: String) =
+        taskDao.updateType(newValue, oldValue) > 0
 
-    override suspend fun changeTypeInTaskHierarchy(task: String, newValue: String) = taskAndSubTaskDao.
-        changeTaskType(task, newValue) > 0
+    override suspend fun changeTypeInTaskHierarchy(task: String, newValue: String) =
+        taskAndSubTaskDao.changeTaskType(task, newValue) > 0
 
 
-    override suspend fun deleteSingleTask(task: ITaskTitleOwner) = taskAndSubTaskDao.
-        deleteSingleTask(task.taskTitle) > 0
+    override suspend fun deleteSingleTask(task: ITaskTitleOwner) =
+        taskAndSubTaskDao.deleteSingleTask(task.taskTitle) > 0
 
-    override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner) = taskAndSubTaskDao.
-        deleteTaskAndAllChildren(task.taskTitle) > 0
+    override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner) =
+        taskAndSubTaskDao.deleteTaskAndAllChildren(task.taskTitle) > 0
 
 
 //    private fun<T> T.log(msj: String? = null) = apply {

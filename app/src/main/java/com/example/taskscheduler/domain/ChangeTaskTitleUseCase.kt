@@ -1,15 +1,14 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.synchronization.SaveTaskContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ChangeTaskTitleUseCase @Inject constructor(
-    private val taskRepository: TaskRepository,
+    private val taskRepository: ITaskRepository,
     private val createValidTaskUseCase: CreateValidTaskUseCase,
     private val saveTaskContext: SaveTaskContext,
 ) {

@@ -1,7 +1,7 @@
 package com.example.taskscheduler.di.data
 
 import android.content.Context
-import com.example.taskscheduler.data.sources.local.ITaskRepository
+import com.example.taskscheduler.data.sources.local.ILocalTaskRepository
 import com.example.taskscheduler.data.sources.local.LocalDataBase
 import com.example.taskscheduler.data.sources.local.RoomTaskRepository
 import dagger.Module
@@ -33,5 +33,5 @@ object LocalModule {
 
     @Singleton
     @Provides   /* The local repository can be changed easily*/
-    fun providesLocalTaskRepository(repo: RoomTaskRepository): ITaskRepository = repo
+    fun providesLocalTaskRepository(repo: RoomTaskRepository): ILocalTaskRepository = repo
 }

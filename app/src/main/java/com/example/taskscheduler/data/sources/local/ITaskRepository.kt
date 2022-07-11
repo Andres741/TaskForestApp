@@ -42,6 +42,8 @@ interface ITaskRepository {
 
     suspend fun getTitlesOfHierarchyOfTaskByTypeStatic(type: String): List<String>
 
+    suspend fun getAllChildrenTitlesStatic(superTask: ITaskTitleOwner): List<String>
+
 
     //Exists
     suspend fun existsTitle(taskTitle: String): Boolean

@@ -34,6 +34,8 @@ interface TaskDao {
 
         const val GET_ALL_CHILDREN_TITLES =
             "SELECT $TITLE_ID FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_ALL_SUB_TASKS})"
+        const val GET_ALL_TITLES_HIERARCHY =
+            "SELECT $TITLE_ID FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_ALL_IN_TITLES_HIERARCHY})"
 
         const val GET_ALL =
             "SELECT * FROM $TASK_TABLE ORDER BY $TITLE_ID"
@@ -119,15 +121,15 @@ interface TaskDao {
     fun getTopSuperTaskByTypeStatic(typeName: String): TaskWithSuperAndSubTasks
     @Transaction
     @Query(GET_TOP_SUPER_TASK_TITLE_BY_TYPE)
-    fun getTopSuperTaskTileByTypeStatic(typeName: String): String
+    fun getTopSuperTaskTileByTypeStatic(typeName: String): String?
 
     @Query(GET_TITLES_BY_TASK_TYPE)
     fun getTaskTitlesByTypeStatic(typeName: String): List<String>
 
     @Transaction
     fun getTitlesOfHierarchyOfTaskByTypeStatic(type: String): List<String> {
-        val topTask = getTopSuperTaskTileByTypeStatic(type)
-        return getAllChildrenTitlesStatic(topTask)
+        val topTask = getTopSuperTaskTileByTypeStatic(type) ?: return emptyList()
+        return getAllTitlesInHierarchyStatic(topTask)
     }
 
     @Transaction
@@ -145,7 +147,9 @@ interface TaskDao {
     @Transaction
     @Query(GET_ALL_CHILDREN_TITLES)
     fun getAllChildrenTitlesStatic(superTask: String): List<String>
-
+    @Transaction
+    @Query(GET_ALL_TITLES_HIERARCHY)
+    fun getAllTitlesInHierarchyStatic(superTask: String): List<String>
 
 
     @Query(GET_TYPE)
