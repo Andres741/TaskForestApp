@@ -11,8 +11,6 @@ import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.ifTrue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import javax.inject.Inject
-import javax.inject.Singleton
 
 class TaskRepository(
     private val local: ILocalTaskRepository,
@@ -53,12 +51,12 @@ class TaskRepository(
         local.changeTaskDescription(task, newValue)
     }
 
-    override suspend fun changeTaskTitle(task: ITaskTitleOwner, newValue: String) =
-        local.changeTaskTitle(task, newValue).ifTrue {
+    override suspend fun changeTaskTitle(task: ITaskTitleOwner, newValue: String): Boolean {
+        return local.changeTaskTitle(task, newValue).ifTrue {
             val previousTaskTitle = task.taskTitle
-            val changedTask = local.getTaskByTitleStatic(previousTaskTitle)
+            val changedTask = local.getTaskByTitleStatic(newValue)
 
-            withContext(Dispatchers.Unconfined) {
+            withContext(Dispatchers.Default + Job()) {
                 launch {
                     changedTask.subTasks.forEach {
                         launch {
@@ -81,10 +79,11 @@ class TaskRepository(
                 )
             }
         }
+    }
 
     override suspend fun changeType(newValue: String, oldValue: String) =
-        local.changeType(newValue, oldValue).ifTrue {
-            local.getTaskTitlesByTypeStatic(newValue).forEach { modifiedTaskTitle ->
+        local.changeType(newValue.log("newValue"), oldValue.log("oldValue")).ifTrue {
+            local.getTaskTitlesByTypeStatic(newValue).logList("---modified Task Title---").forEach { modifiedTaskTitle ->
                 firestoreTasks.setType(newValue, modifiedTaskTitle)
             }
         }
@@ -99,18 +98,20 @@ class TaskRepository(
     //Delete
     override suspend fun deleteSingleTask(task: ITaskTitleOwner): Boolean {
         val deletedTaskTitle = task.taskTitle
-        val deletedTask = local.getTaskByTitleStatic(deletedTaskTitle)
+        val deletedTask = local.getTaskByTitleStatic(deletedTaskTitle)  //Don't move from here
 
         return local.deleteSingleTask(task).ifTrue {
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.Default + Job()) {
                 launch {
+                    val superTaskTitle = deletedTask.superTaskTitle
                     deletedTask.subTasks.forEach {
+                        val subTaskTitle = it.taskTitle
                         launch {
-                            val subTaskTitle = it.taskTitle
                             firestoreTasks.setSupertask(
-                                superTask = "", itsSubTask = subTaskTitle
+                                superTask = superTaskTitle, itsSubTask = subTaskTitle
                             )
                         }
+                        firestoreTasks.addSubTask(subTaskTitle, superTaskTitle)
                     }
                 }
                 launch {
@@ -123,28 +124,51 @@ class TaskRepository(
         }
     }
 
-    override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner) = withContext(Dispatchers.Default) {
-        if (local.existsTitle(task.taskTitle)) return@withContext false
+    override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner): Boolean {
+        if (local.existsTitle(task.taskTitle).not()) return false
 
-        launch {
-            firestoreTasks.delete(task.taskTitle)
-        }
-
-        val allSubTasksTitles = local.getAllChildrenTitlesStatic(task).takeUnless(List<*>::isEmpty).also {
+        return withContext(Dispatchers.Default + Job()) {
             launch {
-                if (it == null) {
-                    local.deleteSingleTask(task)
-                } else {
-                    local.deleteTaskAndAllChildren(task)
+                firestoreTasks.delete(task.taskTitle)
+            }
+
+            val superTaskTitleDef = async {
+                val superTaskTitle = local.getSuperTaskTitleStatic(task)
+                superTaskTitle.takeIf { it != ""}
+            }
+            launch {
+                val superTaskTitle = superTaskTitleDef.await() ?: return@launch
+                firestoreTasks.removeSubTask(task.taskTitle, superTaskTitle)
+            }
+
+            val allSubTasksTitles = local.getAllChildrenTitlesStatic(task).takeIf(List<*>::isNotEmpty).also {
+                launch {
+                    superTaskTitleDef.join()
+                    if (it == null) {
+                        local.deleteSingleTask(task)
+                    } else {
+                        local.deleteTaskAndAllChildren(task)
+                    }
                 }
             }
-        }
 
-        allSubTasksTitles?.forEach { subtaskTitle ->
-            launch {
-                firestoreTasks.delete(subtaskTitle)
+            allSubTasksTitles?.apply {
+                forEach { subtaskTitle ->
+                    launch {
+                        firestoreTasks.delete(subtaskTitle)
+                    }
+                }
             }
+            true
         }
+    }
+
+    override suspend fun deleteAll() = coroutineScope {
+        val titles = local.getAllTasksTitlesStatic().takeIf(List<*>::isNotEmpty) ?: return@coroutineScope false
+        launch {
+            local.deleteAll()
+        }
+        firestoreTasks.deleteAll(titles)
         true
     }
 
@@ -156,7 +180,7 @@ class TaskRepository(
             local.getAllTasks().collectLatest {
 
                 firestoreTasks.getAllTasks().fold({ tasks ->
-                    tasks.logIter("\n\n---tasks in firestore---".uppercase())
+                    tasks.logList("\n\n---tasks in firestore---".uppercase())
                 }){ throwable ->
                     throwable.log("\n\nSearching tasks in firestore failed".uppercase())
                 }
@@ -186,8 +210,12 @@ class TaskRepository(
     private fun<T> T.log(msj: Any? = null) = apply {
         Log.i("TaskRepository", "${if (msj != null) "$msj: " else ""}${toString()}")
     }
-    private fun<T> Iterable<T>.logIter(msj: Any? = null) = apply {
-        msj?.apply{"\n$this".log()}
+    private fun<T, IT: Iterable<T>> IT.logList(msj: Any? = null) = apply {
+        "$msj:".uppercase().log()
+        this.iterator().hasNext().takeIf { it } ?: kotlin.run {
+            "  Collection is empty".log()
+            return@apply
+        }
         forEachIndexed { index, elem ->
             elem.log(index)
         }

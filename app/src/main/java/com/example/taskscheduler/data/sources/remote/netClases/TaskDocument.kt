@@ -34,4 +34,4 @@ data class TaskDocument(
 
 fun Iterable<TaskDocument>.toModel() = mapNotNull(TaskDocument::toModelOrNull)
 
-fun Iterable<TaskDocument>.toModelOrException() = map(TaskDocument::toModel)
+fun Iterable<TaskDocument>.tryToModel() = map(TaskDocument::toModel)

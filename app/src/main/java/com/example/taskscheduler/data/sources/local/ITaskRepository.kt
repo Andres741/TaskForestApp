@@ -28,6 +28,8 @@ interface ITaskRepository {
 
     suspend fun getAllTasksStatic(): List<TaskModel>
 
+    suspend fun getAllTasksTitlesStatic(): List<String>
+
     fun getTaskByTitle(title: String): Flow<TaskModel>
 
     suspend fun getTaskByTitleStatic(title: String): TaskModel
@@ -43,6 +45,8 @@ interface ITaskRepository {
     suspend fun getTitlesOfHierarchyOfTaskByTypeStatic(type: String): List<String>
 
     suspend fun getAllChildrenTitlesStatic(superTask: ITaskTitleOwner): List<String>
+
+    suspend fun getSuperTaskTitleStatic(subTask: ITaskTitleOwner): String
 
 
     //Exists
@@ -67,6 +71,8 @@ interface ITaskRepository {
 
     //Delete
     suspend fun deleteSingleTask(task: ITaskTitleOwner): Boolean
+
+    suspend fun deleteAll(): Boolean
 
     suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner): Boolean
 

@@ -25,10 +25,10 @@ class ChangeTaskTypeUseCase @Inject constructor(
     }
 
     suspend operator fun invoke(oldValue: ITaskTypeNameOwner, newValue: String) = withContext(saveTaskContext) {
-        val validType = createValidTaskUseCase.run {
+        val validNewType = createValidTaskUseCase.run {
             newValue.validateType()
         } ?: return@withContext null
-        taskRepository.changeType(oldValue.typeName, validType).ifTrue {
+        taskRepository.changeType(validNewType, oldValue.typeName).ifTrue {
             return@withContext SimpleTaskTypeNameOwner(newValue)
         }
         null

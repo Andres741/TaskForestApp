@@ -20,12 +20,8 @@ object JoinModule {
         local: ILocalTaskRepository,
         firestoreTasksAuth: FirestoreTasksAuth,
     ): ITaskRepository {
-        val firestoreTasks = firestoreTasksAuth.firestoreTasks
-
-        return if (firestoreTasks != null) {
-            TaskRepository(local, firestoreTasks)
-        } else {
-            local
-        }
+        return firestoreTasksAuth.firestoreTasks?.run {
+            TaskRepository(local, this)
+        } ?: local
     }
 }

@@ -19,7 +19,7 @@ data class TaskModel (
     val dateNum: Long = System.currentTimeMillis(),
 ): ITaskTypeNameOwner, ITaskTitleOwner {
 
-    val date: Calendar get() = dateNum.let { Calendar.getInstance().apply { timeInMillis = it } }
+    val date: Calendar get() = Calendar.getInstance().apply { timeInMillis = dateNum }
     val superTaskTitle get() = superTask.taskTitle
     val subTaskTitles: List<String> get() = WrapperList(subTasks, SimpleTaskTitleOwner::taskTitle)
     val hasDescription get() = description.isNotBlank()
@@ -60,8 +60,8 @@ data class TaskModel (
         subTasks = subTaskTitles
     )
 
-    override fun toString() =
-        "TaskModel(title=$title, type=$type, description=$description, isDone=$isDone, date=${date.time}, superTask=$superTask, subTasks=$subTasks)"
+    override fun toString() = "TaskModel(title=$title, type=$type, description=$description, " +
+            "isDone=$isDone, dateNum=${dateNum}, superTaskTitle=$superTaskTitle, subTaskTitles=$subTaskTitles)"
 }
 
 fun Iterable<TaskModel>.toEntity(): List<TaskEntity> = map(TaskModel::toEntity)
@@ -102,6 +102,6 @@ value class SimpleTaskTitleOwner constructor(
         }
     }
 }
-fun String.toTaskTitle() = SimpleTaskTitleOwner(this)
+fun String.toTaskTitle() = SimpleTaskTitleOwner(this)  //TODO: delete?
 
 fun Iterable<String>.toTaskTitle() = map(String::toTaskTitle)
