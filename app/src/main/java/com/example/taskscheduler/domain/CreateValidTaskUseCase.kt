@@ -53,7 +53,12 @@ class CreateValidTaskUseCase @Inject constructor(
             if(existsTaskWithTitleUseCase(newSuperTask)) this else return null
     } ?: ""
 
-    fun String.validateDescription(): String? = validateField()
+    fun String.validateDescription(): String? {
+        ifBlank {
+            return ""
+        }
+        return validateField()
+    }
 
     sealed class Response {
         open class ValidTask(val task: TaskModel): Response()

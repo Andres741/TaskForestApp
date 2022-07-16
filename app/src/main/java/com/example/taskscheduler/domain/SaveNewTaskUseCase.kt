@@ -1,6 +1,7 @@
 package com.example.taskscheduler.domain
 
 import com.example.taskscheduler.data.sources.local.ITaskRepository
+import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.synchronization.SaveTaskContext
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -30,6 +31,11 @@ class SaveNewTaskUseCase @Inject constructor(
             return@withContext SavedTask(response)
         }
     }
+    /**This function ignores the subtasks of the task model.*/
+    suspend operator fun invoke(task: TaskModel) = invoke(
+        title = task.title, type = task.type, description = task.description, superTask = task.superTaskTitle
+    )
+
     class SavedTask(validTaskResponse: ValidTask): ValidTask(validTaskResponse.task)
 }
 

@@ -1,6 +1,6 @@
 package com.example.taskscheduler.domain
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.FirestoreSynchronizedTaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import io.mockk.MockKAnnotations
@@ -23,14 +23,14 @@ class CreateValidTaskUseCaseTest {
     @RelaxedMockK
     lateinit var existsTaskWithTitleUseCase: ExistsTaskWithTitleUseCase
     @RelaxedMockK
-    lateinit var taskRepository: TaskRepository
+    lateinit var firestoreSynchronizedTaskRepository: FirestoreSynchronizedTaskRepository
 
     lateinit var createValidTaskUseCase: CreateValidTaskUseCase
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-        createValidTaskUseCase = CreateValidTaskUseCase(existsTaskWithTitleUseCase, taskRepository)
+        createValidTaskUseCase = CreateValidTaskUseCase(existsTaskWithTitleUseCase, firestoreSynchronizedTaskRepository)
 
         "\n/-----------------------------------------\\\n".log()
 
@@ -50,7 +50,7 @@ class CreateValidTaskUseCaseTest {
         val superTask = "t3"
         coEvery { existsTaskWithTitleUseCase(title) } returns false
         coEvery { existsTaskWithTitleUseCase(superTask) } returns true
-        coEvery { taskRepository.local.getTaskTypeByTitleStatic(superTask) } returns type
+        coEvery { firestoreSynchronizedTaskRepository.getTaskTypeByTitleStatic(superTask) } returns type
 
         //When
         val res = createValidTaskUseCase(title, type, description, superTask).log()
@@ -76,7 +76,7 @@ class CreateValidTaskUseCaseTest {
         val createdTask = res as? CreateValidTaskUseCase.Response.ValidTask
 
         // Then
-        coVerify(exactly = 0) { taskRepository.local.getTaskTypeByTitleStatic("") }
+        coVerify(exactly = 0) { firestoreSynchronizedTaskRepository.getTaskTypeByTitleStatic("") }
         coVerify(exactly = 0) { existsTaskWithTitleUseCase("") }
         coVerify(exactly = 1) { existsTaskWithTitleUseCase(title) }
         assertNotNull("createValidTaskUseCase response is not Successful", createdTask); createdTask!!

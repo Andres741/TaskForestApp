@@ -5,6 +5,8 @@ import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskEnti
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperAndSubTasks
 import com.example.taskscheduler.data.sources.remote.netClases.TaskDocument
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner.Companion.allToSimpleTaskTitleOwner
+import com.example.taskscheduler.util.dataStructures.BDTree
+import com.example.taskscheduler.util.dataStructures.MyLinkedList
 import com.example.taskscheduler.util.dataStructures.WrapperList
 import java.util.*
 
@@ -21,7 +23,7 @@ data class TaskModel (
 
     val date: Calendar get() = Calendar.getInstance().apply { timeInMillis = dateNum }
     val superTaskTitle get() = superTask.taskTitle
-    val subTaskTitles: List<String> get() = WrapperList(subTasks, SimpleTaskTitleOwner::taskTitle)
+    val subTaskTitles: List<String> get() = subTasks.asStringList()
     val hasDescription get() = description.isNotBlank()
     val hasSuperTask get() = superTask.isNotBlank()
     val hasSubTasks get() = subTasks.isNotEmpty()
@@ -70,7 +72,35 @@ fun Iterable<TaskModel>.toSuperTaskEntity(): List<SubTaskEntity> = map(TaskModel
 
 fun Iterable<TaskModel>.toTaskEntities() = map(TaskModel::toTaskEntities)
 
+fun Iterable<TaskModel>.asTaskEntitiesSeq() = asSequence().map(TaskModel::toTaskEntities)
+
 fun Iterable<TaskModel>.toDocument() = map(TaskModel::toDocument)
+
+fun Iterable<TaskModel>.asDocumentSeq() = asSequence().map(TaskModel::toDocument)
+
+fun Iterable<TaskModel>.toMap(): Map<SimpleTaskTitleOwner, TaskModel> = mutableMapOf<SimpleTaskTitleOwner, TaskModel>().also { map ->
+    forEach { task ->
+        map[task.toSimpleTaskTitleOwner()] = task
+    }
+}
+
+fun Iterable<TaskModel>.toTrees() = MyLinkedList<BDTree<TaskModel>>().also { fathers ->
+    val children = hashMapOf<String, TaskModel>()
+    forEach { task ->
+        if (task.hasSuperTask) children[task.title] = task
+        else fathers.add(BDTree(task))
+    }
+    fathers.forEach { topTaskTree ->
+        topTaskTree.makeTreeWith(children)
+    }
+}
+
+/**Warning: this function removes elements from the map, and the map has to contain all the child tasks.*/
+private fun BDTree<TaskModel>.makeTreeWith(map: MutableMap<String, TaskModel>) {
+    value.subTaskTitles.asSequence().mapNotNull(map::remove).forEach { task ->
+        addChild(task).apply { makeTreeWith(map) }
+    }
+}
 
 
 sealed interface ITaskTitleOwner {
@@ -105,3 +135,5 @@ value class SimpleTaskTitleOwner constructor(
 fun String.toTaskTitle() = SimpleTaskTitleOwner(this)  //TODO: delete?
 
 fun Iterable<String>.toTaskTitle() = map(String::toTaskTitle)
+
+fun List<SimpleTaskTitleOwner>.asStringList() = WrapperList(this, SimpleTaskTitleOwner::taskTitle)

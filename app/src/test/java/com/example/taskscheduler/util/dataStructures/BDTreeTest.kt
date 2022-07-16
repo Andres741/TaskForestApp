@@ -1,8 +1,16 @@
 package com.example.taskscheduler.util.dataStructures
 
+import com.example.taskscheduler.data.sources.local.taskTree.toModel
+import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.domain.models.toTrees
+import com.example.taskscheduler.util.ifFalse
+import com.example.taskscheduler.util.lazy.AsyncLazy
+import com.example.taskscheduler.util.taskModelTree
 import junit.framework.TestCase
 
 class BDTreeTest : TestCase() {
+
+    private val taskModels by AsyncLazy { taskModelTree }
 
     /**Main tree*/
     lateinit var bdTree: BDTree<String>
@@ -55,9 +63,6 @@ class BDTreeTest : TestCase() {
     public override fun tearDown() {
         println("\n\\-----------------------------------------/\n")
     }
-
-
-
 
 
     fun testGetNumChildren() {
@@ -175,5 +180,55 @@ class BDTreeTest : TestCase() {
         subSubTree.toLinkedList().apply(::println)
 
         assertEquals(expected, actual)
+    }
+
+    fun testMap() {
+        val original = MyLinkedList<TaskModel>()
+        val mapped = HashSet<TaskModel>()
+
+        "---Original trees---".bigLog()
+
+        val trees = taskModels.toTrees().onEach { rootTree ->
+            "New tree".log()
+            rootTree.forEachBDTree { branch ->
+                "${branch.value.also(original::add)}".log("  value")
+                "${branch.children.map { it.value.title }}".log("    children")
+            }
+        }
+
+        "---Mapped trees---".bigLog()
+
+        trees.forEach { tree ->
+            "Mapped tree".log()
+            tree.map(TaskModel::toEntity).apply {
+                forEachBDTree { branch ->
+                    "${branch.value}".log("  Value mapped")
+                    "${branch.toModel().also(mapped::add) }".log("  To model    ")
+                    "${branch.childrenIter.map { child -> child.value.title }}".log("    children mapped")
+                }
+            }
+        }
+
+        assertEquals(original.size, mapped.size)
+        original.normalIterator().forEach { originalTask ->
+            assert(mapped.remove(originalTask))
+        }
+    }
+}
+
+private fun <T> T.log(msj: Any? = null) = apply {
+    println("${if (msj != null) "$msj: " else ""}${toString()}")
+}
+private fun <T> T.bigLog(msj: Any? = null) = apply {
+    "\n$this\n".uppercase().log(msj)
+}
+private fun<T, IT: Iterable<T>> IT.logList(msj: Any? = null) = apply {
+    "$msj:".uppercase().log()
+    this.iterator().hasNext().ifFalse {
+        "  Collection is empty".log()
+        return@apply
+    }
+    forEachIndexed { index, elem ->
+        elem.log("  $index")
     }
 }

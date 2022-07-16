@@ -32,9 +32,9 @@ inline fun <B: Boolean?> B.ifTrue(block: () -> Unit): B = apply { if (this == tr
 
 inline fun <B: Boolean?> B.ifFalse(block: () -> Unit): B = apply { if (this == false) block() }
 
-inline fun <T> T?.ifNull(block: () -> Unit) = apply { if (this == null) block() }
+inline fun <T> T.ifNull(block: () -> Unit) = apply { if (this == null) block() }
 
-inline fun <T> T?.ifNotNull(block: () -> Unit) = apply { if (this != null) block() }
+inline fun <T> T.ifNotNull(block: () -> Unit) = apply { if (this != null) block() }
 
 inline fun Collection<*>?.isNotNullOrEmpty() = !isNullOrEmpty()
 
@@ -44,7 +44,7 @@ inline fun <K> Map<K, *>.notContainsKey(key: K) = !containsKey(key)
 
 inline fun <T> Collection<T>.notContains(value: T) = !contains(value)
 
-inline fun <T> Iterator<(T)-> Boolean>.or(value: T): Boolean? {
+inline fun <T> Iterable<(T)-> Boolean>.or(value: T): Boolean? = iterator().run {
     if (! hasNext()) return null
     forEach {
         if (it(value)) return true
@@ -52,7 +52,7 @@ inline fun <T> Iterator<(T)-> Boolean>.or(value: T): Boolean? {
     return false
 }
 
-inline fun <T> Iterator<(T)-> Boolean>.and(value: T): Boolean? {
+inline fun <T> Iterable<(T)-> Boolean>.and(value: T): Boolean? = iterator().run {
     if (! hasNext()) return null
     forEach {
         if (! it(value)) return false

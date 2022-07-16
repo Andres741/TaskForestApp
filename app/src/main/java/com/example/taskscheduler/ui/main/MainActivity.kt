@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.taskscheduler.R
-import com.example.taskscheduler.data.TaskRepository
 import com.example.taskscheduler.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +17,7 @@ class MainActivity: AppCompatActivity() {
 
 //    private val tasksAdapterViewModel: TasksAdapterViewModel by viewModels()
 
-    private val tasksAdapterViewModel: MainActivityViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
 
     private val navController by lazy { findNavController(R.id.nav_host_fragment_content_main) }
 
@@ -26,6 +25,8 @@ class MainActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel.synchronizeTasks()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -59,7 +60,7 @@ class MainActivity: AppCompatActivity() {
 //        super.onDestroy()
 //    }
 
-    private fun<T> T.log(msj: String? = null) = apply {
-        Log.i("MainActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
-    }
+//    private fun<T> T.log(msj: String? = null) = apply {
+//        Log.i("MainActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
+//    }
 }

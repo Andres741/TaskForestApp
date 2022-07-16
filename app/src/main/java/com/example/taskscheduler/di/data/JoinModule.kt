@@ -1,6 +1,6 @@
 package com.example.taskscheduler.di.data
 
-import com.example.taskscheduler.data.TaskRepository
+import com.example.taskscheduler.data.FirestoreSynchronizedTaskRepository
 import com.example.taskscheduler.data.sources.local.ILocalTaskRepository
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.data.sources.remote.firestore.FirestoreTasksAuth
@@ -21,7 +21,7 @@ object JoinModule {
         firestoreTasksAuth: FirestoreTasksAuth,
     ): ITaskRepository {
         return firestoreTasksAuth.firestoreTasks?.run {
-            TaskRepository(local, this)
+            FirestoreSynchronizedTaskRepository(local, this)
         } ?: local
     }
 }

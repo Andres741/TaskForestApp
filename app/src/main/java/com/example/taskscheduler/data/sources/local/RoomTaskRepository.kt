@@ -11,13 +11,16 @@ import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
+import com.example.taskscheduler.domain.models.toTaskEntities
 import com.example.taskscheduler.util.TaskTypeDataFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
-interface ILocalTaskRepository: ITaskRepository
+interface ILocalTaskRepository: ITaskRepository {
+    suspend fun saveAll(tasks: Iterable<TaskModel>)
+}
 
 @Singleton
 class RoomTaskRepository @Inject constructor(
@@ -72,6 +75,9 @@ class RoomTaskRepository @Inject constructor(
 
     override suspend fun saveNewTask(newTask: TaskModel) =
         taskAndSubTaskDao.insert(newTask.toTaskEntities())
+
+    override suspend fun saveAll(tasks: Iterable<TaskModel>) =
+        taskAndSubTaskDao.insertAllPairs(tasks.toTaskEntities())
 
     override fun getAllTasks(): Flow<List<TaskModel>> =
         taskDao.getAllTasksWithSuperAndSubTasks().map {

@@ -13,8 +13,12 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -29,8 +33,12 @@ class FirestoreTasks(
     suspend fun saveAll(vararg tasks: TaskDocument) = saveAll(tasks.asIterable())
 
     suspend fun saveAll(tasks: Iterable<TaskDocument>) = kotlin.runCatching {
-        tasks.forEach { task ->
-            tasksCollection.setDoc(task).await()
+        coroutineScope {
+            tasks.forEach { task ->
+                launch {
+                    tasksCollection.setDoc(task).await()
+                }
+            }
         }
     }
 
@@ -111,12 +119,10 @@ class FirestoreTasks(
     }
 
 
-
-
     suspend fun delete(taskTitle: String) = kotlin.runCatching {
         tasksCollection.document(taskTitle).delete().await()
     }
-    suspend fun deleteAll(vararg taskTitles: String) = deleteAll(taskTitles.asList())
+    suspend fun deleteAll(vararg taskTitles: String) = deleteAll(taskTitles.asIterable())
 
 
     suspend fun deleteAll(taskTitles: Iterable<String>) {
@@ -139,7 +145,7 @@ class FirestoreTasks(
 }
 
 /**
- * Contains a FirestoreTasks instance if the user is signed in, or null if does not.
+ * Contains a FirestoreTasks instance if the user is signed in, or null if doesn't.
  */
 class FirestoreTasksAuth @Inject constructor(
     firestoreCollectionForTasks: FirestoreCollectionForTasks

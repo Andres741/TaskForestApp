@@ -3,23 +3,24 @@ package com.example.taskscheduler.data
 import android.util.Log
 import com.example.taskscheduler.data.sources.local.ILocalTaskRepository
 import com.example.taskscheduler.data.sources.local.ITaskRepository
+import com.example.taskscheduler.data.sources.local.taskTree.TaskForest
 import com.example.taskscheduler.data.sources.remote.firestore.FirestoreTasks
-import com.example.taskscheduler.domain.models.ITaskTitleOwner
-import com.example.taskscheduler.domain.models.TaskModel
-import com.example.taskscheduler.domain.models.toDocument
+import com.example.taskscheduler.data.sources.remote.netClases.toModel
+import com.example.taskscheduler.domain.models.*
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.ifTrue
+import com.example.taskscheduler.util.notContains
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import java.io.IOException
 
-class TaskRepository(
+class FirestoreSynchronizedTaskRepository(
     private val local: ILocalTaskRepository,
     private val firestoreTasks: FirestoreTasks,
 ): ITaskRepository by local {
-    private val easyFiresoreSynchronizationScopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
-    val isEasyFireSoreSynchronizationWorking get() = easyFiresoreSynchronizationScopeProvider.currentScope != null
-
     //TODO: check when write methods of firestoreTasks fails.
+    val easyFiresoreSynchronization = lazy { EasyFiresoreSynchronization() }
 
     //Create
     override suspend fun saveNewTask(newTask: TaskModel) = coroutineScope {
@@ -34,6 +35,18 @@ class TaskRepository(
         }
         //Useless to save newTask.subTaskTitles, because new task doesn't have subtasks.
         local.saveNewTask(newTask)
+    }
+
+    suspend fun replaceTasksWithNew(tasks: Iterable<TaskModel>, oldTaskTitlesInFirestore: Iterable<String>) {
+        if (tasks.iterator().hasNext().not()) return
+        firestoreTasks.deleteAll(oldTaskTitlesInFirestore)
+        
+        coroutineScope {
+            launch {
+                firestoreTasks.saveAll(tasks.asDocumentSeq().asIterable())
+            }
+            local.saveAll(tasks)
+        }
     }
 
     //Update
@@ -56,10 +69,10 @@ class TaskRepository(
             val previousTaskTitle = task.taskTitle
             val changedTask = local.getTaskByTitleStatic(newValue)
 
-            withContext(Dispatchers.Default + Job()) {
+            coroutineScope {
                 launch {
                     changedTask.subTasks.forEach {
-                        launch {
+                        launch(Dispatchers.IO) {
                             val subTaskTitle = it.taskTitle
                             firestoreTasks.setSupertask(
                                 superTask = newValue, itsSubTask = subTaskTitle
@@ -82,16 +95,24 @@ class TaskRepository(
     }
 
     override suspend fun changeType(newValue: String, oldValue: String) =
-        local.changeType(newValue.log("newValue"), oldValue.log("oldValue")).ifTrue {
-            local.getTaskTitlesByTypeStatic(newValue).logList("---modified Task Title---").forEach { modifiedTaskTitle ->
-                firestoreTasks.setType(newValue, modifiedTaskTitle)
+        local.changeType(newValue, oldValue).ifTrue {
+            coroutineScope {
+                local.getTaskTitlesByTypeStatic(newValue).forEach { modifiedTaskTitle ->
+                    launch(Dispatchers.IO) {
+                        firestoreTasks.setType(newValue, modifiedTaskTitle)
+                    }
+                }
             }
         }
 
     override suspend fun changeTypeInTaskHierarchy(task: String, newValue: String) =
         local.changeTypeInTaskHierarchy(task, newValue).ifTrue {
-            local.getTitlesOfHierarchyOfTaskByTypeStatic(newValue).forEach { modifiedTaskTitle ->
-                firestoreTasks.setType(newValue, modifiedTaskTitle)
+            coroutineScope {
+                local.getTitlesOfHierarchyOfTaskByTypeStatic(newValue).forEach { modifiedTaskTitle ->
+                    launch(Dispatchers.IO) {
+                        firestoreTasks.setType(newValue, modifiedTaskTitle)
+                    }
+                }
             }
         }
 
@@ -101,12 +122,12 @@ class TaskRepository(
         val deletedTask = local.getTaskByTitleStatic(deletedTaskTitle)  //Don't move from here
 
         return local.deleteSingleTask(task).ifTrue {
-            withContext(Dispatchers.Default + Job()) {
+            coroutineScope {
                 launch {
                     val superTaskTitle = deletedTask.superTaskTitle
                     deletedTask.subTasks.forEach {
                         val subTaskTitle = it.taskTitle
-                        launch {
+                        launch(Dispatchers.IO) {
                             firestoreTasks.setSupertask(
                                 superTask = superTaskTitle, itsSubTask = subTaskTitle
                             )
@@ -127,7 +148,7 @@ class TaskRepository(
     override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner): Boolean {
         if (local.existsTitle(task.taskTitle).not()) return false
 
-        return withContext(Dispatchers.Default + Job()) {
+        return coroutineScope {
             launch {
                 firestoreTasks.delete(task.taskTitle)
             }
@@ -154,7 +175,7 @@ class TaskRepository(
 
             allSubTasksTitles?.apply {
                 forEach { subtaskTitle ->
-                    launch {
+                    launch(Dispatchers.IO) {
                         firestoreTasks.delete(subtaskTitle)
                     }
                 }
@@ -172,47 +193,91 @@ class TaskRepository(
         true
     }
 
+    private suspend fun saveAllOnlyInFirebase(tasks: Iterable<TaskModel>) {
+        firestoreTasks.saveAll(tasks.asDocumentSeq().asIterable())
+    }
 
+    private suspend fun saveOnlyInLocal(tasks: Iterable<TaskModel>) {
+        local.saveAll(tasks)
+    }
 
-    fun initEasyFiresoreSynchronization(): Boolean {
-        val firestoreTasks = firestoreTasks
-        return null != easyFiresoreSynchronizationScopeProvider.newScopeNotCancelCurrentOrNull?.launch {
-            local.getAllTasks().collectLatest {
+    suspend fun getAllFromFirebase() = firestoreTasks.getAllTasks().fold({ documents ->
+        documents.toModel()
+    }) { t ->
+        t.log("Not possible to connect with firestore because")
+        throw IOException("Firestore does not respond", t)
+    }
 
-                firestoreTasks.getAllTasks().fold({ tasks ->
-                    tasks.logList("\n\n---tasks in firestore---".uppercase())
-                }){ throwable ->
-                    throwable.log("\n\nSearching tasks in firestore failed".uppercase())
-                }
-
-                firestoreTasks.deleteAllTasks()
-
-                val newTasks = it.toDocument()
-
-                "\nNew tasks".log()
-                newTasks.forEach { task ->
-                    task.log()
-                }
-
-                firestoreTasks.saveAll(newTasks).fold ({
-                    "---Tasks has been saved---"
-                }) { throwable ->
-                    "--Saving tasks failed: $throwable"
-                }.log()
+    suspend fun mergeLists(): Unit = coroutineScope {
+        val allFromFirebaseDef = async {
+            withTimeout(7000){
+                getAllFromFirebase()
             }
+        }
+        val allFromLocal = local.getAllTasksStatic()
+
+        allFromLocal.logList("all From Local")
+
+        val forest = TaskForest(allFromLocal)
+
+        "forest 0".bigLog()
+        forest.log()
+
+        val addToLocal = forest.addAll(allFromFirebaseDef.await().logList("all From Firebase"))
+
+        "forest 1".bigLog()
+        forest.log()
+
+        launch {
+            val addToRemote = forest.taskMap.keys.asSequence().filter(addToLocal::notContains).asIterable()
+            saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
+        }
+        saveOnlyInLocal(forest.getAllIn(addToLocal))
+    }
+
+
+    inner class EasyFiresoreSynchronization {
+        private val easyFiresoreSynchronizationScopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
+        val isEasyFireSoreSynchronizationWorking get() = easyFiresoreSynchronizationScopeProvider.currentScope != null
+
+        fun initEasyFiresoreSynchronization(): Boolean {
+            val firestoreTasks = firestoreTasks
+            return null != easyFiresoreSynchronizationScopeProvider.newScopeNotCancelCurrentOrNull?.launch {
+                local.getAllTasks().collectLatest {
+
+//                    firestoreTasks.getAllTasks().fold({ tasks ->
+//                        tasks.logList("\n\n---tasks in firestore---".uppercase())
+//                    }){ throwable ->
+//                        throwable.log("\n\nSearching tasks in firestore failed".uppercase())
+//                    }
+
+                    firestoreTasks.deleteAllTasks()
+
+                    val newTasks = it.toDocument().logList("New tasks")
+
+
+                    firestoreTasks.saveAll(newTasks).fold ({
+                        "---Tasks has been saved---"
+                    }) { throwable ->
+                        "--Saving tasks failed: $throwable"
+                    }.log()
+                }
+            }
+        }
+        fun finishEasyFireSoreSynchronization() {
+            easyFiresoreSynchronizationScopeProvider.cancel()
         }
     }
 
-    fun finishEasyFireSoreSynchronization() {
-        easyFiresoreSynchronizationScopeProvider.cancel()
-    }
-
     private fun<T> T.log(msj: Any? = null) = apply {
-        Log.i("TaskRepository", "${if (msj != null) "$msj: " else ""}${toString()}")
+        Log.i("FirestoreSynchronizedTaskRepository", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
+    private fun<T> T.bigLog(msj: Any? = null) = apply  {
+        "".log(); toString().uppercase().log(msj); "".log()
     }
     private fun<T, IT: Iterable<T>> IT.logList(msj: Any? = null) = apply {
         "$msj:".uppercase().log()
-        this.iterator().hasNext().takeIf { it } ?: kotlin.run {
+        this.iterator().hasNext().ifFalse {
             "  Collection is empty".log()
             return@apply
         }

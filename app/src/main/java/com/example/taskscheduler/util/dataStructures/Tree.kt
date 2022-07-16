@@ -1,5 +1,9 @@
 package com.example.taskscheduler.util.dataStructures
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
+
 
 /**
  * An implementation of the data structure general tree with an indeterminate number of children.
@@ -11,6 +15,7 @@ open class Tree<T>(
     /**A list with the children of the list.*/
     open val children: List<Tree<T>> get() = _children
 //    val childrenIterator: Iterator<ITree<T>>
+    open val childrenIter get() = _children.asIterable()
 
     val numChildren get() = _children.size
 
@@ -33,10 +38,12 @@ open class Tree<T>(
 
     open fun setChild(index: Int, value: T) = _children.set(index, buildChild(value))
 
-    open fun addChild(value: T) = _children.add(buildChild(value))
+    open fun addChild(value: T): Tree<T> {
+        return buildChild(value).apply(_children::add)
+    }
 
     open fun addChildren(values: Iterable<T>) {
-        _children.addAll(Iterable {
+        _children.addAll( Iterable {
             return@Iterable object: Iterator<Tree<T>> {
 
                 val iter = values.iterator()
@@ -91,5 +98,33 @@ open class Tree<T>(
 
         return list
     }
+
+    fun forEach(operation: (T) -> Unit) {
+        operation(value)
+        _children.normalIterator().forEach { child ->
+            child.forEach(operation)
+        }
+    }
+
+    open fun forEachTree(operation: (Tree<T>) -> Unit) {
+        operation(this)
+        _children.forEach { child ->
+            child.forEachTree(operation)
+        }
+    }
+
+    fun asFlow(): Flow<T> {
+        suspend fun FlowCollector<T>.helper(tree: Tree<T>) {
+            emit(tree.value)
+            tree._children.forEach { child ->
+                helper(child)
+            }
+        }
+
+        return flow {
+            helper(this@Tree)
+        }
+    }
+
     protected open fun buildChild(value: T) = Tree(value)
 }

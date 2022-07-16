@@ -264,6 +264,8 @@ class MyLinkedList<T>(): MutableList<T> {
         }
     }
 
+    fun asIterable() = Iterable { normalIterator() }
+
     inline fun<R> mapMyLinkedList(transform: (T)-> R): MyLinkedList<R> {
         val (firstNode, lastNode) =
             Node.createTransformedChain(normalIterator(), transform) ?: return MyLinkedList()
