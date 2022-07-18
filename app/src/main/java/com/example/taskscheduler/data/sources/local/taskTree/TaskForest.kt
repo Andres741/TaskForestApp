@@ -50,12 +50,17 @@ class TaskForest() {
         return true
     }
 
+//    /**Returns a set with the task titles added.*/
+//    fun addAll(task: Iterable<TaskModel>): Set<String> = mutableSetOf<String>().also { set ->
+//        task.forEach { task ->
+//            if (add(task)) set.add(task.title)
+//        }
+//    }
+
     /**Returns a set with the task titles added.*/
-    fun addAll(task: Iterable<TaskModel>): Set<String> = mutableSetOf<String>().also { set ->
-        task.forEach { task ->
-            if (add(task)) set.add(task.title)
-        }
-    }
+    fun addAll(tasks: Iterable<TaskModel>) = tasks.asSequence().mapNotNull { task ->
+        if (add(task)) task.title else null
+    }.toSet()
 
     /**The first iterable stores the saved tasks, and second those that do not*/
     fun addAllAndDistinct(tasks: Iterable<TaskModel>): Pair<Iterable<String>, Iterable<String>> {

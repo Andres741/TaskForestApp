@@ -3,7 +3,8 @@ package com.example.taskscheduler.domain
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
-import com.example.taskscheduler.domain.synchronization.SaveTaskContext
+import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
+import com.example.taskscheduler.domain.synchronization.WriteTaskContext
 import com.example.taskscheduler.util.ifTrue
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -14,9 +15,9 @@ import javax.inject.Singleton
 class ChangeDoneStatusOfTaskUseCase @Inject constructor(
     private val taskRepository: ITaskRepository,
     private val getTaskByTitle: GetTaskByTitleUseCase,
-    private val saveTaskContext: SaveTaskContext,
+    private val withWriteTaskContext: WithWriteTaskContext,
 ) {
-    suspend operator fun invoke(task: TaskModel): Boolean = withContext(saveTaskContext) {
+    suspend operator fun invoke(task: TaskModel): Boolean = withWriteTaskContext {
         taskRepository.changeDone(task, task.isDone.not()).ifTrue {
             task.apply { isDone = !isDone }
         }
@@ -24,7 +25,7 @@ class ChangeDoneStatusOfTaskUseCase @Inject constructor(
 
     suspend operator fun invoke(
         taskTitle: SimpleTaskTitleOwner
-    ): TaskModel = withContext(saveTaskContext) {
+    ): TaskModel = withWriteTaskContext {
         val task = getTaskByTitle.static(taskTitle.taskTitle)
         invoke(task)
         task

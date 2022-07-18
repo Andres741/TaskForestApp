@@ -3,27 +3,28 @@ package com.example.taskscheduler.domain
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
-import com.example.taskscheduler.domain.synchronization.SaveTaskContext
+import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
+import com.example.taskscheduler.domain.synchronization.WriteTaskContext
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ChangeTaskTitleUseCase @Inject constructor(
     private val taskRepository: ITaskRepository,
     private val createValidTaskUseCase: CreateValidTaskUseCase,
-    private val saveTaskContext: SaveTaskContext,
+    private val withWriteTaskContext: WithWriteTaskContext,
 ) {
     suspend operator fun invoke(
         task: ITaskTitleOwner, newValue: String
-    ) = withContext(saveTaskContext) {
+    ) = withWriteTaskContext context@ {
         val validTitle = createValidTaskUseCase.run {
             newValue.validateTitle()
-        } ?: return@withContext null
+        } ?: return@context null
 
         val isSaved = taskRepository.changeTaskTitle(task, validTitle)
         if (isSaved) SimpleTaskTitleOwner(newValue) else null
     }
 
-    suspend fun withUpdated(task: ITaskTitleOwner, newValue: String) = withContext(saveTaskContext) {
+    suspend fun withUpdated(task: ITaskTitleOwner, newValue: String) = withWriteTaskContext {
         invoke(task, newValue)?.let {
             taskRepository.getTaskByTitle(it.taskTitle)
         }

@@ -2,7 +2,8 @@ package com.example.taskscheduler.domain
 
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.TaskModel
-import com.example.taskscheduler.domain.synchronization.SaveTaskContext
+import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
+import com.example.taskscheduler.domain.synchronization.WriteTaskContext
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -11,7 +12,7 @@ import javax.inject.Singleton
 class SaveNewTaskUseCase @Inject constructor(
     private val taskRepository: ITaskRepository,
     private val createValidTaskUseCase: CreateValidTaskUseCase,
-    private val saveTaskContext: SaveTaskContext,
+    private val withWriteTaskContext: WithWriteTaskContext,
 ) {
     /**
      * This function must be used as the constructor of TaskModel in the IU layer.
@@ -21,14 +22,14 @@ class SaveNewTaskUseCase @Inject constructor(
      */
     suspend operator fun invoke(
         title: String?, type: String?, description: String?, superTask: String?
-    ): CreateValidTaskUseCase.Response = withContext(saveTaskContext) {
+    ): CreateValidTaskUseCase.Response = withWriteTaskContext context@ {
         createValidTaskUseCase(
             title, type, description, superTask
         ).also { response ->
             if (response !is ValidTask) return@also
 
             taskRepository.saveNewTask(response.task)
-            return@withContext SavedTask(response)
+            return@context SavedTask(response)
         }
     }
     /**This function ignores the subtasks of the task model.*/

@@ -104,7 +104,7 @@ interface TaskDao {
     fun getBySuperTask(superTask: String): Flow<List<TaskWithSuperAndSubTasks>>
     @Transaction
     @Query(GET_BY_SUPER_TASK)
-    fun getBySuperTaskStatic(superTask: String): List<TaskWithSuperAndSubTasks>
+    suspend fun getBySuperTaskStatic(superTask: String): List<TaskWithSuperAndSubTasks>
     @Transaction
     @Query(GET_BY_SUPER_TASK)
     fun getTaskPagingSourceBySuperTask(superTask: String): PagingSource<Int, TaskWithSuperAndSubTasks>
@@ -115,23 +115,23 @@ interface TaskDao {
     fun getTasksByType(typeName: String): Flow<List<TaskWithSuperAndSubTasks>>
     @Transaction
     @Query(GET_BY_TASK_TYPE)
-    fun getTasksByTypeStatic(typeName: String): List<TaskWithSuperAndSubTasks>
+    suspend fun getTasksByTypeStatic(typeName: String): List<TaskWithSuperAndSubTasks>
     @Transaction
     @Query(GET_BY_TASK_TYPE)
     fun getTaskPagingSourceByType(typeName: String): PagingSource<Int, TaskWithSuperAndSubTasks>
 
     @Transaction
     @Query(GET_TOP_SUPER_TASK_BY_TYPE)
-    fun getTopSuperTaskByTypeStatic(typeName: String): TaskWithSuperAndSubTasks
+    suspend fun getTopSuperTaskByTypeStatic(typeName: String): TaskWithSuperAndSubTasks
     @Transaction
     @Query(GET_TOP_SUPER_TASK_TITLE_BY_TYPE)
-    fun getTopSuperTaskTileByTypeStatic(typeName: String): String?
+    suspend fun getTopSuperTaskTileByTypeStatic(typeName: String): String?
 
     @Query(GET_TITLES_BY_TASK_TYPE)
-    fun getTaskTitlesByTypeStatic(typeName: String): List<String>
+    suspend fun getTaskTitlesByTypeStatic(typeName: String): List<String>
 
     @Transaction
-    fun getTitlesOfHierarchyOfTaskByTypeStatic(type: String): List<String> {
+    suspend fun getTitlesOfHierarchyOfTaskByTypeStatic(type: String): List<String> {
         val topTask = getTopSuperTaskTileByTypeStatic(type) ?: return emptyList()
         return getAllTitlesInHierarchyStatic(topTask)
     }
@@ -150,10 +150,10 @@ interface TaskDao {
 
     @Transaction
     @Query(GET_ALL_CHILDREN_TITLES)
-    fun getAllChildrenTitlesStatic(superTask: String): List<String>
+    suspend fun getAllChildrenTitlesStatic(superTask: String): List<String>
     @Transaction
     @Query(GET_ALL_TITLES_HIERARCHY)
-    fun getAllTitlesInHierarchyStatic(superTask: String): List<String>
+    suspend fun getAllTitlesInHierarchyStatic(superTask: String): List<String>
 
 
     @Query(GET_TYPE)
