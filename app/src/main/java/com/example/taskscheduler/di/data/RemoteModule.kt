@@ -31,7 +31,6 @@ object RemoteModule {
     @Provides
     fun provideFirestoreCollectionForTasks() = FirestoreCollectionForTasks(
         Firebase.auth.uid?.let { uid ->
-//            Firebase.firestore.collection("users/$uid/tasks")
             Firebase.firestore.collection("users/$uid/tasks")
 //            Firebase.firestore.collection("users/zzz_test/tasks")
         }

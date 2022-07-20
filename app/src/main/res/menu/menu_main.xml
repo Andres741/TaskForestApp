@@ -5,6 +5,6 @@
     tools:context="com.example.taskscheduler.ui.main.MainActivity">
     <item
         android:id="@+id/logOutFragment_dest"
-        android:title="@string/log_out"
+        android:title="@string/exit"
         />
 </menu>

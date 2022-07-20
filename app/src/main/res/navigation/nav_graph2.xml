@@ -22,8 +22,5 @@
         android:label="@string/home_fragment_label"
         tools:layout="@layout/log_in_fragment"
         >
-        <action
-            android:id="@+id/action_LogInFragment_to_HomeFragment"
-            app:destination="@id/HomeFragment" />
     </fragment>
 </navigation>

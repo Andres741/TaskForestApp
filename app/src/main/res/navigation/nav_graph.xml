@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/fragment_tasks"
         android:name="com.example.taskscheduler.ui.main.tasks.TasksFragment"
-        android:label=""
+        android:label="@string/tasks"
         tools:layout="@layout/fragment_tasks">
 
         <action
@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/fragment_task_detail"
         android:name="com.example.taskscheduler.ui.main.taskDetail.TaskDetailFragment"
-        android:label=""
+        android:label="@string/tasks"
         tools:layout="@layout/fragment_task_detail">
 
         <action
@@ -36,7 +36,7 @@
     <fragment
         android:id="@+id/addTaskFragment"
         android:name="com.example.taskscheduler.ui.main.addTask.AddTaskFragment"
-        android:label=""
+        android:label="@string/tasks"
         tools:layout="@layout/add_task_fragment"
         >
         <argument
@@ -47,6 +47,6 @@
     <fragment
         android:id="@+id/logOutFragment_dest"
         android:name="com.example.taskscheduler.ui.main.logOut.LogOutFragment"
-        android:label=""
+        android:label="@string/tasks"
         tools:layout="@layout/fragment_log_out" />
 </navigation>

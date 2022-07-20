@@ -65,25 +65,31 @@ class LogInFragment : Fragment() {
         "onSignInResult".logd()
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
             "Sign in successful!".logd()
+            Firebase.auth
+                .apply { uid.log("user uid") }
+                .currentUser?.displayName.log("user name")
+
             activityViewModel.goToMainActivity()
             return
         }
 
+        val response = result.idpResponse
+
+        val noLogInMsj = if (response == null) {
+            "Sign in canceled".logw()
+            R.string.signing_in_cancelled
+        } else {
+            "Sign in error: ${response.error}".logw()
+            R.string.error_signing_in
+        }
+
         Toast.makeText(
             context,
-            R.string.error_signing_in,
+            noLogInMsj,
             Toast.LENGTH_SHORT
         ).show()
 
-        val response = result.idpResponse
-        if (response == null) {
-            "Sign in canceled".logw()
-        } else {
-            "Sign in error ${response.error}".logw()
-        }
-        binding.root.findNavController().navigate(
-            LogInFragmentDirections.actionLogInFragmentToHomeFragment()
-        )
+        binding.root.findNavController().popBackStack()
     }
 
     private fun goToSignIn() {
