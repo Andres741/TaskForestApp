@@ -2,21 +2,21 @@ package com.example.taskscheduler.ui.main.logOut
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import com.example.taskscheduler.R
 import com.example.taskscheduler.ui.logIn.LogInActivity
+import com.example.taskscheduler.util.await
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -34,7 +34,7 @@ class LogOutFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logOut()
+        logout1()
 //        lifecycleScope.launch {
 //            delay(4500)
 //            Toast.makeText(context, "I was lying", Toast.LENGTH_LONG).show()
@@ -43,13 +43,38 @@ class LogOutFragment: Fragment() {
     }
 
     private fun logOut() {
-        val activity = requireActivity()
+        "logOut".log()
+
+        val activity = activity!!
         Toast.makeText(context, R.string.bye, Toast.LENGTH_LONG).show()
+
         Firebase.auth.signOut()
+
+        Firebase.auth.currentUser.log("Firebase.auth.currentUser")
         startActivity(Intent(activity, LogInActivity::class.java))
         activity.finish()
     }
-//    companion object {
-//        fun newInstance() = LogOutFragment()
-//    }
+
+    private fun logout1() {
+        "logout1".log()
+
+        val activity = activity!!
+        val context = context ?: return
+        Toast.makeText(context, R.string.bye, Toast.LENGTH_LONG).show()
+
+
+        lifecycleScope.launch {
+            AuthUI.getInstance()
+                .signOut(context)
+                .await()
+
+            Firebase.auth.currentUser.log("Firebase.auth.currentUser")
+            startActivity(Intent(activity, LogInActivity::class.java))
+            activity.finish()
+        }
+    }
+
+    private fun <T> T.log(msj: String? = null) = apply {
+        Log.i("LogOutFragment", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
 }

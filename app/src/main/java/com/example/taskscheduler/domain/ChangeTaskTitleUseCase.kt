@@ -4,7 +4,7 @@ import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
-import com.example.taskscheduler.domain.synchronization.WriteTaskContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -24,7 +24,7 @@ class ChangeTaskTitleUseCase @Inject constructor(
         if (isSaved) SimpleTaskTitleOwner(newValue) else null
     }
 
-    suspend fun withUpdated(task: ITaskTitleOwner, newValue: String) = withWriteTaskContext {
+    suspend fun withUpdated(task: ITaskTitleOwner, newValue: String) = withContext(Dispatchers.Default) {
         invoke(task, newValue)?.let {
             taskRepository.getTaskByTitle(it.taskTitle)
         }

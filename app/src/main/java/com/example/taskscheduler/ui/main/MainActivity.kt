@@ -21,10 +21,11 @@ class MainActivity: AppCompatActivity() {
 
     private val navController by lazy { findNavController(R.id.nav_host_fragment_content_main) }
 
-    private val mainFrag by lazy { R.id.fragment_tasks }
+    //private val mainFrag by lazy { R.id.fragment_tasks }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        "main activity created".log()
 
         viewModel.synchronizeTasks()
 
@@ -45,8 +46,9 @@ class MainActivity: AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        "navigate up pressed".log()
         return when(navController.currentDestination?.id) {
-            mainFrag -> NavigationUI.navigateUp(navController, binding.drawerLayout)
+            R.id.fragment_tasks -> NavigationUI.navigateUp(navController, binding.drawerLayout)
             else -> {
                 onBackPressed()
                 true
@@ -60,7 +62,7 @@ class MainActivity: AppCompatActivity() {
 //        super.onDestroy()
 //    }
 
-//    private fun<T> T.log(msj: String? = null) = apply {
-//        Log.i("MainActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
-//    }
+    private fun<T> T.log(msj: String? = null) = apply {
+        Log.i("MainActivity", "${if (msj != null) "$msj: " else ""}${toString()}")
+    }
 }

@@ -116,4 +116,12 @@
     <string name="house_icon">House icon</string>
     <string name="login">Login</string>
     <string name="error_signing_in">There was an error signing in</string>
+    <string name="log_in">Log in</string>
+    <string name="home">Home</string>
+    <string name="title_activity_log_in">Home</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="home_fragment_label">Home</string>
+    <string name="log_in_fragment_label">Log In</string>
+    <string name="enter_without_log_in">Enter without log in</string>
+    <string name="tasks_app">Tasks app</string>
 </resources>

@@ -4,9 +4,7 @@ import android.util.Log
 import com.example.taskscheduler.data.FirestoreSynchronizedTaskRepository
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
-import com.example.taskscheduler.domain.synchronization.WriteTaskContext
 import com.example.taskscheduler.util.ifTrue
-import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class SynchronizeFromFirestoreUseCase constructor(

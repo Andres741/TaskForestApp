@@ -6,6 +6,8 @@ class EventTrigger: DataEventTrigger<Unit>() {
         eventManager.value = Unit
     }
 
+    inline operator fun invoke() = triggerEvent()
+
     override fun triggerEvent(data: Unit) {
         triggerEvent()
     }

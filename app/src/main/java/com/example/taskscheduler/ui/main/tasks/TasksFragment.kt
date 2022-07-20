@@ -40,6 +40,7 @@ class TasksFragment: Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        "Tasks fragment created".log()
 
         val root = inflater.inflate(R.layout.fragment_tasks, container, false)
 

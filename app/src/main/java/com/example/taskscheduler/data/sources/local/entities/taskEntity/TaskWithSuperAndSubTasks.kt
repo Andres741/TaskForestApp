@@ -15,12 +15,12 @@ data class TaskWithSuperAndSubTasks(
         parentColumn = TITLE_ID,
         entityColumn = SUB_TASK_ID
     )
-    val superTaskEntity: SubTaskEntity
+    val superTaskEntity: SubTaskEntity?
 ) {
-    private val superTask: String get() = superTaskEntity.superTask
+    private val superTask: String get() = superTaskEntity!!.superTask
     private val subTasks: List<String> get() = subTaskEntities.map { it.subTask }
     val hasSubTasks: Boolean get() = subTaskEntities.isNotEmpty()
-    val hasSuperTask: Boolean get() = superTaskEntity.hasSuperTask
+    val hasSuperTask: Boolean get() = superTaskEntity!!.hasSuperTask
 
     fun toModel() = TaskModel(this)
 }

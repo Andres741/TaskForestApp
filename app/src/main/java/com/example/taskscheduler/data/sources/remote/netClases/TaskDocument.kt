@@ -26,10 +26,7 @@ data class TaskDocument(
         subTasks = subTasks!!.map(::SimpleTaskTitleOwner),
     )
 
-    fun toModelOrNull(): TaskModel? {
-        return if (containsNullProperty()) null
-        else toModel()
-    }
+    fun toModelOrNull() = if (! containsNullProperty()) toModel() else null
 }
 
 fun Iterable<TaskDocument>.toModel() = mapNotNull(TaskDocument::toModelOrNull)

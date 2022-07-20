@@ -210,23 +210,15 @@ class FirestoreSynchronizedTaskRepository(
 
     suspend fun mergeLists(): Unit = coroutineScope {
         val allFromFirebaseDef = async {
-            withTimeout(7000){
+            withTimeout(5000){
                 getAllFromFirebase()
             }
         }
         val allFromLocal = local.getAllTasksStatic()
 
-        allFromLocal.logList("all From Local")
-
         val forest = TaskForest(allFromLocal)
 
-        "forest 0".bigLog()
-        forest.log()
-
-        val addToLocal = forest.addAll(allFromFirebaseDef.await().logList("all From Firebase"))
-
-        "forest 1".bigLog()
-        forest.log()
+        val addToLocal = forest.addAll(allFromFirebaseDef.await())
 
         launch {
             val addToRemote = forest.taskMap.keys.asSequence().filter(addToLocal::notContains).asIterable()
@@ -234,6 +226,24 @@ class FirestoreSynchronizedTaskRepository(
         }
         saveOnlyInLocal(forest.getAllIn(addToLocal))
     }
+
+//    suspend fun mergeListsRemote(): Unit = coroutineScope {
+//        val allFromLocalDef = async { local.getAllTasksStatic() }
+//
+//        val allFromFirebase = withTimeout(5000) {
+//            getAllFromFirebase()
+//        }
+//
+//        val forest = TaskForest(allFromFirebase)
+//
+//        val addToRemote = forest.addAll(allFromLocalDef.await())
+//
+//        launch {
+//            val addToLocal = forest.taskMap.keys.asSequence().filter(addToRemote::notContains).asIterable()
+//            saveOnlyInLocal(forest.getAllIn(addToLocal))
+//        }
+//        saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
+//    }
 
 
     inner class EasyFiresoreSynchronization {

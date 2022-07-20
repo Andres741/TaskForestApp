@@ -14,7 +14,6 @@ class WriteTaskContext @Inject constructor(): CoroutineContext by Dispatchers.De
 @Singleton
 class WriteTaskExclusion @Inject constructor(): Mutex by Mutex()
 
-@Singleton
 class WithWriteTaskContext @Inject constructor(
     val writeTaskContext: WriteTaskContext,
     val writeTaskExclusion: WriteTaskExclusion,
