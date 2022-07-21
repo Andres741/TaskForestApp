@@ -127,4 +127,5 @@
     <string name="tasks_app">Tasks app</string>
     <string name="exit">Exit</string>
     <string name="tasks">Tasks</string>
+    <string name="date">Date:</string>
 </resources>

@@ -84,7 +84,7 @@
 
                 android:text="@string/save_change"
 
-                app:layout_constraintEnd_toStartOf="@id/optional_button"
+                app:layout_constraintEnd_toStartOf="@id/discard"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/separator"
 
@@ -99,7 +99,7 @@
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/separator"
-                app:layout_constraintStart_toEndOf="@id/optional_button"
+                app:layout_constraintStart_toEndOf="@id/save"
                 app:layout_constraintBottom_toBottomOf="parent"
 
                 style="@style/button_save_pop_up"
@@ -108,9 +108,12 @@
             <Button
                 android:id="@+id/optional_button"
 
-                app:layout_constraintEnd_toStartOf="@+id/discard"
-                app:layout_constraintStart_toEndOf="@+id/save"
-                app:layout_constraintTop_toBottomOf="@+id/separator"
+                android:layout_width="wrap_content"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@+id/save"
                 app:layout_constraintBottom_toBottomOf="parent"
 
                 android:visibility="gone"

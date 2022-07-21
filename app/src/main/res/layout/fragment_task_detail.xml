@@ -109,12 +109,11 @@
 
             style="@style/task_value"
             android:layout_width="wrap_content"
-
             android:layout_height="wrap_content"
 
             app:layout_constraintStart_toEndOf="@id/key_value_separator"
 
-            app:layout_constraintBottom_toTopOf="@+id/task_description_cont_SV"
+            app:layout_constraintBottom_toTopOf="@+id/date_cont"
             app:layout_constraintTop_toBottomOf="@+id/task_done_cont"
 
             android:text="@{viewmodel.task.hasSuperTask ? viewmodel.task.superTaskTitle : @string/doesn_t_have}"
@@ -122,6 +121,23 @@
             android:onClick="@{()-> tasksAdapterViewModel.goToSuperTask(viewmodel.task)}"
 
             tools:text="Learning"
+            />
+
+        <TextView
+            android:id="@+id/date_cont"
+
+            style="@style/task_value"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintStart_toEndOf="@id/key_value_separator"
+            app:layout_constraintTop_toBottomOf="@id/superTask_cont"
+            app:layout_constraintBottom_toTopOf="@id/task_description_cont_SV"
+
+            android:text="@{viewmodel.formattedDate}"
+
+            tools:text="07/09/2022 - 18:00"
             />
 
         <ScrollView
@@ -154,7 +170,7 @@
                 android:inputType="textMultiLine"
 
                 android:text="@={viewmodel.description}"
-                tools:text="@string/mucho_texto"
+                tools:text="@string/no_mucho_texto"
                 android:paddingBottom="24dp"
                 />
 
@@ -166,7 +182,7 @@
         <!--        tools:text="@string/mucho_texto"-->
 
 
-        <View
+        <Space
             android:id="@+id/key_value_separator"
             android:layout_width="1dp"
             android:layout_height="0dp"
@@ -242,6 +258,23 @@
             />
 
         <TextView
+            android:id="@+id/date"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintBaseline_toBaselineOf="@id/date_cont"
+
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+
+            android:layout_marginEnd="@dimen/value_min_separation"
+
+            android:text="@string/date"
+            />
+
+        <TextView
             android:id="@+id/task_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -260,7 +293,7 @@
 
             />
 
-        <View
+        <Space
             android:id="@+id/separator_helper"
             android:layout_width="1dp"
             android:layout_height="1dp"
@@ -274,7 +307,7 @@
             app:layout_constraintStart_toStartOf="@+id/task_title"
             app:layout_constraintTop_toTopOf="parent"
 
-            tools:layout_marginTop="260dp"
+            tools:layout_marginTop="80dp"
             />
 
         <androidx.recyclerview.widget.RecyclerView

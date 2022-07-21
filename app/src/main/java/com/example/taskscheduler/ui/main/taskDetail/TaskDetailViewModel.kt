@@ -10,7 +10,7 @@ import com.example.taskscheduler.util.observable.DataEventTrigger
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.NoMoreWithTaskDeletedType
 import com.example.taskscheduler.util.TypeChange
-import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -42,6 +42,12 @@ class TaskDetailViewModel @Inject constructor(
     val taskDeletedEvent = DataEventTrigger<NoMoreWithTaskDeletedType>()
 
     private val scopeProvider = OneScopeAtOnceProvider()
+
+    private val dateFormat = SimpleDateFormat("EEE, dd/MM/yyyy - HH:mm:ss")
+    val formattedDate: LiveData<String> = _task.map { task ->
+        task ?: return@map ""
+        dateFormat.format(task.dateNum)
+    }
 
     fun onSetUp(task: ITaskTitleOwner) {
         scopeProvider.newScope.launch {
