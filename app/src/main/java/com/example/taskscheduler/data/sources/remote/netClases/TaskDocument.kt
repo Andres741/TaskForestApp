@@ -12,7 +12,7 @@ data class TaskDocument(
 //    @field:JvmField // -> isDone
     val done: Boolean? = null,
     val dateNum: Long? = null,
-    val adviseDate: Long?,
+    val adviseDate: Long? = null,
 ): IFirestoreDocument {
 
     override fun obtainDocumentName() = title ?: ""

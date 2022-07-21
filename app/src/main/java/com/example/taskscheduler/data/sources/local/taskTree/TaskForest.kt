@@ -101,7 +101,7 @@ class TaskForest() {
 
 fun BDTree<TaskEntity>.toModel() = TaskModel(
     title = value.title, type = value.type, description = value.description,
-    isDone = value.isDone, dateNum = value.date,
+    isDone = value.isDone, dateNum = value.date, adviseDate = value.adviseDate,
     superTask = SimpleTaskTitleOwner(father?.value?.title ?: ""),
     subTasks = childrenIter.asSequence().map { child -> child.value.title }.asIterable().toTaskTitle(),
 )

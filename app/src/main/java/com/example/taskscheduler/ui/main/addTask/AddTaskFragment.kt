@@ -96,5 +96,4 @@ class AddTaskFragment : Fragment() {
     private fun<T> T.log(msj: String? = null) = apply {
         Log.i("AddTaskFragment", "${if (msj != null) "$msj: " else ""}${toString()}")
     }
-
 }

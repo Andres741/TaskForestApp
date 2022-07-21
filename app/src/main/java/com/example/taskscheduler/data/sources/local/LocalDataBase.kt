@@ -12,7 +12,7 @@ import com.example.taskscheduler.data.sources.local.dao.*
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
 import com.example.taskscheduler.di.data.LocalModule
 
-@Database(entities = [TaskEntity::class, SubTaskEntity::class], version = 3, exportSchema = true)
+@Database(entities = [TaskEntity::class, SubTaskEntity::class], version = 4, exportSchema = true)
 //@TypeConverters(Converters::class)
 abstract class LocalDataBase: RoomDatabase() {
     abstract val taskDao: TaskDao
@@ -25,11 +25,15 @@ abstract class LocalDataBase: RoomDatabase() {
         fun build(context: Context) = Room.databaseBuilder(
             context, LocalDataBase::class.java, DATABASE_NAME
         )/*.addTypeConverter(Converters())*/.addMigrations(
-            Migration(2,3) {
-                //it.execSQL("TODO: delete AEntity table")
+            Migration(1,2) {},
+            Migration(1,3) { db ->
+                db.execSQL("DROP TABLE IF EXISTS a_table")
             },
-            Migration(1,3) {
-
+            Migration(2,3) { db ->
+                db.execSQL("DROP TABLE IF EXISTS a_table")
+            },
+            Migration(3, 4) { db ->
+                db.execSQL("ALTER TABLE $TASK_TABLE ADD COLUMN $ADVISE_DATEa INTEGER DEFAULT NULL")
             }
         ).build()
     }

@@ -24,6 +24,6 @@ data class TaskEntity(
     val isDone: Boolean,
     @ColumnInfo(name = DATEa)
     val date: Long,
-//    @ColumnInfo(name = ADVISE_DATEa)
-//    val adviseDate: Long?,
+    @ColumnInfo(name = ADVISE_DATEa)
+    val adviseDate: Long?,
 )
