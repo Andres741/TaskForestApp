@@ -12,21 +12,22 @@ data class TaskDocument(
 //    @field:JvmField // -> isDone
     val done: Boolean? = null,
     val dateNum: Long? = null,
+    val adviseDate: Long?,
 ): IFirestoreDocument {
 
     override fun obtainDocumentName() = title ?: ""
 
-    fun containsNullProperty() = title == null || type == null || description == null ||
+    fun containsPropertyShouldNotBeNull() = title == null || type == null || description == null ||
             superTask == null || subTasks == null || done == null || dateNum == null
 
     fun toModel() = TaskModel(
         title = title!!, type = type!!, description = description!!,
-        isDone = done!!, dateNum = dateNum!!,
+        isDone = done!!, dateNum = dateNum!!, adviseDate = adviseDate,
         superTask = superTask!!.let(::SimpleTaskTitleOwner),
         subTasks = subTasks!!.map(::SimpleTaskTitleOwner),
     )
 
-    fun toModelOrNull() = if (! containsNullProperty()) toModel() else null
+    fun toModelOrNull() = if (! containsPropertyShouldNotBeNull()) toModel() else null
 }
 
 fun Iterable<TaskDocument>.toModel() = mapNotNull(TaskDocument::toModelOrNull)

@@ -20,7 +20,8 @@ class CreateValidTaskUseCase @Inject constructor(
      * If there are super task the type will be the same as the super task, ignoring type param
      */
     suspend operator fun invoke(
-        title: String?, type: String? = null, description: String?, superTask: String? = null
+        title: String?, type: String? = null, description: String?,
+        superTask: String? = null, adviseDate: Long?,
     ): Response = withContext(Dispatchers.Default) res@ {
 
         val (newSuperTask, newType) = if (superTask.isNullOrBlank()) { // There is not super task
@@ -33,7 +34,8 @@ class CreateValidTaskUseCase @Inject constructor(
         val newDescription = description?.validateDescription() ?: ""
 
         return@res Response.ValidTask( TaskModel (
-            title = newTitle, type = newType, description = newDescription, superTask = SimpleTaskTitleOwner(newSuperTask)
+            title = newTitle, type = newType, description = newDescription,
+            superTask = SimpleTaskTitleOwner(newSuperTask), adviseDate = adviseDate
         ))
     }
 

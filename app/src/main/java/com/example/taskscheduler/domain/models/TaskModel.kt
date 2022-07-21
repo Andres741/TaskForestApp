@@ -10,7 +10,6 @@ import com.example.taskscheduler.util.dataStructures.MyLinkedList
 import com.example.taskscheduler.util.dataStructures.WrapperList
 import java.util.*
 
-
 data class TaskModel (
     val title: String,
     val type: String,
@@ -19,6 +18,7 @@ data class TaskModel (
     val subTasks: List<SimpleTaskTitleOwner> = emptyList(),
     var isDone: Boolean = false,
     val dateNum: Long = System.currentTimeMillis(),
+    val adviseDate: Long? = null
 ): ITaskTypeNameOwner, ITaskTitleOwner {
 
     val date: Calendar get() = Calendar.getInstance().apply { timeInMillis = dateNum }
@@ -34,13 +34,13 @@ data class TaskModel (
 
     constructor(entity: TaskWithSuperAndSubTasks): this (
         title = entity.task.title, type = entity.task.type, description = entity.task.description,
-        isDone = entity.task.isDone, dateNum = entity.task.date,
+        isDone = entity.task.isDone, dateNum = entity.task.date,// adviseDate = entity.task.adviseDate,
         superTask = SimpleTaskTitleOwner(entity.superTaskEntity),
         subTasks = allToSimpleTaskTitleOwner(entity.subTaskEntities),
     )
 
     fun toEntity() = TaskEntity(
-        title = title, type = type, description = description, isDone = isDone, date = dateNum
+        title = title, type = type, description = description, isDone = isDone, date = dateNum,// adviseDate = adviseDate
     )
 
     /**Returns a SubTaskEntity with the relationship of hierarchy whit its father, or null if does not have father.*/
@@ -57,7 +57,7 @@ data class TaskModel (
 
     fun toDocument() = TaskDocument (
         title = title, type = type, description = description,
-        done = isDone, dateNum = dateNum,
+        done = isDone, dateNum = dateNum, adviseDate = adviseDate,
         superTask = superTaskTitle,
         subTasks = subTaskTitles
     )

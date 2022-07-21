@@ -37,12 +37,6 @@ object RemoteModule {
     )
 }
 
-//private interface IFirestoreCollection  {
-//    val collection: CollectionReference
-//}
-//@JvmInline
-//value class FirestoreCollection (override val collection: CollectionReference): IFirestoreCollection
-
-class FirestoreCollectionForTasks(
+data class FirestoreCollectionForTasks(
     val collection: CollectionReference?
 )

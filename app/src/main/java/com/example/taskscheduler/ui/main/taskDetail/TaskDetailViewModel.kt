@@ -2,6 +2,7 @@ package com.example.taskscheduler.ui.main.taskDetail
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.taskscheduler.di.util.AppDateAndHourFormatProvider
 import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
@@ -10,7 +11,6 @@ import com.example.taskscheduler.util.observable.DataEventTrigger
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.NoMoreWithTaskDeletedType
 import com.example.taskscheduler.util.TypeChange
-import java.text.SimpleDateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -24,6 +24,7 @@ class TaskDetailViewModel @Inject constructor(
     private val getTaskByTitle: GetTaskByTitleUseCase,
     private val deleteTask: DeleteTaskUseCase,
     private val existsTaskWithType: ExistsTaskWithTypeUseCase,
+    dateAndHourFormatProvider: AppDateAndHourFormatProvider,
 ): ViewModel() {
 
     val title = MutableLiveData<String>()
@@ -43,7 +44,7 @@ class TaskDetailViewModel @Inject constructor(
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
-    private val dateFormat = SimpleDateFormat("EEE, dd/MM/yyyy - HH:mm:ss")
+    private val dateFormat = dateAndHourFormatProvider.format
     val formattedDate: LiveData<String> = _task.map { task ->
         task ?: return@map ""
         dateFormat.format(task.dateNum)

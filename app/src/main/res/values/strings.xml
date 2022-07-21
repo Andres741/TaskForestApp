@@ -78,6 +78,7 @@
     <string name="title">title</string>
     <string name="description">description</string>
     <string name="type">type</string>
+    <string name="advise_date">advise date</string>
     <string name="add_task">Add task</string>
     <string name="save">save</string>
     <string name="super_task">Super task:</string>

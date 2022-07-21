@@ -25,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
 @AndroidEntryPoint
 class TaskDetailFragment: Fragment() {
 
@@ -204,7 +203,6 @@ class TaskDetailFragment: Fragment() {
     }
 
     private val deleteOptionsMenu by lazy {
-
         val view = activity!!.findViewById<View>(R.id.menu_delete)
         PopupMenu(context!!, view).apply {
             menuInflater.inflate(R.menu.delete_task_options, menu)
@@ -222,8 +220,9 @@ class TaskDetailFragment: Fragment() {
 
     private fun setSaveStatusColor(savedValue: String, candidateNewValue: String?, textView: TextView): Boolean {
         val isDifferent = savedValue == candidateNewValue
-        val color = if (isDifferent) resources.getColor(R.color.black)
-        else resources.getColor(R.color.unsaved)
+        val color =
+            if (isDifferent) resources.getColor(R.color.black)
+            else resources.getColor(R.color.unsaved)
 
         textView.setTextColor(color)
         return isDifferent

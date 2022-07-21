@@ -14,8 +14,8 @@ import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.AddTaskFragmentBinding
 import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.util.ifFalse
+import com.example.taskscheduler.util.ui.DatePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class AddTaskFragment : Fragment() {
@@ -73,6 +73,19 @@ class AddTaskFragment : Fragment() {
                     .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
             }
         }
+        binding.apply {
+            adviseDate.setOnClickListener {
+                showDatePickerDialog()
+            }
+        }
+    }
+
+    private fun showDatePickerDialog() {
+        val datePicker = DatePickerFragment.newInstance { _, year, month, day ->
+            //"$day/${month+1}/$year".log("Date piked")
+            viewModel.setAdviseDate(year, month, day)
+        }
+        datePicker.show(activity!!.supportFragmentManager, "datePicker")
     }
 
     override fun onDestroy() {

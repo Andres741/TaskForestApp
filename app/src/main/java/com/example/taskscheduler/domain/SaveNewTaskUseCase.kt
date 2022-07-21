@@ -21,10 +21,10 @@ class SaveNewTaskUseCase @Inject constructor(
      * This function is synchronized and non cancellable.
      */
     suspend operator fun invoke(
-        title: String?, type: String?, description: String?, superTask: String?
+        title: String?, type: String?, description: String?, superTask: String?, adviseDate: Long?,
     ): CreateValidTaskUseCase.Response = withWriteTaskContext context@ {
         createValidTaskUseCase(
-            title, type, description, superTask
+            title, type, description, superTask, adviseDate,
         ).also { response ->
             if (response !is ValidTask) return@also
 
@@ -34,7 +34,8 @@ class SaveNewTaskUseCase @Inject constructor(
     }
     /**This function ignores the subtasks of the task model.*/
     suspend operator fun invoke(task: TaskModel) = invoke(
-        title = task.title, type = task.type, description = task.description, superTask = task.superTaskTitle
+        title = task.title, type = task.type, description = task.description,
+        superTask = task.superTaskTitle, adviseDate = task.adviseDate
     )
 
     class SavedTask(validTaskResponse: ValidTask): ValidTask(validTaskResponse.task)

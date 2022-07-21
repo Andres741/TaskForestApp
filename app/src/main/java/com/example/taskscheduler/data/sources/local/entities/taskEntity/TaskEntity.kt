@@ -10,6 +10,7 @@ const val TYPEa = "type"
 const val DESCRIPTIONa = "description_a"
 const val IS_DONEa = "isDone_a"
 const val DATEa = "date_a"
+const val ADVISE_DATEa = "adviseDate_a"
 
 @Entity(tableName = TASK_TABLE)
 data class TaskEntity(
@@ -23,4 +24,6 @@ data class TaskEntity(
     val isDone: Boolean,
     @ColumnInfo(name = DATEa)
     val date: Long,
+//    @ColumnInfo(name = ADVISE_DATEa)
+//    val adviseDate: Long?,
 )

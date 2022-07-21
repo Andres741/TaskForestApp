@@ -65,6 +65,23 @@ class WrapperList<T, R> (
         originalList.subList(fromIndex, toIndex), converter
     )
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is List<*>) return false
+        if (this === other) return true
+        if (size != other.size) return false
+
+        val otherIter = other.iterator()
+
+        forEach { item ->
+            if (item != otherIter.next()) return false
+        }
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return iterator().hashCode()
+    }
+
     override fun toString() = buildString {
         val elemIter = this@WrapperList.iterator()
         append("WrapperList[")
