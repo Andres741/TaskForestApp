@@ -129,4 +129,7 @@
     <string name="exit">Exit</string>
     <string name="tasks">Tasks</string>
     <string name="date">Date:</string>
+    <string name="quit">Quit</string>
+
+    <string name="must_select_future_date">You must select a future date</string>
 </resources>

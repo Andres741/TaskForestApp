@@ -13,7 +13,7 @@
         <item name="android:layout_height">wrap_content</item>
 
         <item name="android:layout_marginTop">32dp</item>
-        <item name="android:layout_marginHorizontal">24dp</item>
+        <item name="android:layout_marginHorizontal">@dimen/task_input_marg_hor</item>
     </style>
 
     <style name="fragments_title">

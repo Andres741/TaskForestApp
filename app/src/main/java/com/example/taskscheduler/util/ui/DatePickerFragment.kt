@@ -6,20 +6,24 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import java.util.*
 
-class DatePickerFragment private constructor(
-    var listener: DatePickerDialog.OnDateSetListener
+class DatePickerFragment (
+    val calendar: Calendar,
+    val minDate: Calendar? = null,
+    val maxDate: Calendar? = null,
+    var listener: DatePickerDialog.OnDateSetListener,
 ): DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        return DatePickerDialog(activity!!, listener, year, month, day)
-    }
+        return DatePickerDialog(activity!!, listener, year, month, day).also { dialog ->
+            if (minDate != null)
+                dialog.datePicker.minDate = minDate.timeInMillis
 
-    companion object {
-        fun newInstance(listener: DatePickerDialog.OnDateSetListener) = DatePickerFragment(listener)
+            if (maxDate != null)
+                dialog.datePicker.maxDate = maxDate.timeInMillis
+        }
     }
 }

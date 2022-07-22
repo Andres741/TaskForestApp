@@ -6,11 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
-import com.example.taskscheduler.data.Converters
-import com.example.taskscheduler.data.sources.local.entities.AEntity
 import com.example.taskscheduler.data.sources.local.dao.*
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
-import com.example.taskscheduler.di.data.LocalModule
 
 @Database(entities = [TaskEntity::class, SubTaskEntity::class], version = 4, exportSchema = true)
 //@TypeConverters(Converters::class)

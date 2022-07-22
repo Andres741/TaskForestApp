@@ -16,6 +16,7 @@ import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.ui.DatePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class AddTaskFragment : Fragment() {
@@ -47,41 +48,54 @@ class AddTaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.taskHasBeenSaved.observe(viewLifecycleOwner) { response ->
-            response ?: throw NullPointerException("response is null.")
+        viewModel.apply {
+            taskHasBeenSaved.observe(viewLifecycleOwner) { response ->
+                response ?: throw NullPointerException("response is null.")
 
-            var isSuccessful = false
+                var isSuccessful = false
 
-            val message: Int = when (response) {
-                is ValidTask -> {
-                    if (response !is SavedTask)
-                        throw IllegalStateException ("Task has not been saved")
-                    isSuccessful = true
-                    R.string.new_task_saved
+                val message: Int = when (response) {
+                    is ValidTask -> {
+                        if (response !is SavedTask)
+                            throw IllegalStateException ("Task has not been saved")
+                        isSuccessful = true
+                        R.string.new_task_saved
+                    }
+                    is WrongSuperTask -> throw IllegalStateException (
+                        "The super task for some reason does not exists."
+                    )
+                    is WrongTitle -> R.string.new_task_wrong_title
+                    is WrongType -> R.string.new_task_wrong_type
                 }
-                is WrongSuperTask -> throw IllegalStateException (
-                    "The super task for some reason does not exists."
-                )
-                is WrongTitle -> R.string.new_task_wrong_title
-                is WrongType -> R.string.new_task_wrong_type
+
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+                if (isSuccessful) {
+                    view.findNavController().popBackStack()
+                        .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
+                }
             }
-
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-
-            if (isSuccessful) {
-                view.findNavController().popBackStack()
-                    .ifFalse { "TaskDetailFragment hasn't back stack.".log() }
+            notValidAdviseDate.setEvent(viewLifecycleOwner) {
+                Toast.makeText(context, R.string.must_select_future_date, Toast.LENGTH_LONG).show()
             }
         }
+
         binding.apply {
             adviseDate.setOnClickListener {
                 showDatePickerDialog()
+            }
+            quitBt.setOnClickListener {
+                viewModel.adviseDate.value = null
             }
         }
     }
 
     private fun showDatePickerDialog() {
-        val datePicker = DatePickerFragment.newInstance { _, year, month, day ->
+        val nowDate = Calendar.getInstance()
+        val tomorrowDate = (nowDate.clone() as Calendar).apply {
+            add(Calendar.DAY_OF_MONTH, 1)
+        }
+        val datePicker = DatePickerFragment(nowDate, tomorrowDate) { _, year, month, day ->
             //"$day/${month+1}/$year".log("Date piked")
             viewModel.setAdviseDate(year, month, day)
         }
