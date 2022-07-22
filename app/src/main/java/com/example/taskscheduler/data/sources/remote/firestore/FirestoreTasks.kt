@@ -118,6 +118,10 @@ class FirestoreTasks(
         tasksCollection.document(task).update("description", newValue).await()
     }
 
+    suspend fun setAdviseDate(task: String, newValue: Long?) = kotlin.runCatching {
+        tasksCollection.document(task).update("adviseDate", newValue).await()
+    }
+
 
     suspend fun delete(taskTitle: String) = kotlin.runCatching {
         tasksCollection.document(taskTitle).delete().await()

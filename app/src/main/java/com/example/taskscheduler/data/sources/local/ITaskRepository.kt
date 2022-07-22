@@ -69,6 +69,8 @@ interface ITaskRepository {
 
     suspend fun changeTypeInTaskHierarchy(task: String, newValue: String): Boolean
 
+    suspend fun changeAdviseDate(task: String, newValue: Long?): Boolean
+
     //Delete
     suspend fun deleteSingleTask(task: ITaskTitleOwner): Boolean
 

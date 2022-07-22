@@ -133,12 +133,59 @@
 
             app:layout_constraintStart_toEndOf="@id/key_value_separator"
             app:layout_constraintTop_toBottomOf="@id/superTask_cont"
-            app:layout_constraintBottom_toTopOf="@id/task_description_cont_SV"
 
-            android:text="@{viewmodel.formattedDate}"
+            app:layout_constraintBottom_toTopOf="@id/advise_date_cont"
+
+            android:text="@{viewmodel.formattedCreationDate}"
 
             tools:text="07/09/2022 - 18:00"
             />
+
+        <TextView
+            android:id="@+id/advise_date_cont"
+
+            style="@style/task_value"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintStart_toEndOf="@id/key_value_separator"
+            app:layout_constraintTop_toBottomOf="@id/date_cont"
+
+            app:layout_constraintBottom_toTopOf="@id/task_description_cont_SV"
+
+            android:text="@{ viewmodel.formattedAdviseDate }"
+
+            android:hint="@{@string/enter_your_x_here(@string/advise_date)}"
+            tools:hint="Enter your advise date here"
+
+            tools:text="06/09/2022"
+            />
+
+
+        <TextView
+            android:id="@+id/quit_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+
+            android:layout_marginEnd="@dimen/task_input_marg_hor"
+            android:text="@string/quit"
+
+            android:textColor="@color/black"
+            android:textSize="18sp"
+
+            android:visibility="@{ viewmodel.adviseDate == null ? View.GONE : View.VISIBLE }"
+
+            app:layout_constraintBottom_toBottomOf="@id/task_advise_date"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+
+            app:layout_constraintStart_toEndOf="@id/advise_date_cont"
+
+            app:layout_constraintTop_toTopOf="@id/advise_date_cont"
+            app:layout_constraintVertical_bias="0.0"
+            tools:visibility="visible" />
 
         <ScrollView
             android:id="@+id/task_description_cont_SV"
@@ -271,7 +318,24 @@
 
             android:layout_marginEnd="@dimen/value_min_separation"
 
-            android:text="@string/date"
+            android:text="@string/creation_date"
+            />
+
+        <TextView
+            android:id="@+id/task_advise_date"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintBaseline_toBaselineOf="@id/advise_date_cont"
+
+            app:layout_constraintEnd_toStartOf="@id/key_value_separator"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/task_title"
+
+            android:layout_marginEnd="@dimen/value_min_separation"
+
+            android:text="@string/advise_date_key"
             />
 
         <TextView
@@ -307,7 +371,6 @@
             app:layout_constraintStart_toStartOf="@+id/task_title"
             app:layout_constraintTop_toTopOf="parent"
 
-            tools:layout_marginTop="80dp"
             />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -318,7 +381,7 @@
             app:layout_constraintHeight_max="@dimen/subtasksRcyMaxHeight"
             app:layout_constrainedHeight="true"
 
-            tools:layout_height="300dp"
+            tools:layout_height="250dp"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

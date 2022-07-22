@@ -67,9 +67,11 @@ interface TaskDao {
         const val UPDATE_DESCRIPTION =
             "UPDATE $TASK_TABLE SET $DESCRIPTIONa = :newValue WHERE $TITLE_ID = :key"
 
-
         const val UPDATE_TYPE =
             "UPDATE $TASK_TABLE SET $TYPEa = :newValue WHERE $TYPEa = :oldValue"
+
+        const val UPDATE_ADVISE_DATE =
+            "UPDATE $TASK_TABLE SET $ADVISE_DATEa = :newValue WHERE $TITLE_ID = :key "
 
 
         const val GET_TYPE_FROM_DB_BY_TASK =
@@ -220,6 +222,9 @@ interface TaskDao {
 
     @Query(UPDATE_TYPE)
     suspend fun updateType(oldValue: String, newValue: String): Int
+
+    @Query(UPDATE_ADVISE_DATE)
+    suspend fun updateAdviseDate(key: String, newValue: Long?): Int
 
 
     @Query(GET_TYPE_FROM_DB_BY_TASK)

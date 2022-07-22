@@ -116,6 +116,14 @@ class FirestoreSynchronizedTaskRepository(
             }
         }
 
+    override suspend fun changeAdviseDate(task: String, newValue: Long?) = coroutineScope {
+        launch {
+            firestoreTasks.setAdviseDate(task, newValue)
+        }
+        local.changeAdviseDate(task, newValue)
+    }
+
+
     //Delete
     override suspend fun deleteSingleTask(task: ITaskTitleOwner): Boolean {
         val deletedTaskTitle = task.taskTitle

@@ -127,6 +127,9 @@ class RoomTaskRepository @Inject constructor(
     override suspend fun changeTypeInTaskHierarchy(task: String, newValue: String) =
         taskAndSubTaskDao.changeTaskType(task, newValue) > 0
 
+    override suspend fun changeAdviseDate(task: String, newValue: Long?): Boolean =
+        taskDao.updateAdviseDate(task, newValue) > 0
+
 
     override suspend fun deleteSingleTask(task: ITaskTitleOwner) =
         taskAndSubTaskDao.deleteSingleTask(task.taskTitle) > 0

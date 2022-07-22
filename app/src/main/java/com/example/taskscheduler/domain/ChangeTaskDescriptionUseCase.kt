@@ -4,11 +4,11 @@ import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
-import com.example.taskscheduler.domain.synchronization.WriteTaskContext
 import com.example.taskscheduler.util.ifTrue
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ChangeTaskDescriptionUseCase  @Inject constructor(
     private val taskRepository: ITaskRepository,
     private val createValidTaskUseCase: CreateValidTaskUseCase,

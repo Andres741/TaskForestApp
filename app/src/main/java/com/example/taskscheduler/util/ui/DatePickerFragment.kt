@@ -26,4 +26,14 @@ class DatePickerFragment (
                 dialog.datePicker.maxDate = maxDate.timeInMillis
         }
     }
+
+    companion object {
+        fun newInstanceMinTomorrow(listener: DatePickerDialog.OnDateSetListener): DatePickerFragment {
+            val nowDate = Calendar.getInstance()
+            val tomorrowDate = (nowDate.clone() as Calendar).apply {
+                add(Calendar.DAY_OF_MONTH, 1)
+            }
+            return DatePickerFragment(nowDate,tomorrowDate, null, listener)
+        }
+    }
 }

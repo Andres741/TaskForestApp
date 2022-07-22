@@ -21,9 +21,13 @@ import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.CallbackAndName
 import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.toSimpleDate
+import com.example.taskscheduler.util.ui.DatePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.save_changes_pop_op_window.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.*
 
 @AndroidEntryPoint
 class TaskDetailFragment: Fragment() {
@@ -42,6 +46,7 @@ class TaskDetailFragment: Fragment() {
     private var isTitleSaved = true
     private var isTypeSaved = true
     private var isDescriptionSaved = true
+    private var isAdviseDateSaved = true
 
     private val saveInHierMsj by lazy { resources.getString(R.string.save_in_hierarchy) }
 
@@ -74,26 +79,30 @@ class TaskDetailFragment: Fragment() {
         }
 
         viewModel.apply {
-            title.observe(viewLifecycleOwner) {
+            title.observe(viewLifecycleOwner) { new ->
                 val title = task.value?.title ?: return@observe
-                isTitleSaved = setSaveStatusColor(title, it, binding.taskTitle)
+                isTitleSaved = setSaveStatusColorIfEquals(title, new, binding.taskTitle)
             }
-
-            type.observe(viewLifecycleOwner) {
+            type.observe(viewLifecycleOwner) { new ->
                 val type = task.value?.type ?: return@observe
-                isTypeSaved = setSaveStatusColor(type, it, binding.taskType)
+                isTypeSaved = setSaveStatusColorIfEquals(type, new, binding.taskType)
+            }
+            description.observe(viewLifecycleOwner) { new ->
+                val description = task.value?.description ?: return@observe
+                isDescriptionSaved = setSaveStatusColorIfEquals(description, new, binding.taskDescription)
+            }
+            adviseDate.observe(viewLifecycleOwner) { new ->
+                val adviseDate = task.value?.adviseDate
+                isAdviseDateSaved = setSaveStatusColorIfEquals(
+                    adviseDate?.toSimpleDate(), new?.toSimpleDate(), binding.taskAdviseDate
+                )
             }
 
-            description.observe(viewLifecycleOwner) {
-                val description = task.value?.description ?: return@observe
-                isDescriptionSaved = setSaveStatusColor(description, it, binding.taskDescription)
-            }
 
             taskTitleChangedEvent.observe(viewLifecycleOwner) { newTitle ->
                 newTitle ?: return@observe
                 tasksAdapterViewModel.changeStackTop(newTitle)
             }
-
             typeChangedEvent.observe(viewLifecycleOwner) { typeChange -> typeChange ?: return@observe
                 val currentType = tasksAdapterViewModel.selectedTaskTypeName.value ?: return@observe
                 if (currentType equalsType typeChange.first)
@@ -140,6 +149,22 @@ class TaskDetailFragment: Fragment() {
                 )
             }
 
+            it.adviseDateCont.setOnClickListener onClick@ {
+                val datePicker = DatePickerFragment.newInstanceMinTomorrow {  _, year, month, day ->
+                    viewModel.adviseDate.value = Calendar.getInstance().apply {
+                        set(Calendar.YEAR, year)
+                        set(Calendar.MONTH, month)
+                        set(Calendar.DAY_OF_MONTH, day)
+                    }.time.time.apply { toSimpleDate().log("Selected date") }
+                }
+                datePicker.show(activity!!.supportFragmentManager, "datePicker")
+            }
+
+            it.quitBt.setOnClickListener onClick@ {
+                viewModel.adviseDate.value = null
+            }
+
+
             it.taskTitle.setOnClickListener onClick@ {
                 if (isTitleSaved) return@onClick
 
@@ -148,7 +173,6 @@ class TaskDetailFragment: Fragment() {
                     onSavePressed = viewModel::saveNewTitle, onDiscardPressed = viewModel::restoreTitle
                 )
             }
-
             it.taskType.setOnClickListener onClick@ {
                 if (isTypeSaved) return@onClick
 
@@ -158,13 +182,26 @@ class TaskDetailFragment: Fragment() {
                     optional = viewModel::saveNewTypeInTaskHierarchy to saveInHierMsj
                 )
             }
-
             it.taskDescription.setOnClickListener onClick@ {
                 if (isDescriptionSaved) return@onClick
 
                 createSaveWindow(
                     oldValueText = viewModel.task.value!!.description, newValueText = viewModel.description.value!!,
                     onSavePressed = viewModel::saveNewDescription, onDiscardPressed = viewModel::restoreDescription
+                )
+            }
+            it.taskAdviseDate.setOnClickListener onClick@ {
+                if (isAdviseDateSaved) return@onClick
+
+                val doesNotHaveStr = lazy { getString(R.string.doesn_t_have) }
+                val format = viewModel.adviseDateFormat
+                val oldValue = format.run { format(viewModel.task.value?.adviseDate ?: return@run null) }
+                val newValue = format.run { format(viewModel.adviseDate.value ?: return@run null) }
+
+                createSaveWindow(
+                    oldValueText = oldValue ?: doesNotHaveStr.value,
+                    newValueText = newValue ?: doesNotHaveStr.value,
+                    onSavePressed = viewModel::saveNewAdviseDate, onDiscardPressed = viewModel::restoreAdviseDate
                 )
             }
         }
@@ -218,14 +255,17 @@ class TaskDetailFragment: Fragment() {
         }
     }
 
-    private fun setSaveStatusColor(savedValue: String, candidateNewValue: String?, textView: TextView): Boolean {
-        val isDifferent = savedValue == candidateNewValue
+    private fun setSaveStatusColorIfEquals(savedValue: Any?, candidateNewValue: Any?, textView: TextView): Boolean {
+        return (savedValue == candidateNewValue).also { isDifferent ->
+            setSaveStatusColor(isDifferent, textView)
+        }
+    }
+
+    private fun setSaveStatusColor(isDifferent: Boolean, textView: TextView) {
         val color =
             if (isDifferent) resources.getColor(R.color.black)
             else resources.getColor(R.color.unsaved)
-
         textView.setTextColor(color)
-        return isDifferent
     }
 
     private fun createSaveWindow(

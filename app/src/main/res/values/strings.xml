@@ -132,4 +132,6 @@
     <string name="quit">Quit</string>
 
     <string name="must_select_future_date">You must select a future date</string>
+    <string name="advise_date_key">Advise date:</string>
+    <string name="creation_date">Creation date:</string>
 </resources>

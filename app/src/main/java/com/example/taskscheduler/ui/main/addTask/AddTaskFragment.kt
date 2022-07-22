@@ -64,6 +64,9 @@ class AddTaskFragment : Fragment() {
                     is WrongSuperTask -> throw IllegalStateException (
                         "The super task for some reason does not exists."
                     )
+                    is WrongAdviseDate -> throw IllegalStateException (
+                        "Advise date should not be wrong."
+                    )
                     is WrongTitle -> R.string.new_task_wrong_title
                     is WrongType -> R.string.new_task_wrong_type
                 }
@@ -81,25 +84,18 @@ class AddTaskFragment : Fragment() {
         }
 
         binding.apply {
-            adviseDate.setOnClickListener {
-                showDatePickerDialog()
+            taskAdviseDate.setOnClickListener {
+                val datePicker = DatePickerFragment.newInstanceMinTomorrow { _, year, month, day ->
+                    //"$day/${month+1}/$year".log("Date piked")
+                    viewModel.setAdviseDate(year, month, day)
+                }
+                datePicker.show(activity!!.supportFragmentManager, "datePicker")
+
             }
             quitBt.setOnClickListener {
                 viewModel.adviseDate.value = null
             }
         }
-    }
-
-    private fun showDatePickerDialog() {
-        val nowDate = Calendar.getInstance()
-        val tomorrowDate = (nowDate.clone() as Calendar).apply {
-            add(Calendar.DAY_OF_MONTH, 1)
-        }
-        val datePicker = DatePickerFragment(nowDate, tomorrowDate) { _, year, month, day ->
-            //"$day/${month+1}/$year".log("Date piked")
-            viewModel.setAdviseDate(year, month, day)
-        }
-        datePicker.show(activity!!.supportFragmentManager, "datePicker")
     }
 
     override fun onDestroy() {

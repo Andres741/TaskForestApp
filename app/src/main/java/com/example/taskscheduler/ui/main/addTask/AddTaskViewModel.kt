@@ -1,7 +1,6 @@
 package com.example.taskscheduler.ui.main.addTask
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.taskscheduler.di.util.AppDateFormatProvider
 import com.example.taskscheduler.domain.CreateValidTaskUseCase
@@ -26,8 +25,8 @@ class AddTaskViewModel @Inject constructor(
 
     private val dateFormat = dateFormatProvider.format
 
-    val adviseDateFormatted: LiveData<String> = adviseDate.map { date ->
-        date ?: return@map ""
+    val adviseDateFormatted: LiveData<String?> = adviseDate.map { date ->
+        date ?: return@map null
         dateFormat.format(date)
     }
 
@@ -53,29 +52,7 @@ class AddTaskViewModel @Inject constructor(
     }
 
     fun setAdviseDate(year: Int, month: Int, day: Int) {
-        val nowsDate = GregorianCalendar.getInstance().time
-
-        val nowYear = (nowsDate.year + 1900)//.log("\nnow year")
-        //year.log("year")
-
-        val nowMonth = nowsDate.month//.log("\nnow month")
-        //month.log("month")
-
-        val nowDay = nowsDate.date//.log("\nnow day")
-        //day.log("day")
-
-        val isFuture = nowYear < year || nowYear == year &&
-                nowMonth < month || nowMonth == month &&
-                nowDay < day
-
-        if (! isFuture) {
-            "--Is not the future--".log()
-            notValidAdviseDate()
-            return
-        }
-        "--Is the future--".log()
-        val calendar = GregorianCalendar(year, month, day,22,0,0)
-        adviseDate.value = calendar.time.time
+        adviseDate.value = GregorianCalendar(year, month, day,22,0,0).time.time
     }
 
     /** Called in fragment xml */

@@ -3,6 +3,7 @@ package com.example.taskscheduler.ui.main.taskDetail
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.taskscheduler.di.util.AppDateAndHourFormatProvider
+import com.example.taskscheduler.di.util.AppDateFormatProvider
 import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
@@ -21,15 +22,18 @@ class TaskDetailViewModel @Inject constructor(
     private val changeTitle: ChangeTaskTitleUseCase,
     private val changeType: ChangeTaskTypeUseCase,
     private val changeDescription: ChangeTaskDescriptionUseCase,
+    private val changeAdviseDate: ChangeAdviseDateUseCase,
     private val getTaskByTitle: GetTaskByTitleUseCase,
     private val deleteTask: DeleteTaskUseCase,
     private val existsTaskWithType: ExistsTaskWithTypeUseCase,
     dateAndHourFormatProvider: AppDateAndHourFormatProvider,
+    dateFormatProvider: AppDateFormatProvider,
 ): ViewModel() {
 
     val title = MutableLiveData<String>()
     val type = MutableLiveData<String>()
     val description = MutableLiveData<String>()
+    val adviseDate = MutableLiveData<Long?>()
 
     private val _task = MutableLiveData<TaskModel>()
     val task: LiveData<TaskModel> = _task
@@ -44,10 +48,16 @@ class TaskDetailViewModel @Inject constructor(
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
-    private val dateFormat = dateAndHourFormatProvider.format
-    val formattedDate: LiveData<String> = _task.map { task ->
+    val creationDateFormat = dateAndHourFormatProvider.format
+    val adviseDateFormat = dateFormatProvider.format
+
+    val formattedCreationDate = _task.map { task ->
         task ?: return@map ""
-        dateFormat.format(task.dateNum)
+        creationDateFormat.format(task.dateNum)
+    }
+    val formattedAdviseDate = adviseDate.map { numDate ->
+        numDate ?: return@map null
+        adviseDateFormat.format(numDate)
     }
 
     fun onSetUp(task: ITaskTitleOwner) {
@@ -58,6 +68,7 @@ class TaskDetailViewModel @Inject constructor(
                     title.value = latestTask.title
                     type.value = latestTask.type
                     description.value = latestTask.description
+                    adviseDate.value = latestTask.adviseDate
                 }
             } catch (e: Exception) {
                 e.log("Exception collecting tasks")
@@ -108,6 +119,15 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
+    fun saveNewAdviseDate() {
+        val task = _task.value ?: return
+        val newAdviseDate = adviseDate.value
+
+        viewModelScope.launch {
+            changeAdviseDate(task, newAdviseDate)
+        }
+    }
+
     fun restoreTitle() {
         title.value = _task.value!!.title
     }
@@ -116,6 +136,9 @@ class TaskDetailViewModel @Inject constructor(
     }
     fun restoreDescription() {
         description.value = _task.value!!.description
+    }
+    fun restoreAdviseDate() {
+        adviseDate.value = _task.value?.adviseDate
     }
 
     fun deleteOnlyTopStackTask() {
