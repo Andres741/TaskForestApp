@@ -1,6 +1,5 @@
 package com.example.taskscheduler.domain
 
-import androidx.core.app.NotificationManagerCompat
 import com.example.taskscheduler.di.backwroundWork.AdviseDateNotificationFactory
 import com.example.taskscheduler.domain.models.ITaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
@@ -26,7 +25,7 @@ class AdviseDateNotificationUseCase @Inject constructor(
 
     fun delete(taskTitleOwner: ITaskTitleOwner) {
         val taskTitle = taskTitleOwner.taskTitle
-        adviseDateNotificationFactory.deleteTaskByChannel(taskTitle.hashCode())
+        adviseDateNotificationFactory.deleteTaskById(taskTitle.hashCode())
         adviseDateNotificationFactory.cancelNotificationByTag(taskTitle)
     }
 

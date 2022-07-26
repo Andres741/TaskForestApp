@@ -91,8 +91,8 @@ interface NotificationFactory {
     fun cancelNotificationByTag(workTag: String) {
         WorkManager.getInstance(context).cancelAllWorkByTag(workTag)
     }
-    fun deleteTaskByChannel(channelId: Int) {
-        NotificationManagerCompat.from(context).cancel(channelId)
+    fun deleteTaskById(notificationId: Int) {
+        NotificationManagerCompat.from(context).cancel(notificationId)
     }
 }
 
