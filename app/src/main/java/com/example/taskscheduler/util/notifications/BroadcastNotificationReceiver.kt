@@ -35,7 +35,6 @@ class BroadcastNotificationReceiver : BroadcastReceiver() {
 //            cancel(ID)
             notify(ID, notification)
         }
-        cancelNotification(context, title, text)
     }
 
     companion object {

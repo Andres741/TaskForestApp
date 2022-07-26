@@ -111,17 +111,6 @@ class TasksFragment: Fragment() {
                     TasksFragmentDirections.actionFragmentTasksToAddTaskFragment(null)
                 )
             }
-            it.deleteMe.setOnClickListener {
-                val context = context ?: return@setOnClickListener
-                val randomNum = (1024..8192).random().log("randomInt")
-                val title = "Hello world!!!"
-                val text = "Random big num: $randomNum"
-                val channelId = getString(R.string.CHANNEL_ID)
-
-                NotificationWorker.sendOneNotification(
-                    title, text, channelId, 77, null, context, 7000
-                )
-            }
         }
     }
 

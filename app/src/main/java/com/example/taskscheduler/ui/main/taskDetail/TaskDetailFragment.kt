@@ -24,7 +24,6 @@ import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.toSimpleDate
 import com.example.taskscheduler.util.ui.DatePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.save_changes_pop_op_window.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
@@ -199,8 +198,7 @@ class TaskDetailFragment: Fragment() {
                 val newValue = format.run { format(viewModel.adviseDate.value ?: return@run null) }
 
                 createSaveWindow(
-                    oldValueText = oldValue ?: doesNotHaveStr.value,
-                    newValueText = newValue ?: doesNotHaveStr.value,
+                    oldValueText = oldValue ?: doesNotHaveStr.value, newValueText = newValue ?: doesNotHaveStr.value,
                     onSavePressed = viewModel::saveNewAdviseDate, onDiscardPressed = viewModel::restoreAdviseDate
                 )
             }

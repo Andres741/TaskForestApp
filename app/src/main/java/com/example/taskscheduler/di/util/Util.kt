@@ -22,9 +22,9 @@ object Util {
 }
 
 data class AppDateAndHourFormatProvider(
-    val format: SimpleDateFormat = SimpleDateFormat("EEE, dd/MM/yyyy - HH:mm:ss")
+    val value: SimpleDateFormat = SimpleDateFormat("EEE, dd/MM/yyyy - HH:mm:ss")
 )
 
 data class AppDateFormatProvider(
-    val format: SimpleDateFormat = SimpleDateFormat("EEE, dd/MM/yyyy")
+    val value: SimpleDateFormat = SimpleDateFormat("EEE, dd/MM/yyyy")
 )

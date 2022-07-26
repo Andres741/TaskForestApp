@@ -154,7 +154,11 @@ class FirestoreSynchronizedTaskRepository(
     }
 
     override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner): Boolean {
-        if (local.existsTitle(task.taskTitle).not()) return false
+        return deleteTaskAndAllChildrenGettingDeleted(task).isNotEmpty()
+    }
+
+    override suspend fun deleteTaskAndAllChildrenGettingDeleted(task: ITaskTitleOwner): List<ITaskTitleOwner> {
+        if (local.existsTitle(task.taskTitle).not()) return emptyList()
 
         return coroutineScope {
             launch {
@@ -188,7 +192,7 @@ class FirestoreSynchronizedTaskRepository(
                     }
                 }
             }
-            true
+            allSubTasksTitles?.map(::SimpleTaskTitleOwner) ?: emptyList()
         }
     }
 
@@ -216,7 +220,7 @@ class FirestoreSynchronizedTaskRepository(
         throw IOException("Firestore does not respond", t)
     }
 
-    suspend fun mergeLists(): Unit = coroutineScope {
+    suspend fun mergeLists(): Set<String> = coroutineScope {
         val allFromFirebaseDef = async {
             withTimeout(5000){
                 getAllFromFirebase()
@@ -233,6 +237,8 @@ class FirestoreSynchronizedTaskRepository(
             saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
         }
         saveOnlyInLocal(forest.getAllIn(addToLocal))
+
+        return@coroutineScope addToLocal
     }
 
 //    suspend fun mergeListsRemote(): Unit = coroutineScope {

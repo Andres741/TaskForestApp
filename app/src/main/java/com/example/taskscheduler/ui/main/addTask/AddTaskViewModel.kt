@@ -23,7 +23,7 @@ class AddTaskViewModel @Inject constructor(
     val adviseDate = MutableLiveData<Long?>(null)
     val description = MutableLiveData<String>()
 
-    private val dateFormat = dateFormatProvider.format
+    private val dateFormat = dateFormatProvider.value
 
     val adviseDateFormatted: LiveData<String?> = adviseDate.map { date ->
         date ?: return@map null

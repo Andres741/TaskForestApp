@@ -82,18 +82,5 @@
             style="@style/lower_button"
         />
 
-        <Button
-            android:id="@+id/delete_me"
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            app:layout_constraintStart_toStartOf="parent"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-
-            android:text="notify"
-            />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

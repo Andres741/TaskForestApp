@@ -10,18 +10,23 @@ import javax.inject.Inject
 class SynchronizeFromFirestoreUseCase constructor(
     private val withWriteTaskContext: WithWriteTaskContext,
     private val taskRepository: FirestoreSynchronizedTaskRepository,
+    private val adviseDateNotification: AdviseDateNotificationUseCase,
 ) {
-    suspend operator fun invoke(): Unit = withWriteTaskContext {
-        taskRepository.mergeLists()
+    suspend operator fun invoke() = withWriteTaskContext {
+        taskRepository.mergeLists().onEach { addedTaskTitle ->
+            val addedTask = taskRepository.getTaskByTitleStatic(addedTaskTitle)
+            adviseDateNotification.set(addedTask)
+        }
     }
 }
 
 class SynchronizeFromFirestoreUseCaseAuth @Inject constructor(
     withWriteTaskContext: WithWriteTaskContext,
     taskRepository: ITaskRepository,
+    adviseDateNotification: AdviseDateNotificationUseCase,
 ) {
-    val synchronizeFromFirestoreUseCase = (taskRepository as? FirestoreSynchronizedTaskRepository)?.run {
-        SynchronizeFromFirestoreUseCase(withWriteTaskContext, this)
+    val synchronizeFromFirestoreUseCase = (taskRepository as? FirestoreSynchronizedTaskRepository)?.let { repo ->
+        SynchronizeFromFirestoreUseCase(withWriteTaskContext, repo, adviseDateNotification)
     }
 }
 

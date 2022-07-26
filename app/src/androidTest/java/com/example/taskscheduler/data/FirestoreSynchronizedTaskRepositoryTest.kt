@@ -104,9 +104,9 @@ class FirestoreSynchronizedTaskRepositoryTest: TestCase() {
                 "delete Single Task_cc" to
                         { firestoreSynchronizedTaskRepository.deleteSingleTask("cc".toTaskTitleOwner()) },
                 "delete Task And All Children_c" to
-                        { firestoreSynchronizedTaskRepository.deleteTaskAndAllChildren("c".toTaskTitleOwner()) },
+                        { firestoreSynchronizedTaskRepository.deleteTaskAndAllChildrenGettingDeleted("c".toTaskTitleOwner()) },
                 "delete Task And All Children_bb" to
-                        { firestoreSynchronizedTaskRepository.deleteTaskAndAllChildren("bb".toTaskTitleOwner()) },
+                        { firestoreSynchronizedTaskRepository.deleteTaskAndAllChildrenGettingDeleted("bb".toTaskTitleOwner()) },
                 "delete All" to
                         { firestoreSynchronizedTaskRepository.deleteAll() },
             )

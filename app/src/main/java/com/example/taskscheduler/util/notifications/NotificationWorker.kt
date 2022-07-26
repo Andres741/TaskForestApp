@@ -52,8 +52,8 @@ class NotificationWorker(
         }
 
         fun sendOneNotification (
-            title: String, text: String, channelId: String, notificationId: Int, tag: String? = null,
-            context: Context, delayMillis: Long? = null
+            title: String, text: String, channelId: String, notificationId: Int,
+            context: Context, workTag: String? = null, delayMillis: Long? = null,
         ) {
             val data = crateData(title, text, channelId, notificationId)
 
@@ -64,7 +64,7 @@ class NotificationWorker(
                     delayMillis?.takeIf { it > 0 }?.also {
                         setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
                     }
-                    tag?.also { addTag(tag) }
+                    workTag?.also { addTag(workTag) }
 
                     build()
                 }
@@ -73,6 +73,26 @@ class NotificationWorker(
                 .getInstance(context)
                 .enqueue(notificationWorkRequest)
         }
+    }
+}
+
+interface NotificationFactory {
+    val context: Context
+    val channelId: String
+
+    fun sendNotification(
+        title: String, text: String, notificationId: Int,
+        delayMillis: Long?, workTag: String?
+    ) {
+        NotificationWorker.sendOneNotification(
+            title, text, channelId, notificationId, context, workTag, delayMillis
+        )
+    }
+    fun cancelNotificationByTag(workTag: String) {
+        WorkManager.getInstance(context).cancelAllWorkByTag(workTag)
+    }
+    fun deleteTaskByChannel(channelId: Int) {
+        NotificationManagerCompat.from(context).cancel(channelId)
     }
 }
 

@@ -15,6 +15,7 @@ import com.example.taskscheduler.util.TypeChange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,8 +49,8 @@ class TaskDetailViewModel @Inject constructor(
 
     private val scopeProvider = OneScopeAtOnceProvider()
 
-    val creationDateFormat = dateAndHourFormatProvider.format
-    val adviseDateFormat = dateFormatProvider.format
+    val creationDateFormat: SimpleDateFormat = dateAndHourFormatProvider.value
+    val adviseDateFormat: SimpleDateFormat = dateFormatProvider.value
 
     val formattedCreationDate = _task.map { task ->
         task ?: return@map ""
@@ -154,7 +155,7 @@ class TaskDetailViewModel @Inject constructor(
     fun deleteTopStackTaskAndChildren() {
         val task = _task.value ?: return
         viewModelScope.launch {
-            deleteTask.alsoChildren(task).ifTrue {
+            deleteTask.alsoChildren(task).isNotEmpty().ifTrue {
                 scopeProvider.cancel()
                 taskDeletedEvent.triggerEvent(existsTaskWithType(task.type))
             }

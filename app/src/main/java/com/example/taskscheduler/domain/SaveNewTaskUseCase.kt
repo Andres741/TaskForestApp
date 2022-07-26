@@ -3,16 +3,15 @@ package com.example.taskscheduler.domain
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
-import com.example.taskscheduler.domain.synchronization.WriteTaskContext
-import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SaveNewTaskUseCase @Inject constructor(
     private val taskRepository: ITaskRepository,
-    private val createValidTaskUseCase: CreateValidTaskUseCase,
+    private val createValidTask: CreateValidTaskUseCase,
     private val withWriteTaskContext: WithWriteTaskContext,
+    private val adviseDateNotification: AdviseDateNotificationUseCase,
 ) {
     /**
      * This function must be used as the constructor of TaskModel in the IU layer.
@@ -23,12 +22,17 @@ class SaveNewTaskUseCase @Inject constructor(
     suspend operator fun invoke(
         title: String?, type: String?, description: String?, superTask: String?, adviseDate: Long?,
     ): CreateValidTaskUseCase.Response = withWriteTaskContext context@ {
-        createValidTaskUseCase(
+        createValidTask(
             title, type, description, superTask, adviseDate,
         ).also { response ->
             if (response !is ValidTask) return@also
+            val newTask = response.task
+            taskRepository.saveNewTask(newTask)
 
-            taskRepository.saveNewTask(response.task)
+            newTask.adviseDate?.also {
+                adviseDateNotification.add(newTask)
+            }
+
             return@context SavedTask(response)
         }
     }

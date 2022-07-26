@@ -12,6 +12,7 @@ class ChangeTaskTitleUseCase @Inject constructor(
     private val taskRepository: ITaskRepository,
     private val createValidTaskUseCase: CreateValidTaskUseCase,
     private val withWriteTaskContext: WithWriteTaskContext,
+    private val adviseDateNotification: AdviseDateNotificationUseCase,
 ) {
     suspend operator fun invoke(
         task: ITaskTitleOwner, newValue: String
@@ -21,12 +22,9 @@ class ChangeTaskTitleUseCase @Inject constructor(
         } ?: return@context null
 
         val isSaved = taskRepository.changeTaskTitle(task, validTitle)
-        if (isSaved) SimpleTaskTitleOwner(newValue) else null
-    }
-
-    suspend fun withUpdated(task: ITaskTitleOwner, newValue: String) = withContext(Dispatchers.Default) {
-        invoke(task, newValue)?.let {
-            taskRepository.getTaskByTitle(it.taskTitle)
-        }
+        if (isSaved) {
+            adviseDateNotification.delete(task)
+            taskRepository.getTaskByTitleStatic(newValue).apply(adviseDateNotification::set)
+        } else null
     }
 }

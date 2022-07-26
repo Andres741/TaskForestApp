@@ -8,10 +8,7 @@ import com.example.taskscheduler.data.sources.local.dao.TaskDao
 import com.example.taskscheduler.data.sources.local.entities.TaskTypeFromDB
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWithSuperAndSubTasks
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
-import com.example.taskscheduler.domain.models.ITaskTitleOwner
-import com.example.taskscheduler.domain.models.TaskModel
-import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
-import com.example.taskscheduler.domain.models.toTaskEntities
+import com.example.taskscheduler.domain.models.*
 import com.example.taskscheduler.util.TaskTypeDataFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -139,6 +136,12 @@ class RoomTaskRepository @Inject constructor(
 
     override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner) =
         taskAndSubTaskDao.deleteTaskAndAllChildren(task.taskTitle) > 0
+
+    override suspend fun deleteTaskAndAllChildrenGettingDeleted(task: ITaskTitleOwner): List<ITaskTitleOwner> =
+        getAllChildrenTitlesStatic(task).apply {
+            if (isEmpty()) return@apply
+            taskAndSubTaskDao.deleteTaskAndAllChildren(task.taskTitle)
+        }.map(::SimpleTaskTitleOwner)
 
 
 //    private fun<T> T.log(msj: String? = null) = apply {
