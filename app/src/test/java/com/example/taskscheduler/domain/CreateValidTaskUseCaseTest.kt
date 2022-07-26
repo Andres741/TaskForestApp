@@ -53,12 +53,14 @@ class CreateValidTaskUseCaseTest {
         coEvery { firestoreSynchronizedTaskRepository.getTaskTypeByTitleStatic(superTask) } returns type
 
         //When
-        val res = createValidTaskUseCase(title, type, description, superTask).log()
+        val res = createValidTaskUseCase(title, type, description, superTask, null).log()
         val createdTask = res as? CreateValidTaskUseCase.Response.ValidTask
 
         //Then
         assertNotNull("createValidTaskUseCase response is not Successful", createdTask); createdTask!!
-        assertEquals(createdTask.task, TaskModel(title, type, description, SimpleTaskTitleOwner(superTask), dateNum = createdTask.task.dateNum))
+        assertEquals(createdTask.task, TaskModel(
+            title, type, description, SimpleTaskTitleOwner(superTask), dateNum = createdTask.task.dateNum, adviseDate = null
+        ))
     }
 
     @Test
@@ -72,7 +74,7 @@ class CreateValidTaskUseCaseTest {
         coEvery { existsTaskWithTitleUseCase(title) } returns false
 
         //When
-        val res = createValidTaskUseCase(title, type, description, superTask).log()
+        val res = createValidTaskUseCase(title, type, description, superTask, null).log()
         val createdTask = res as? CreateValidTaskUseCase.Response.ValidTask
 
         // Then
@@ -80,7 +82,9 @@ class CreateValidTaskUseCaseTest {
         coVerify(exactly = 0) { existsTaskWithTitleUseCase("") }
         coVerify(exactly = 1) { existsTaskWithTitleUseCase(title) }
         assertNotNull("createValidTaskUseCase response is not Successful", createdTask); createdTask!!
-        assertEquals(createdTask.task, TaskModel(title, type, description, SimpleTaskTitleOwner(""), dateNum = createdTask.task.dateNum))
+        assertEquals(createdTask.task, TaskModel(
+            title, type, description, SimpleTaskTitleOwner(""), dateNum = createdTask.task.dateNum, adviseDate = null
+        ))
     }
 }
 

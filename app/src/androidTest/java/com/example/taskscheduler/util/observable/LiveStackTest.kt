@@ -4,11 +4,15 @@ import android.util.Log
 import com.example.taskscheduler.util.dataStructures.MyLinkedList
 import junit.framework.TestCase
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class LiveStackTest: TestCase() {
 
     lateinit var liveStack: LiveStack<String>
     lateinit var stack: MyLinkedList<String>
+
+    private val mutex = Mutex()
 
     private fun addToBoth(str: String): Unit = synchronized(this){
         stack.addFirst(str)
@@ -21,9 +25,9 @@ class LiveStackTest: TestCase() {
         Pair(first, second)
     }
 
-    private fun getBoth() = synchronized(this){ Pair(liveStack.value, stack.getFirst()) }
+    private suspend fun getBoth() = mutex.withLock { Pair(liveStack.value, stack.getFirst()) }
 
-    private fun bothEquals() = synchronized(this){ liveStack.value == stack.getFirst() }
+    private suspend fun bothEquals() = mutex.withLock { liveStack.value == stack.getFirst() }
 
     public override fun setUp() {
         super.setUp()

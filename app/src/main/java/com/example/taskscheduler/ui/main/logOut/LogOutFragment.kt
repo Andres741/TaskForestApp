@@ -34,7 +34,7 @@ class LogOutFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logout1()
+        logout()
 //        lifecycleScope.launch {
 //            delay(4500)
 //            Toast.makeText(context, "I was lying", Toast.LENGTH_LONG).show()
@@ -42,21 +42,8 @@ class LogOutFragment: Fragment() {
 //        }
     }
 
-    private fun logOut() {
-        "logOut".log()
-
-        val activity = activity!!
-        Toast.makeText(context, R.string.bye, Toast.LENGTH_LONG).show()
-
-        Firebase.auth.signOut()
-
-        Firebase.auth.currentUser.log("Firebase.auth.currentUser")
-        startActivity(Intent(activity, LogInActivity::class.java))
-        activity.finish()
-    }
-
-    private fun logout1() {
-        "logout1".log()
+    private fun logout() {
+        "logout".log()
 
         val activity = activity!!
         val context = context ?: return

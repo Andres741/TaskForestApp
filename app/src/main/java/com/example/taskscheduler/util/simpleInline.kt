@@ -1,32 +1,32 @@
 package com.example.taskscheduler.util
 
-inline fun <T> T?.returnThisIfException(target: ()->T?): T? {
-    return try {
-        target()
-    } catch (e: Error) {
-        this
-    }
-}
-
-inline fun <T> T.returnThisIfExceptionOrNull(target: ()->T?): T {
-    return try {
-        target() ?: this
-    } catch (e: Error) {
-        this
-    }
-}
-
-inline fun <T> returnNullIfException(target: ()->T): T? {
-    return try {
-        target()
-    } catch (e: Error) {
-        null
-    }
-}
-
-inline fun <T> returnDefaultIfExceptionOrNull(default: ()->T, target: ()->T?): T {
-    return returnNullIfException(target) ?: default()
-}
+//inline fun <T> T?.returnThisIfException(target: ()->T?): T? {
+//    return try {
+//        target()
+//    } catch (e: Error) {
+//        this
+//    }
+//}
+//
+//inline fun <T> T.returnThisIfExceptionOrNull(target: ()->T?): T {
+//    return try {
+//        target() ?: this
+//    } catch (e: Error) {
+//        this
+//    }
+//}
+//
+//inline fun <T> returnNullIfException(target: ()->T): T? {
+//    return try {
+//        target()
+//    } catch (e: Error) {
+//        null
+//    }
+//}
+//
+//inline fun <T> returnDefaultIfExceptionOrNull(default: ()->T, target: ()->T?): T {
+//    return returnNullIfException(target) ?: default()
+//}
 
 inline fun <B: Boolean?> B.ifTrue(block: () -> Unit): B = apply { if (this == true) block() }
 

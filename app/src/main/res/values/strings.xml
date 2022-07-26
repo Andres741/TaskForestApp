@@ -134,4 +134,8 @@
     <string name="must_select_future_date">You must select a future date</string>
     <string name="advise_date_key">Advise date:</string>
     <string name="creation_date">Creation date:</string>
+
+    <string name="channel_name">Advise date</string>
+    <string name="channel_description">This channel emits notifications related to the advise date of a task.</string>
+    <string name="CHANNEL_ID">0</string>
 </resources>

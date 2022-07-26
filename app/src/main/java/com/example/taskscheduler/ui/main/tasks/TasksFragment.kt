@@ -10,15 +10,23 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.example.taskscheduler.R
+import com.example.taskscheduler.TaskSchedulerApp
 import com.example.taskscheduler.databinding.FragmentTasksBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskTypeAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.notifications.BroadcastNotificationReceiver
+import com.example.taskscheduler.util.notifications.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
@@ -103,8 +111,18 @@ class TasksFragment: Fragment() {
                     TasksFragmentDirections.actionFragmentTasksToAddTaskFragment(null)
                 )
             }
+            it.deleteMe.setOnClickListener {
+                val context = context ?: return@setOnClickListener
+                val randomNum = (1024..8192).random().log("randomInt")
+                val title = "Hello world!!!"
+                val text = "Random big num: $randomNum"
+                val channelId = getString(R.string.CHANNEL_ID)
+
+                NotificationWorker.sendOneNotification(
+                    title, text, channelId, 77, null, context, 7000
+                )
+            }
         }
-//        notImplementedToastFactory(context, "none")()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -246,7 +246,7 @@ class TaskDaoTest {
     }
 }
 
-private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this", date = 0L, isDone = false)
+private fun Int.taskNum() = TaskEntity("t$this", "ty$this", "des$this", date = 0L, isDone = false, adviseDate = null)
 
 
 //private fun Int.subTaskNum(sub: Int) = TaskEntity("t$this-$sub", "ty$this-$sub", "des$this-$sub", "super$this-$sub",)
