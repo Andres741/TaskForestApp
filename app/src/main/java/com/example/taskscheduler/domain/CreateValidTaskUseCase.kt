@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.util.remove
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -15,6 +16,13 @@ class CreateValidTaskUseCase @Inject constructor(
     private val existsTaskWithTitleUseCase: ExistsTaskWithTitleUseCase,
     private val taskRepository: ITaskRepository,
 ) {
+
+    private val validateRegex: String.() -> Boolean = Regex("[\\w¿¡&&\\D][\\w\\s.,:;¿?¡!]{0,29}")::matches
+    private val trimRegex: String.() -> String = {
+        val rTrim = Regex("^[\\s\\h\\v]+").remove(this)
+        Regex("[\\s\\h\\v]+$").remove(rTrim)
+    }
+
     /**
      * Returns a Successful instance with a valid TaskModel ready to be saved in the database or other
      * subtype of Response class is one of the arguments is not valid to create a new TaskModel considering
@@ -38,7 +46,7 @@ class CreateValidTaskUseCase @Inject constructor(
             formatDate() ?: return@res WrongAdviseDate
         }
 
-        val newDescription = description?.validateDescription() ?: ""
+        val newDescription = description?.formatDescription() ?: ""
 
         return@res Response.ValidTask( TaskModel (
             title = newTitle, type = newType, description = newDescription,
@@ -46,27 +54,24 @@ class CreateValidTaskUseCase @Inject constructor(
         ))
     }
 
-    private inline fun String.validateField(): String? = ifBlank { null }
-    private inline fun String.validateShortField(): String? = validateField()?.takeIf { field ->
-        field.length < 35
-    }
+    fun String.validateField(): String? = trimRegex().takeIf(validateRegex)
 
 
-    suspend fun String.validateTitle(): String? = validateShortField()?.let { newTitle ->
+    suspend fun String.validateTitle(): String? = validateField()?.let { newTitle ->
         if(existsTaskWithTitleUseCase(newTitle)) null else this
     }
 
-    fun String.validateType() = validateShortField()
+    fun String.validateType() = validateField()
 
-    private suspend fun String.validateSuperTask(): String? = validateShortField()?.let { newSuperTask ->
-            if(existsTaskWithTitleUseCase(newSuperTask)) this else return null
+    private suspend fun String.validateSuperTask(): String? = validateField()?.let { newSuperTask ->
+        if(existsTaskWithTitleUseCase(newSuperTask)) this else return null
     } ?: ""
 
-    fun String.validateDescription(): String? {
+    fun String.formatDescription(): String {
         ifBlank {
             return ""
         }
-        return validateField()
+        return this
     }
 
     fun isDateValid(millis: Long?, nowMillis: Long? = null): Boolean {

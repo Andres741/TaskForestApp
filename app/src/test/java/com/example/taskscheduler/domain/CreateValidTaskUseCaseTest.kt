@@ -86,6 +86,40 @@ class CreateValidTaskUseCaseTest {
             title, type, description, SimpleTaskTitleOwner(""), dateNum = createdTask.task.dateNum, adviseDate = null
         ))
     }
+
+    @Test
+    fun validateField_test() {
+        val valuesAndExpectedList = listOf(
+            "HelloWorld" to true,
+            "H3lloWorld" to true,
+            "Hello world" to true,
+            "Hello::world;" to true,
+            "Hello world!!!" to true,
+            "!Hello world!!!" to false,
+            "Hello world!!!" to true,
+            "¿Hello world?" to true,
+            "H3llo world" to true,
+            "" to false,
+            "_" to true,
+            "Hello_world" to true,
+            "very very very very very very very very very very very long text" to false,
+            "a12345678901234567890123456789" to true,
+            "aa12345678901234567890123456789" to false,
+            "012345678901234567890123456789" to false,
+            " 9Hello world" to false,
+            "hello world and all" to true,
+            "  Hello world  \n " to true,
+        )
+        valuesAndExpectedList.forEachIndexed { rep, (str, shouldMatch) ->
+            val validated = createValidTaskUseCase.run {
+                str.validateField()
+            }
+            rep.log("rep")
+            ">$str<".log("str")
+            ">$validated<".log("validated")
+            assertEquals(shouldMatch, validated != null)
+        }
+    }
 }
 
 private fun<T> T.log(msj: String? = null) = apply {

@@ -17,7 +17,7 @@ class ChangeTaskDescriptionUseCase  @Inject constructor(
 ) {
     suspend operator fun invoke(task: ITaskTitleOwner, newValue: String) = withWriteTaskContext context@ {
         val validDescription = createValidTaskUseCase.run {
-            newValue.validateDescription()
+            newValue.formatDescription()
         } ?: return@context false
 
         taskRepository.changeTaskDescription(task, validDescription).ifTrue {

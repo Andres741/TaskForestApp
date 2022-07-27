@@ -60,7 +60,7 @@ class TaskDetailViewModel @Inject constructor(
     }
     val saveDescriptionStatus = description.map { latest -> latest!!
         if (latest == _task.value!!.description) SavedStatus.Saved
-        else if (createValidTask.run { latest.validateDescription() != null }) SavedStatus.Savable
+        else if (createValidTask.run { latest.formatDescription() != null }) SavedStatus.Savable
         else SavedStatus.NotSavable
     }
     val saveAdviseDateStatus = adviseDate.map { latest ->

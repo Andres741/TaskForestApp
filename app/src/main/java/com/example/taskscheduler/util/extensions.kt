@@ -42,6 +42,8 @@ fun<T> Collection<T>.notContainsInConstantTime(): (T)-> Boolean = toUnitHashMap(
 
 fun<T> MutableLiveData<T>.observeAgain() { value = value }
 
+fun Regex.remove(charSequence: CharSequence) = replace(charSequence, "")
+
 
 fun <T> Task<T>.getOrNull(): T? {
     return if (exception != null || isCanceled) null
