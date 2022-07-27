@@ -12,6 +12,7 @@ import com.example.taskscheduler.util.observable.DataEventTrigger
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.NoMoreWithTaskDeletedType
 import com.example.taskscheduler.util.TypeChange
+import com.example.taskscheduler.util.ifNotNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -155,7 +156,7 @@ class TaskDetailViewModel @Inject constructor(
     fun deleteTopStackTaskAndChildren() {
         val task = _task.value ?: return
         viewModelScope.launch {
-            deleteTask.alsoChildren(task).isNotEmpty().ifTrue {
+            deleteTask.alsoChildren(task).ifNotNull {
                 scopeProvider.cancel()
                 taskDeletedEvent.triggerEvent(existsTaskWithType(task.type))
             }

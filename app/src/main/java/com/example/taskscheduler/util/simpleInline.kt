@@ -32,9 +32,9 @@ inline fun <B: Boolean?> B.ifTrue(block: () -> Unit): B = apply { if (this == tr
 
 inline fun <B: Boolean?> B.ifFalse(block: () -> Unit): B = apply { if (this == false) block() }
 
-inline fun <T> T.ifNull(block: () -> Unit) = apply { if (this == null) block() }
+inline fun <T> T.ifNull(block: () -> Unit) = also { if (this == null) block() }
 
-inline fun <T> T.ifNotNull(block: () -> Unit) = apply { if (this != null) block() }
+inline fun <T: Any> T?.ifNotNull(block: (T) -> Unit) = also { if (it != null) block(it) }
 
 inline fun Collection<*>?.isNotNullOrEmpty() = !isNullOrEmpty()
 

@@ -70,17 +70,19 @@ class CreateValidTaskUseCase @Inject constructor(
     }
 
     fun Long.validateDate(): Long? {
-        val nowsDate = GregorianCalendar.getInstance().time
-        val date = Date(this)
+        val nowsDate = Calendar.getInstance()
+        val date = Calendar.getInstance().apply {
+            this.timeInMillis = this@validateDate
+        }
 
-        val nowYear = (nowsDate.year + 1900)//.log("\nnow year")
-        val year = date.year//.log("year")
+        val nowYear = nowsDate.get(Calendar.YEAR).log("\nnow year")
+        val year = date.get(Calendar.YEAR).log("year")
 
-        val nowMonth = nowsDate.month//.log("\nnow month")
-        val month = date.month//.log("month")
+        val nowMonth = nowsDate.get(Calendar.MONTH).log("\nnow month")
+        val month = date.get(Calendar.MONTH).log("month")
 
-        val nowDay = nowsDate.date//.log("\nnow day")
-        val day = date.date//.log("day")
+        val nowDay = nowsDate.get(Calendar.DAY_OF_MONTH).log("\nnow day")
+        val day = date.get(Calendar.DAY_OF_MONTH).log("day")
 
         val isFuture = nowYear < year || nowYear == year &&
                 nowMonth < month || nowMonth == month &&

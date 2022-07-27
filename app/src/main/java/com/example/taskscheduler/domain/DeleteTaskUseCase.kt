@@ -18,7 +18,7 @@ class DeleteTaskUseCase @Inject constructor(
     }
 
     suspend fun alsoChildren(taskTitle: ITaskTitleOwner) = withWriteTaskContext {
-        taskRepository.deleteTaskAndAllChildrenGettingDeleted(taskTitle).onEach { deletedTaskTitle ->
+        taskRepository.deleteTaskAndAllChildrenGettingDeleted(taskTitle)?.onEach { deletedTaskTitle ->
             adviseDateNotification.delete(deletedTaskTitle)
         }
     }

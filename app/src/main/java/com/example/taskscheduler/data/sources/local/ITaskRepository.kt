@@ -78,7 +78,8 @@ interface ITaskRepository {
 
     suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner): Boolean
 
-    suspend fun deleteTaskAndAllChildrenGettingDeleted(task: ITaskTitleOwner): List<ITaskTitleOwner>
+    /**Returns null if the nothing was deleted.*/
+    suspend fun deleteTaskAndAllChildrenGettingDeleted(task: ITaskTitleOwner): List<ITaskTitleOwner>?
 
     companion object {
         const val PAGE_SIZE = 30

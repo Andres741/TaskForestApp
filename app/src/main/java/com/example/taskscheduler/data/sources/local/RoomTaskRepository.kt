@@ -10,6 +10,7 @@ import com.example.taskscheduler.data.sources.local.entities.taskEntity.TaskWith
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
 import com.example.taskscheduler.domain.models.*
 import com.example.taskscheduler.util.TaskTypeDataFlow
+import com.example.taskscheduler.util.ifTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -137,10 +138,12 @@ class RoomTaskRepository @Inject constructor(
     override suspend fun deleteTaskAndAllChildren(task: ITaskTitleOwner) =
         taskAndSubTaskDao.deleteTaskAndAllChildren(task.taskTitle) > 0
 
-    override suspend fun deleteTaskAndAllChildrenGettingDeleted(task: ITaskTitleOwner): List<ITaskTitleOwner> =
+    override suspend fun deleteTaskAndAllChildrenGettingDeleted(task: ITaskTitleOwner): List<ITaskTitleOwner>? =
         getAllChildrenTitlesStatic(task).apply {
-            if (isEmpty()) return@apply
-            taskAndSubTaskDao.deleteTaskAndAllChildren(task.taskTitle)
+            if (isEmpty()) return null
+            deleteTaskAndAllChildren(task).ifTrue {
+                return null
+            }
         }.map(::SimpleTaskTitleOwner)
 
 
