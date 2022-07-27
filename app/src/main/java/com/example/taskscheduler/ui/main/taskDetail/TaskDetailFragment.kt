@@ -4,8 +4,9 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.navigation.fragment.findNavController
@@ -23,9 +24,11 @@ import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.toSimpleDate
 import com.example.taskscheduler.util.ui.DatePickerFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.IllegalStateException
 import java.util.*
 
 @AndroidEntryPoint
@@ -42,10 +45,10 @@ class TaskDetailFragment: Fragment() {
 
     private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
 
-    private var isTitleSaved = true
-    private var isTypeSaved = true
-    private var isDescriptionSaved = true
-    private var isAdviseDateSaved = true
+//    private var isTitleSaved = true
+//    private var isTypeSaved = true
+//    private var isDescriptionSaved = true
+//    private var isAdviseDateSaved = true
 
     private val saveInHierMsj by lazy { resources.getString(R.string.save_in_hierarchy) }
 
@@ -78,23 +81,17 @@ class TaskDetailFragment: Fragment() {
         }
 
         viewModel.apply {
-            title.observe(viewLifecycleOwner) { new ->
-                val title = task.value?.title ?: return@observe
-                isTitleSaved = setSaveStatusColorIfEquals(title, new, binding.taskTitle)
+            saveTitleStatus.observe(viewLifecycleOwner) { status ->
+                setSaveStatusColor(status, binding.taskTitle)
             }
-            type.observe(viewLifecycleOwner) { new ->
-                val type = task.value?.type ?: return@observe
-                isTypeSaved = setSaveStatusColorIfEquals(type, new, binding.taskType)
+            saveTypeStatus.observe(viewLifecycleOwner) { status ->
+                setSaveStatusColor(status, binding.taskType)
             }
-            description.observe(viewLifecycleOwner) { new ->
-                val description = task.value?.description ?: return@observe
-                isDescriptionSaved = setSaveStatusColorIfEquals(description, new, binding.taskDescription)
+            saveDescriptionStatus.observe(viewLifecycleOwner) { status ->
+                setSaveStatusColor(status, binding.taskDescription)
             }
-            adviseDate.observe(viewLifecycleOwner) { new ->
-                val adviseDate = task.value?.adviseDate
-                isAdviseDateSaved = setSaveStatusColorIfEquals(
-                    adviseDate?.toSimpleDate(), new?.toSimpleDate(), binding.taskAdviseDate
-                )
+            saveAdviseDateStatus.observe(viewLifecycleOwner) { status ->
+                setSaveStatusColor(status, binding.taskAdviseDate)
             }
 
 
@@ -165,42 +162,85 @@ class TaskDetailFragment: Fragment() {
 
 
             it.taskTitle.setOnClickListener onClick@ {
-                if (isTitleSaved) return@onClick
-
-                createSaveWindow(
-                    oldValueText = viewModel.task.value!!.title, newValueText = viewModel.title.value!!,
-                    onSavePressed = viewModel::saveNewTitle, onDiscardPressed = viewModel::restoreTitle
-                )
+                val msj = when (viewModel.saveTitleStatus.value ?: return@onClick) {
+                    is TaskDetailViewModel.SavedStatus.Savable -> {
+                        createSaveWindow(
+                            oldValueText = viewModel.task.value!!.title, newValueText = viewModel.title.value!!,
+                            onSavePressed = viewModel::saveNewTitle, onDiscardPressed = viewModel::restoreTitle
+                        )
+                        null
+                    }
+                    is TaskDetailViewModel.SavedStatus.Saved -> {
+                        R.string.value_saved
+                    }
+                    is TaskDetailViewModel.SavedStatus.NotSavable -> {
+                        viewModel.restoreTitle()
+                        R.string.impossible_save_value
+                    }
+                }
+                msj ?: return@onClick
+                Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
             it.taskType.setOnClickListener onClick@ {
-                if (isTypeSaved) return@onClick
-
-                createSaveWindow(
-                    oldValueText = viewModel.task.value!!.type, newValueText = viewModel.type.value!!,
-                    onSavePressed = viewModel::saveNewType, onDiscardPressed = viewModel::restoreType,
-                    optional = viewModel::saveNewTypeInTaskHierarchy to saveInHierMsj
-                )
+                val msj = when (viewModel.saveTypeStatus.value ?: return@onClick) {
+                    is TaskDetailViewModel.SavedStatus.Savable -> {
+                        createSaveWindow(
+                            oldValueText = viewModel.task.value!!.type, newValueText = viewModel.type.value!!,
+                            onSavePressed = viewModel::saveNewType, onDiscardPressed = viewModel::restoreType,
+                            optional = viewModel::saveNewTypeInTaskHierarchy to saveInHierMsj
+                        )
+                        null
+                    }
+                    is TaskDetailViewModel.SavedStatus.Saved -> {
+                        R.string.value_saved
+                    }
+                    is TaskDetailViewModel.SavedStatus.NotSavable -> {
+                        viewModel.restoreType()
+                        R.string.impossible_save_value
+                    }
+                }
+                msj ?: return@onClick
+                Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
             it.taskDescription.setOnClickListener onClick@ {
-                if (isDescriptionSaved) return@onClick
-
-                createSaveWindow(
-                    oldValueText = viewModel.task.value!!.description, newValueText = viewModel.description.value!!,
-                    onSavePressed = viewModel::saveNewDescription, onDiscardPressed = viewModel::restoreDescription
-                )
+                val msj = when (viewModel.saveDescriptionStatus.value ?: return@onClick) {
+                    is TaskDetailViewModel.SavedStatus.Savable -> {
+                        createSaveWindow(
+                            oldValueText = viewModel.task.value!!.description, newValueText = viewModel.description.value!!,
+                            onSavePressed = viewModel::saveNewDescription, onDiscardPressed = viewModel::restoreDescription
+                        )
+                        null
+                    }
+                    is TaskDetailViewModel.SavedStatus.Saved -> R.string.value_saved
+                    is TaskDetailViewModel.SavedStatus.NotSavable -> {
+                        viewModel.restoreDescription()
+                        R.string.impossible_save_value
+                    }
+                }
+                msj ?: return@onClick
+                Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
             it.taskAdviseDate.setOnClickListener onClick@ {
-                if (isAdviseDateSaved) return@onClick
+                val msj = when (viewModel.saveAdviseDateStatus.value ?: return@onClick) {
+                    is TaskDetailViewModel.SavedStatus.Savable -> {
+                        val doesNotHaveStr = lazy { getString(R.string.doesn_t_have) }
+                        val format = viewModel.adviseDateFormat
+                        val oldValue = format.run { format(viewModel.task.value?.adviseDate ?: return@run null) }
+                        val newValue = format.run { format(viewModel.adviseDate.value ?: return@run null) }
 
-                val doesNotHaveStr = lazy { getString(R.string.doesn_t_have) }
-                val format = viewModel.adviseDateFormat
-                val oldValue = format.run { format(viewModel.task.value?.adviseDate ?: return@run null) }
-                val newValue = format.run { format(viewModel.adviseDate.value ?: return@run null) }
-
-                createSaveWindow(
-                    oldValueText = oldValue ?: doesNotHaveStr.value, newValueText = newValue ?: doesNotHaveStr.value,
-                    onSavePressed = viewModel::saveNewAdviseDate, onDiscardPressed = viewModel::restoreAdviseDate
-                )
+                        createSaveWindow(
+                            oldValueText = oldValue ?: doesNotHaveStr.value, newValueText = newValue ?: doesNotHaveStr.value,
+                            onSavePressed = viewModel::saveNewAdviseDate, onDiscardPressed = viewModel::restoreAdviseDate
+                        )
+                        null
+                    }
+                    is TaskDetailViewModel.SavedStatus.Saved -> R.string.value_saved
+                    is TaskDetailViewModel.SavedStatus.NotSavable -> throw IllegalStateException(
+                        "New advise date should not be wrong"
+                    )
+                }
+                msj ?: return@onClick
+                Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -253,16 +293,11 @@ class TaskDetailFragment: Fragment() {
         }
     }
 
-    private fun setSaveStatusColorIfEquals(savedValue: Any?, candidateNewValue: Any?, textView: TextView): Boolean {
-        return (savedValue == candidateNewValue).also { isDifferent ->
-            setSaveStatusColor(isDifferent, textView)
-        }
-    }
-
-    private fun setSaveStatusColor(isDifferent: Boolean, textView: TextView) {
-        val color =
-            if (isDifferent) resources.getColor(R.color.black)
-            else resources.getColor(R.color.unsaved)
+    private fun setSaveStatusColor(status: TaskDetailViewModel.SavedStatus, textView: TextView) =  when(status) {
+        is TaskDetailViewModel.SavedStatus.Saved -> resources.getColor(R.color.black)
+        is TaskDetailViewModel.SavedStatus.Savable -> resources.getColor(R.color.unsaved)
+        is TaskDetailViewModel.SavedStatus.NotSavable -> resources.getColor(R.color.not_savable)
+    }.also { color ->
         textView.setTextColor(color)
     }
 

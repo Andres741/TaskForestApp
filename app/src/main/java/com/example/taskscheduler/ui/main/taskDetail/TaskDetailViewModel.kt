@@ -28,6 +28,7 @@ class TaskDetailViewModel @Inject constructor(
     private val getTaskByTitle: GetTaskByTitleUseCase,
     private val deleteTask: DeleteTaskUseCase,
     private val existsTaskWithType: ExistsTaskWithTypeUseCase,
+    private val createValidTask: CreateValidTaskUseCase,
     dateAndHourFormatProvider: AppDateAndHourFormatProvider,
     dateFormatProvider: AppDateFormatProvider,
 ): ViewModel() {
@@ -39,6 +40,34 @@ class TaskDetailViewModel @Inject constructor(
 
     private val _task = MutableLiveData<TaskModel>()
     val task: LiveData<TaskModel> = _task
+
+
+    private val _saveTitleStatus = MutableLiveData<SavedStatus>()
+    init {
+        viewModelScope.launch {
+            title.asFlow().collectLatest { latest -> latest!!
+                _saveTitleStatus.value = if (latest == _task.value!!.title) SavedStatus.Saved
+                else if (createValidTask.run { latest.validateTitle() != null }) SavedStatus.Savable
+                else SavedStatus.NotSavable
+            }
+        }
+    }
+    val saveTitleStatus: LiveData<SavedStatus> = _saveTitleStatus
+    val saveTypeStatus = type.map { latest -> latest!!
+        if (latest == _task.value!!.type) SavedStatus.Saved
+        else if (createValidTask.run { latest.validateType() != null }) SavedStatus.Savable
+        else SavedStatus.NotSavable
+    }
+    val saveDescriptionStatus = description.map { latest -> latest!!
+        if (latest == _task.value!!.description) SavedStatus.Saved
+        else if (createValidTask.run { latest.validateDescription() != null }) SavedStatus.Savable
+        else SavedStatus.NotSavable
+    }
+    val saveAdviseDateStatus = adviseDate.map { latest ->
+        if (latest == _task.value!!.adviseDate) SavedStatus.Saved
+        else if (createValidTask.isDateValid(latest)) SavedStatus.Savable
+        else SavedStatus.NotSavable
+    }
 
     private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner>()
     val taskTitleChangedEvent: LiveData<ITaskTitleOwner> = _taskTitleChangedEvent
@@ -64,13 +93,56 @@ class TaskDetailViewModel @Inject constructor(
 
     fun onSetUp(task: ITaskTitleOwner) {
         scopeProvider.newScope.launch {
+            var latestCollectedTask: TaskModel? = null
             try {
                 getTaskByTitle(task.taskTitle).collectLatest { latestTask ->
                     _task.value = latestTask
-                    title.value = latestTask.title
-                    type.value = latestTask.type
-                    description.value = latestTask.description
-                    adviseDate.value = latestTask.adviseDate
+                    val previousTask = latestCollectedTask
+
+//                    if (saveTitleStatus.value.let { status ->
+//                            isSettingUp || status is SavedStatus.Saved
+//                        }) title.value = latestTask.title
+//
+//                    if (saveTypeStatus.value.let { status ->
+//                            isSettingUp || status is SavedStatus.Saved
+//                        }) type.value = latestTask.type
+//
+//                    if (saveDescriptionStatus.value.let { status ->
+//                            isSettingUp || status is SavedStatus.Saved
+//                        }) description.value = latestTask.description
+//
+//                    if (saveAdviseDateStatus.value.let { status ->
+//                            isSettingUp || status is SavedStatus.Saved
+//                        }) adviseDate.value = latestTask.adviseDate
+//
+//                    isSettingUp = false
+
+                    kotlin.run {
+                        if (previousTask == null) {
+                            title.value = latestTask.title
+                            type.value = latestTask.type
+                            description.value = latestTask.description
+                            adviseDate.value = latestTask.adviseDate
+                            return@run
+                        }
+                        if (previousTask.title != latestTask.title) {
+                            title.value = latestTask.title
+                            return@run
+                        }
+                        if (previousTask.type != latestTask.type) {
+                            type.value = latestTask.type
+                            return@run
+                        }
+                        if (previousTask.description != latestTask.description) {
+                            description.value = latestTask.description
+                            return@run
+                        }
+                        if (previousTask.adviseDate != latestTask.adviseDate) {
+                            adviseDate.value = latestTask.adviseDate
+                            return@run
+                        }
+                    }
+                    latestCollectedTask = latestTask
                 }
             } catch (e: Exception) {
                 e.log("Exception collecting tasks")
@@ -166,6 +238,13 @@ class TaskDetailViewModel @Inject constructor(
     override fun onCleared() {
         scopeProvider.cancel()
         super.onCleared()
+    }
+
+
+    sealed class SavedStatus {
+        object Saved: SavedStatus()
+        object Savable: SavedStatus()
+        object NotSavable: SavedStatus()
     }
 
     private fun<T> T.log(msj: Any? = null) = apply {

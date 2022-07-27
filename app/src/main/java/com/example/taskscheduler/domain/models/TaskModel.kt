@@ -13,7 +13,7 @@ import java.util.*
 data class TaskModel (
     val title: String,
     val type: String,
-    var description: String = "",
+    val description: String = "",
     val superTask: SimpleTaskTitleOwner = SimpleTaskTitleOwner(),
     val subTasks: List<SimpleTaskTitleOwner> = emptyList(),
     var isDone: Boolean = false,

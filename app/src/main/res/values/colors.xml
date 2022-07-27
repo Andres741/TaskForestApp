@@ -11,4 +11,5 @@
     <color name="done">#0F9</color>
     <color name="undone">#F66</color>
     <color name="unsaved">#F90</color>
+    <color name="not_savable">#F00</color>
 </resources>

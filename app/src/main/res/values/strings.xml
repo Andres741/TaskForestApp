@@ -138,4 +138,7 @@
     <string name="channel_name">Advise date</string>
     <string name="channel_description">This channel emits notifications related to the advise date of a task.</string>
     <string name="CHANNEL_ID">0</string>
+
+    <string name="value_saved">Value already saved</string>
+    <string name="impossible_save_value">Impossible to save the value</string>
 </resources>

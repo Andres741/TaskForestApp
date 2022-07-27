@@ -35,7 +35,7 @@ class CreateValidTaskUseCase @Inject constructor(
         }
 
         adviseDate?.apply {
-            validateDate() ?: return@res WrongAdviseDate
+            formatDate() ?: return@res WrongAdviseDate
         }
 
         val newDescription = description?.validateDescription() ?: ""
@@ -69,10 +69,14 @@ class CreateValidTaskUseCase @Inject constructor(
         return validateField()
     }
 
-    fun Long.validateDate(): Long? {
-        val nowsDate = Calendar.getInstance()
+    fun isDateValid(millis: Long?, nowMillis: Long? = null): Boolean {
+        if (millis == null) return true
+
+        val nowsDate = Calendar.getInstance().apply {
+            timeInMillis = nowMillis ?: return@apply
+        }
         val date = Calendar.getInstance().apply {
-            this.timeInMillis = this@validateDate
+            timeInMillis = millis
         }
 
         val nowYear = nowsDate.get(Calendar.YEAR).log("\nnow year")
@@ -84,13 +88,23 @@ class CreateValidTaskUseCase @Inject constructor(
         val nowDay = nowsDate.get(Calendar.DAY_OF_MONTH).log("\nnow day")
         val day = date.get(Calendar.DAY_OF_MONTH).log("day")
 
-        val isFuture = nowYear < year || nowYear == year &&
+        return nowYear < year || nowYear == year &&
                 nowMonth < month || nowMonth == month &&
                 nowDay < day
+    }
 
-        return if (isFuture) {
+    fun Long.formatDate(): Long? {
+        return if (isDateValid(this, System.currentTimeMillis())) {
             "--Is the future--".log()
-            GregorianCalendar(year, month, day,22,0,0).time.time
+            val date = Calendar.getInstance().apply {
+                timeInMillis = this@formatDate
+            }
+
+            val year = date.get(Calendar.YEAR).log("year")
+            val month = date.get(Calendar.MONTH).log("month")
+            val day = date.get(Calendar.DAY_OF_MONTH).log("day")
+
+            GregorianCalendar(year, month, day,22,0,0).timeInMillis
         } else {
             "--Is not the future--".log()
             null

@@ -22,7 +22,6 @@ class ChangeTaskDescriptionUseCase  @Inject constructor(
 
         taskRepository.changeTaskDescription(task, validDescription).ifTrue {
             val addedTask = if (task is TaskModel) {
-                task.description = validDescription
                 adviseDateNotification.set(task)
                 task
             } else taskRepository.getTaskByTitleStatic(task.taskTitle)
