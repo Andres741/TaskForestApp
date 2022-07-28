@@ -24,7 +24,6 @@ import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.toSimpleDate
 import com.example.taskscheduler.util.ui.DatePickerFragment
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -44,11 +43,6 @@ class TaskDetailFragment: Fragment() {
     private val adapter by lazy { TasksAdapter(tasksAdapterViewModel) }
 
     private val collectPagingDataScopeProvider = OneScopeAtOnceProvider()
-
-//    private var isTitleSaved = true
-//    private var isTypeSaved = true
-//    private var isDescriptionSaved = true
-//    private var isAdviseDateSaved = true
 
     private val saveInHierMsj by lazy { resources.getString(R.string.save_in_hierarchy) }
 

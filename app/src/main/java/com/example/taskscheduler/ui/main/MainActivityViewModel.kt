@@ -1,11 +1,15 @@
 package com.example.taskscheduler.ui.main
 
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskscheduler.domain.SynchronizeFromFirestoreUseCaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
@@ -15,29 +19,62 @@ import kotlin.system.measureTimeMillis
 class MainActivityViewModel @Inject constructor(
     synchronizeFromFirestoreUseCaseAuth: SynchronizeFromFirestoreUseCaseAuth,
 ): ViewModel() {
+
     private val synchronizeFromFirestore = synchronizeFromFirestoreUseCaseAuth.synchronizeFromFirestoreUseCase
 
-    fun synchronizeTasks(): Boolean {
-        val synchronizeFromFirestore = synchronizeFromFirestore ?: return false
+    val intentChannel = Channel<Intent>()
+    private val _syncStateFlow = MutableStateFlow<SyncState>(SyncState.NotAuth)
+    val syncStateFlow: StateFlow<SyncState> = _syncStateFlow
+
+    init {
         viewModelScope.launch {
-            try {
-                val time = measureTimeMillis {
-                    synchronizeFromFirestore()
+            intentChannel.consumeAsFlow().collect { intent ->
+                when(intent) {
+                    is Intent.Synchronize -> synchronizeTasks()
                 }
-                "Firestore synchronization succeed in $time millis".log()
-            }
-            catch (IO: IOException) {
-                "Not possible to connect with firestore".log()
-                IO.log()
-            }
-            catch (timeOut: TimeoutCancellationException) {
-                "It took too long to connect with firestore".log()
-                timeOut.log()
             }
         }
-        return true
     }
 
+    private suspend fun synchronizeTasks() {
+        val synchronizeFromFirestore = synchronizeFromFirestore ?: return
+        "Sync starts".log()
+        _syncStateFlow.value = SyncState.InProcess
+
+        _syncStateFlow.value = try {
+            val time = measureTimeMillis {
+                synchronizeFromFirestore()
+            }
+            "Firestore synchronization succeed in $time millis".log()
+            SyncState.Done
+        }
+        catch (IO: IOException) {
+            "Not possible to connect with firestore".log()
+            IO.log()
+            SyncState.Error
+        }
+        catch (timeOut: TimeoutCancellationException) {
+            "It took too long to connect with firestore".log()
+            timeOut.log()
+            SyncState.Error
+        }
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        intentChannel.close()
+    }
+
+    sealed class SyncState {
+        object Done: SyncState()
+        object InProcess: SyncState()
+        object Error: SyncState()
+        object NotAuth: SyncState()
+    }
+    sealed class Intent {
+        object Synchronize: Intent()
+    }
 
     private fun<T> T.log(msj: Any? = null) = apply {
         Log.i("MainActivityViewModel", "${if (msj != null) "$msj: " else ""}${toString()}")

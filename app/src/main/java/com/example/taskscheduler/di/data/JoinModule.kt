@@ -14,7 +14,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object JoinModule {
 
-    @Singleton
     @Provides
     fun providesTaskRepository(
         local: ILocalTaskRepository,

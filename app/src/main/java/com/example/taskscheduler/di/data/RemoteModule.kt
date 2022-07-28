@@ -22,7 +22,6 @@ object RemoteModule {
 //    @Provides
 //    fun provideQuoteApiClient(retrofit: Retrofit) = AApiClient.getQuoteApiClient(retrofit)
 
-    @Singleton
     @Provides
     fun provideFirestoreCollectionForTasks() = FirestoreCollectionForTasks(
         Firebase.auth.uid?.let { uid ->

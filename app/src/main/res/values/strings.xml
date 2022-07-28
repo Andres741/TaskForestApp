@@ -141,4 +141,10 @@
 
     <string name="value_saved">Value already saved</string>
     <string name="impossible_save_value">Impossible to save the value</string>
+    <string name="loading">loading</string>
+    <string name="loaded">loaded</string>
+    <string name="impossible_load">impossible load</string>
+    <string name="sync_in_process">sync in process</string>
+    <string name="sync_done">sync done</string>
+    <string name="sync_impossible">sync impossible</string>
 </resources>
