@@ -1,8 +1,6 @@
 package com.example.taskscheduler.ui.main
 
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskscheduler.domain.SynchronizeFromFirestoreUseCaseAuth

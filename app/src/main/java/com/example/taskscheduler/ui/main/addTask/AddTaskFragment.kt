@@ -16,7 +16,6 @@ import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.ui.DatePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class AddTaskFragment : Fragment() {
@@ -48,6 +47,11 @@ class AddTaskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        observeViewModel(view)
+        setUpOnClickListeners()
+    }
+
+    private fun observeViewModel(view: View) {
         viewModel.apply {
             taskHasBeenSaved.observe(viewLifecycleOwner) { response ->
                 response ?: throw NullPointerException("response is null.")
@@ -82,7 +86,8 @@ class AddTaskFragment : Fragment() {
                 Toast.makeText(context, R.string.must_select_future_date, Toast.LENGTH_LONG).show()
             }
         }
-
+    }
+    private fun setUpOnClickListeners() {
         binding.apply {
             taskAdviseDate.setOnClickListener {
                 val datePicker = DatePickerFragment.newInstanceMinTomorrow { _, year, month, day ->
@@ -97,6 +102,7 @@ class AddTaskFragment : Fragment() {
             }
         }
     }
+
 
     override fun onDestroy() {
         _binding = null

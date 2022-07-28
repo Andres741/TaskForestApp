@@ -74,6 +74,12 @@ class TaskDetailFragment: Fragment() {
             onBackPressedDispatcher.addCallback(viewLifecycleOwner) { tasksAdapterViewModel.removeFromStack() }
         }
 
+        observeViewModel()
+        observeTaskAdapterViewModel(view)
+        setUpOnClickListeners()
+    }
+
+    private fun observeViewModel() {
         viewModel.apply {
             saveTitleStatus.observe(viewLifecycleOwner) { status ->
                 setSaveStatusColor(status, binding.taskTitle)
@@ -108,7 +114,8 @@ class TaskDetailFragment: Fragment() {
                 tasksAdapterViewModel.removeFromStack()
             }
         }
-
+    }
+    private fun observeTaskAdapterViewModel(view: View) {
         tasksAdapterViewModel.apply {
             taskTitleStack.observe(viewLifecycleOwner) { taskTitle ->
                 if (taskTitle != null) {
@@ -129,7 +136,8 @@ class TaskDetailFragment: Fragment() {
                 tasksAdapterViewModel.filters.typeFilterCriteria = typeName
             }
         }
-
+    }
+    private fun setUpOnClickListeners() {
         binding.also {
             it.addSubtaskButton.setOnClickListener {
                 findNavController().navigate(
