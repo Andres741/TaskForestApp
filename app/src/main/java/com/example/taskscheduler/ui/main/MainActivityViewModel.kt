@@ -9,6 +9,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
@@ -20,7 +21,10 @@ class MainActivityViewModel @Inject constructor(
         val synchronizeFromFirestore = synchronizeFromFirestore ?: return false
         viewModelScope.launch {
             try {
-                synchronizeFromFirestore()
+                val time = measureTimeMillis {
+                    synchronizeFromFirestore()
+                }
+                "Firestore synchronization succeed in $time millis".log()
             }
             catch (IO: IOException) {
                 "Not possible to connect with firestore".log()

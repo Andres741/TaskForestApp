@@ -16,7 +16,7 @@
     <dimen name="marginBottomButton">10dp</dimen>
     <dimen name="rcy_marginHorizontal">14dp</dimen>
     <dimen name="rcy_marginVertical">10dp</dimen>
-    <dimen name="subtasksRcyMaxHeight">250dp</dimen>
+    <dimen name="subtasksRcyMaxHeight">270dp</dimen>
     <dimen name="add_task_fab">12dp</dimen>
     <dimen name="attributes_marginVertical">20dp</dimen>
     <dimen name="card_margin">4dp</dimen>

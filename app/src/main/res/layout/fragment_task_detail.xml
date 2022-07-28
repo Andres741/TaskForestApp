@@ -381,7 +381,7 @@
             app:layout_constraintHeight_max="@dimen/subtasksRcyMaxHeight"
             app:layout_constrainedHeight="true"
 
-            tools:layout_height="250dp"
+            tools:layout_height="270dp"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

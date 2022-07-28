@@ -99,49 +99,25 @@ class TaskDetailViewModel @Inject constructor(
                     _task.value = latestTask
                     val previousTask = latestCollectedTask
 
-//                    if (saveTitleStatus.value.let { status ->
-//                            isSettingUp || status is SavedStatus.Saved
-//                        }) title.value = latestTask.title
-//
-//                    if (saveTypeStatus.value.let { status ->
-//                            isSettingUp || status is SavedStatus.Saved
-//                        }) type.value = latestTask.type
-//
-//                    if (saveDescriptionStatus.value.let { status ->
-//                            isSettingUp || status is SavedStatus.Saved
-//                        }) description.value = latestTask.description
-//
-//                    if (saveAdviseDateStatus.value.let { status ->
-//                            isSettingUp || status is SavedStatus.Saved
-//                        }) adviseDate.value = latestTask.adviseDate
-//
-//                    isSettingUp = false
-
-                    kotlin.run {
-                        if (previousTask == null) {
-                            title.value = latestTask.title
-                            type.value = latestTask.type
-                            description.value = latestTask.description
-                            adviseDate.value = latestTask.adviseDate
-                            return@run
-                        }
-                        if (previousTask.title != latestTask.title) {
-                            title.value = latestTask.title
-                            return@run
-                        }
-                        if (previousTask.type != latestTask.type) {
-                            type.value = latestTask.type
-                            return@run
-                        }
-                        if (previousTask.description != latestTask.description) {
-                            description.value = latestTask.description
-                            return@run
-                        }
-                        if (previousTask.adviseDate != latestTask.adviseDate) {
-                            adviseDate.value = latestTask.adviseDate
-                            return@run
-                        }
+                    if (previousTask == null) {
+                        title.value = latestTask.title
+                        type.value = latestTask.type
+                        description.value = latestTask.description
+                        adviseDate.value = latestTask.adviseDate
                     }
+                    else if (previousTask.title != latestTask.title) {
+                        title.value = latestTask.title
+                    }
+                    else if (previousTask.type != latestTask.type) {
+                        type.value = latestTask.type
+                    }
+                    else if (previousTask.description != latestTask.description) {
+                        description.value = latestTask.description
+                    }
+                    else if (previousTask.adviseDate != latestTask.adviseDate) {
+                        adviseDate.value = latestTask.adviseDate
+                    }
+
                     latestCollectedTask = latestTask
                 }
             } catch (e: Exception) {

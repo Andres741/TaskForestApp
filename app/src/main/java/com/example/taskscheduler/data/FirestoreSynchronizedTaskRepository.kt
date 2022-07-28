@@ -11,9 +11,11 @@ import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.ifTrue
 import com.example.taskscheduler.util.notContains
+import com.google.firebase.firestore.Source
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.io.IOException
+import kotlin.system.measureTimeMillis
 
 class FirestoreSynchronizedTaskRepository(
     private val local: ILocalTaskRepository,
@@ -216,7 +218,7 @@ class FirestoreSynchronizedTaskRepository(
         local.saveAll(tasks)
     }
 
-    suspend fun getAllFromFirebase() = firestoreTasks.getAllTasks().fold({ documents ->
+    suspend fun getAllFromFirebase() = firestoreTasks.getAllTasks(Source.SERVER).fold({ documents ->
         documents.toModel()
     }) { t ->
         t.log("Not possible to connect with firestore because")
@@ -225,8 +227,13 @@ class FirestoreSynchronizedTaskRepository(
 
     suspend fun mergeLists(): Set<String> = coroutineScope {
         val allFromFirebaseDef = async {
-            withTimeout(5000){
-                getAllFromFirebase()
+            withTimeout(12000){
+                val res: List<TaskModel>
+                val time = measureTimeMillis {
+                    res = getAllFromFirebase()
+                }
+                "Getting from firebase took $time millis".log()
+                res
             }
         }
         val allFromLocal = local.getAllTasksStatic()
@@ -235,7 +242,7 @@ class FirestoreSynchronizedTaskRepository(
 
         val addToLocal = forest.addAll(allFromFirebaseDef.await())
 
-        launch {
+        CoroutineScope(Dispatchers.Default).launch {
             val addToRemote = forest.taskMap.keys.asSequence().filter(addToLocal::notContains).asIterable()
             saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
         }
@@ -243,24 +250,6 @@ class FirestoreSynchronizedTaskRepository(
 
         return@coroutineScope addToLocal
     }
-
-//    suspend fun mergeListsRemote(): Unit = coroutineScope {
-//        val allFromLocalDef = async { local.getAllTasksStatic() }
-//
-//        val allFromFirebase = withTimeout(5000) {
-//            getAllFromFirebase()
-//        }
-//
-//        val forest = TaskForest(allFromFirebase)
-//
-//        val addToRemote = forest.addAll(allFromLocalDef.await())
-//
-//        launch {
-//            val addToLocal = forest.taskMap.keys.asSequence().filter(addToRemote::notContains).asIterable()
-//            saveOnlyInLocal(forest.getAllIn(addToLocal))
-//        }
-//        saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
-//    }
 
 
     inner class EasyFiresoreSynchronization {

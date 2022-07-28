@@ -18,9 +18,10 @@ class CreateValidTaskUseCase @Inject constructor(
 ) {
 
     private val validateRegex: String.() -> Boolean = Regex("[\\w¿¡&&\\D][\\w\\s.,:;¿?¡!]{0,29}")::matches
-    private val trimRegex: String.() -> String = {
-        val rTrim = Regex("^[\\s\\h\\v]+").remove(this)
-        Regex("[\\s\\h\\v]+$").remove(rTrim)
+    private val trimRegex: String.() -> String = object : (String) -> String {
+        val rRegex = Regex("^[\\s\\h\\v]+")
+        val lRegex = Regex("[\\s\\h\\v]+$")
+        override fun invoke(arg: String) = arg.run(rRegex::remove).run(lRegex::remove)
     }
 
     /**

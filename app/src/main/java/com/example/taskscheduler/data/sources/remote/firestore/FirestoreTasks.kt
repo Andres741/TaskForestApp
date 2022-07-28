@@ -11,6 +11,7 @@ import com.example.taskscheduler.util.dataStructures.asOtherTypeList
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
 import kotlinx.coroutines.coroutineScope
@@ -72,10 +73,10 @@ class FirestoreTasks(
         doc.toObject<TaskDocument>()
     }.filterNotNull()
 
-    suspend fun getTasksQuery() = kotlin.runCatching {
-        tasksCollection.get().await()
+    suspend fun getTasksQuery(source: Source = Source.DEFAULT) = kotlin.runCatching {
+        tasksCollection.get(source).await()
     }
-    suspend fun getAllTasks() = getTasksQuery().mapCatching { query ->
+    suspend fun getAllTasks(source: Source = Source.DEFAULT) = getTasksQuery(source).mapCatching { query ->
         query.toObjects<TaskDocument>()
     }
     suspend fun getAllTasksTitle() = getTasksQuery().mapCatching { query ->
