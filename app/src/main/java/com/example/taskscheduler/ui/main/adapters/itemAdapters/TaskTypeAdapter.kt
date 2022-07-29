@@ -13,10 +13,11 @@ import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
 import com.example.taskscheduler.domain.models.equalsType
+import com.example.taskscheduler.ui.main.adapters.bindingAdapters.setSelected
 import com.example.taskscheduler.util.OnClickType
 
 class TaskTypeAdapter (
-    private val onClickCallBack: OnClickType
+    private val onClickCallBack: OnClickType,
 ): PagingDataAdapter<TaskTypeModel, TaskTypeViewHolder>(TaskTypeDiffCallback) {
 
     init {
@@ -58,13 +59,9 @@ class TaskTypeViewHolder private constructor(
         var selectedViewHolder: TaskTypeViewHolder? = null
         var selectedTaskType: ITaskTypeNameOwner? = null
 
-        const val greenColor = 0xff00ff55.toInt()
-        const val whiteColor = 0xffffffff.toInt()
-
         fun removeSelected() {
             selectedTaskType = null
-            val previousColored = selectedViewHolder?.binding?.cardRoot
-            previousColored?.setCardBackgroundColor(whiteColor)
+            selectedViewHolder?.apply { binding.setSelected(false) }
             selectedViewHolder = null
         }
 
@@ -97,17 +94,17 @@ class TaskTypeViewHolder private constructor(
     }
 
     fun unselect() {
-        binding.cardRoot.setCardBackgroundColor(whiteColor)
+        binding.setSelected(false)
     }
 
     fun setIsSelected() {
         if (isSelected) {
             selectedViewHolder?.unselect()
-            binding.cardRoot.setCardBackgroundColor(greenColor)
+            binding.setSelected(true)
             selectedViewHolder = this
             return
         }
-        binding.cardRoot.setCardBackgroundColor(whiteColor)
+        binding.setSelected(false)
     }
 
 

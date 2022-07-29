@@ -3,6 +3,7 @@ package com.example.taskscheduler.ui.main.taskDetail
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -22,6 +23,7 @@ import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.util.CallbackAndName
 import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
+import com.example.taskscheduler.util.getColorFromAttr
 import com.example.taskscheduler.util.toSimpleDate
 import com.example.taskscheduler.util.ui.DatePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -296,7 +298,7 @@ class TaskDetailFragment: Fragment() {
     }
 
     private fun setSaveStatusColor(status: TaskDetailViewModel.SavedStatus, textView: TextView) =  when(status) {
-        is TaskDetailViewModel.SavedStatus.Saved -> resources.getColor(R.color.black)
+        is TaskDetailViewModel.SavedStatus.Saved -> context!!.getColorFromAttr(R.attr.textAccent)
         is TaskDetailViewModel.SavedStatus.Savable -> resources.getColor(R.color.unsaved)
         is TaskDetailViewModel.SavedStatus.NotSavable -> resources.getColor(R.color.not_savable)
     }.also { color ->

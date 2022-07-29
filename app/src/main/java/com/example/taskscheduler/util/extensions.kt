@@ -1,6 +1,11 @@
 package com.example.taskscheduler.util
 
+import android.content.Context
+import android.util.TypedValue
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.lifecycle.MutableLiveData
+import com.example.taskscheduler.R
 import com.example.taskscheduler.util.dataStructures.MyLinkedList
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
@@ -43,6 +48,16 @@ fun<T> Collection<T>.notContainsInConstantTime(): (T)-> Boolean = toUnitHashMap(
 fun<T> MutableLiveData<T>.observeAgain() { value = value }
 
 fun Regex.remove(charSequence: CharSequence) = replace(charSequence, "")
+
+@ColorInt
+fun Context.getColorFromAttr(
+    @AttrRes attrColor: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true
+) = typedValue.let {
+    theme.resolveAttribute(attrColor, it, resolveRefs)
+    it.data
+}
 
 
 fun <T> Task<T>.getOrNull(): T? {

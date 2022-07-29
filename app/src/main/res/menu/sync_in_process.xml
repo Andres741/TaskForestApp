@@ -5,7 +5,7 @@
     >
     <item
         android:id="@+id/sync_in_process"
-        android:icon="@drawable/loading_ic_animated"
+        android:icon="@drawable/loading_ic"
         android:title="@string/sync_in_process"
         app:showAsAction="ifRoom"
         />

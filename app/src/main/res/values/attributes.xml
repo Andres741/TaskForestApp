@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr format="color" name="normalTextColor"/>
+    <attr format="color" name="textAccent"/>
+    <attr format="color" name="selectedCardBackgroundColor"/>
+    <attr format="color" name="selectedCardTextColor"/>
+</resources>

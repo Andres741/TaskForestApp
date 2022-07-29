@@ -35,8 +35,8 @@
             android:paddingVertical="@dimen/paddingVerticalTaskItem"
 
             android:text="@{@string/attribute_value_format(taskType.name, taskType.multiplicity)}"
-
             tools:text="type name: 5"
-            />
+        />
+<!--        app:baTextFromTaskType="@{taskType}"-->
     </androidx.cardview.widget.CardView>
 </layout>
