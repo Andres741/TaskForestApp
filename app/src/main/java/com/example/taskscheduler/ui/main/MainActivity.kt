@@ -6,6 +6,8 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.contains
+import androidx.core.view.forEach
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -70,11 +72,13 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return super.onCreateOptionsMenu(menu)
-    }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.apply {
+            findItem(R.id.sync_done)?.also { return false }
+            findItem(R.id.sync_impossible)?.also { return false }
+            findItem(R.id.sync_in_process)?.also { return false }
+        }
         menuInflater.inflate(statusMenu, menu)
         return true
     }
@@ -96,7 +100,9 @@ class MainActivity: AppCompatActivity() {
                 viewModel.intentChannel.send(MainActivityViewModel.Intent.Synchronize)
             }
             true
-        } else super.onOptionsItemSelected(item)
+        } else {
+            super.onOptionsItemSelected(item)
+        }
     }
 
 //    override fun onDestroy() {

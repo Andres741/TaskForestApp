@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -19,7 +20,6 @@ import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-
 
 @AndroidEntryPoint
 class TasksFragment: Fragment() {
@@ -118,7 +118,15 @@ class TasksFragment: Fragment() {
         inflater.inflate(R.menu.filter_tasks_options, menu)
     }
 
+//    override fun onPrepareOptionsMenu(menu: Menu) {  //WTF
+//        activity?.apply {
+//            invalidateOptionsMenu()  //Better, but not good
+//            menuInflater.inflate(R.menu.filter_tasks_options, menu)
+//        }
+//    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        activity?.invalidateOptionsMenu()  //useless
         when (item.itemId) {
             R.id.filter_by_done -> filterByDoneMenu.show()
             R.id.all -> viewModel.isShowingOnlyTopSuperTask.value = false
