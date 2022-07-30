@@ -171,7 +171,7 @@
             android:layout_marginEnd="@dimen/task_input_marg_hor"
             android:text="@string/quit"
 
-            android:textColor="@color/black"
+            android:textColor="?attr/textAccent"
             android:textSize="18sp"
 
             android:visibility="@{ viewmodel.adviseDate == null ? View.GONE : View.VISIBLE }"

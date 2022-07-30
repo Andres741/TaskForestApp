@@ -65,8 +65,8 @@ class TaskDetailViewModel @Inject constructor(
     }
     val saveAdviseDateStatus = adviseDate.map { latest ->
         if (latest == _task.value!!.adviseDate) SavedStatus.Saved
-        else if (createValidTask.isDateValid(latest)) SavedStatus.Savable
-        else SavedStatus.NotSavable
+//        else if (createValidTask.isDateValid(latest)) SavedStatus.Savable
+        else SavedStatus.Savable
     }
 
     private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner>()

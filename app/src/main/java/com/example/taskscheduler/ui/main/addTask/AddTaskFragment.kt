@@ -15,6 +15,7 @@ import com.example.taskscheduler.databinding.AddTaskFragmentBinding
 import com.example.taskscheduler.domain.*
 import com.example.taskscheduler.util.ifFalse
 import com.example.taskscheduler.util.ui.DatePickerFragment
+import com.example.taskscheduler.util.ui.DateTimePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -68,9 +69,7 @@ class AddTaskFragment : Fragment() {
                     is WrongSuperTask -> throw IllegalStateException (
                         "The super task for some reason does not exists."
                     )
-                    is WrongAdviseDate -> throw IllegalStateException (
-                        "Advise date should not be wrong."
-                    )
+                    is WrongAdviseDate -> R.string.days_go_by
                     is WrongTitle -> R.string.new_task_wrong_title
                     is WrongType -> R.string.new_task_wrong_type
                 }
@@ -90,12 +89,10 @@ class AddTaskFragment : Fragment() {
     private fun setUpOnClickListeners() {
         binding.apply {
             taskAdviseDate.setOnClickListener {
-                val datePicker = DatePickerFragment.newInstanceMinTomorrow { _, year, month, day ->
-                    //"$day/${month+1}/$year".log("Date piked")
-                    viewModel.setAdviseDate(year, month, day)
+                val datePicker = DateTimePickerFragment.newInstanceMinNextMinute (true) { timeDate ->
+                    viewModel.setAdviseDate(timeDate)
                 }
                 datePicker.show(activity!!.supportFragmentManager, "datePicker")
-
             }
             quitBt.setOnClickListener {
                 viewModel.adviseDate.value = null

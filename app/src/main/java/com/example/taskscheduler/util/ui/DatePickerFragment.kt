@@ -33,7 +33,7 @@ class DatePickerFragment (
             val tomorrowDate = (nowDate.clone() as Calendar).apply {
                 add(Calendar.DAY_OF_MONTH, 1)
             }
-            return DatePickerFragment(nowDate,tomorrowDate, null, listener)
+            return DatePickerFragment(nowDate, tomorrowDate, null, listener)
         }
     }
 }

@@ -26,6 +26,7 @@ import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.getColorFromAttr
 import com.example.taskscheduler.util.toSimpleDate
 import com.example.taskscheduler.util.ui.DatePickerFragment
+import com.example.taskscheduler.util.ui.DateTimePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -150,12 +151,8 @@ class TaskDetailFragment: Fragment() {
             }
 
             it.adviseDateCont.setOnClickListener onClick@ {
-                val datePicker = DatePickerFragment.newInstanceMinTomorrow {  _, year, month, day ->
-                    viewModel.adviseDate.value = Calendar.getInstance().apply {
-                        set(Calendar.YEAR, year)
-                        set(Calendar.MONTH, month)
-                        set(Calendar.DAY_OF_MONTH, day)
-                    }.time.time.apply { toSimpleDate().log("Selected date") }
+                val datePicker = DateTimePickerFragment.newInstanceMinNextMinute(true) { newTimeDate ->
+                    viewModel.adviseDate.value = newTimeDate.log("newTimeDate").toCalendar().timeInMillis
                 }
                 datePicker.show(activity!!.supportFragmentManager, "datePicker")
             }

@@ -117,7 +117,7 @@
             android:text="@string/quit"
 
             android:textSize="18sp"
-            android:textColor="@color/black"
+            android:textColor="?attr/textAccent"
 
             android:visibility="@{ viewmodel.adviseDate == null ? View.GONE : View.VISIBLE }"
 

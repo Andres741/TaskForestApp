@@ -5,6 +5,7 @@ import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.remove
+import com.example.taskscheduler.util.toSimpleTimeDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -43,15 +44,13 @@ class CreateValidTaskUseCase @Inject constructor(
             (superTask.validateSuperTask() ?: return@res Response.WrongSuperTask) to taskRepository.getTaskTypeByTitleStatic(superTask)
         }
 
-        adviseDate?.apply {
-            formatDate() ?: return@res WrongAdviseDate
-        }
+        val newAdviseDate = adviseDate?.formatDate()
 
         val newDescription = description?.formatDescription() ?: ""
 
         return@res Response.ValidTask( TaskModel (
             title = newTitle, type = newType, description = newDescription,
-            superTask = SimpleTaskTitleOwner(newSuperTask), adviseDate = adviseDate
+            superTask = SimpleTaskTitleOwner(newSuperTask), adviseDate = newAdviseDate
         ))
     }
 
@@ -75,46 +74,36 @@ class CreateValidTaskUseCase @Inject constructor(
         return this
     }
 
-    fun isDateValid(millis: Long?, nowMillis: Long? = null): Boolean {
-        if (millis == null) return true
+//    fun isDateValid(millis: Long?, nowMillis: Long? = null): Boolean {
+//        if (millis == null) return true
+//
+//        val nowsDate = Calendar.getInstance().apply {
+//            timeInMillis = nowMillis ?: return@apply
+//        }
+//        val date = Calendar.getInstance().apply {
+//            timeInMillis = millis
+//        }
+//
+//        val nowYear = nowsDate.get(Calendar.YEAR).log("\nnow year")
+//        val year = date.get(Calendar.YEAR).log("year")
+//
+//        val nowMonth = nowsDate.get(Calendar.MONTH).log("\nnow month")
+//        val month = date.get(Calendar.MONTH).log("month")
+//
+//        val nowDay = nowsDate.get(Calendar.DAY_OF_MONTH).log("\nnow day")
+//        val day = date.get(Calendar.DAY_OF_MONTH).log("day")
+//
+//        return nowYear < year || nowYear == year &&
+//                nowMonth < month || nowMonth == month &&
+//                nowDay < day
+//    }
 
-        val nowsDate = Calendar.getInstance().apply {
-            timeInMillis = nowMillis ?: return@apply
-        }
-        val date = Calendar.getInstance().apply {
-            timeInMillis = millis
-        }
+    fun Long.formatDate(): Long {
+        val nowTimeDate = Calendar.getInstance().toSimpleTimeDate()
+        val timeDate = Calendar.getInstance().also { it.timeInMillis = this }.toSimpleTimeDate()
 
-        val nowYear = nowsDate.get(Calendar.YEAR).log("\nnow year")
-        val year = date.get(Calendar.YEAR).log("year")
-
-        val nowMonth = nowsDate.get(Calendar.MONTH).log("\nnow month")
-        val month = date.get(Calendar.MONTH).log("month")
-
-        val nowDay = nowsDate.get(Calendar.DAY_OF_MONTH).log("\nnow day")
-        val day = date.get(Calendar.DAY_OF_MONTH).log("day")
-
-        return nowYear < year || nowYear == year &&
-                nowMonth < month || nowMonth == month &&
-                nowDay < day
-    }
-
-    fun Long.formatDate(): Long? {
-        return if (isDateValid(this, System.currentTimeMillis())) {
-            "--Is the future--".log()
-            val date = Calendar.getInstance().apply {
-                timeInMillis = this@formatDate
-            }
-
-            val year = date.get(Calendar.YEAR).log("year")
-            val month = date.get(Calendar.MONTH).log("month")
-            val day = date.get(Calendar.DAY_OF_MONTH).log("day")
-
-            GregorianCalendar(year, month, day,22,0,0).timeInMillis
-        } else {
-            "--Is not the future--".log()
-            null
-        }
+        return (timeDate.takeIf { it >= nowTimeDate }?.toCalendar() ?:
+            Calendar.getInstance().also { it.add(Calendar.MINUTE, 1) }).timeInMillis
     }
 
     sealed class Response {

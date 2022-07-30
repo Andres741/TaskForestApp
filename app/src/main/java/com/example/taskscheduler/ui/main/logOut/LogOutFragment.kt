@@ -12,7 +12,7 @@ import androidx.activity.addCallback
 import androidx.lifecycle.lifecycleScope
 import com.example.taskscheduler.R
 import com.example.taskscheduler.ui.logIn.LogInActivity
-import com.example.taskscheduler.util.await
+import com.example.taskscheduler.util.coroutines.await
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase

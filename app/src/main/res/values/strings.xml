@@ -89,6 +89,7 @@
     <string name="new_task_wrong_super_task">The new task has an invalid super task.</string>
     <string name="new_task_wrong_type">The new task has an invalid type.</string>
     <string name="new_task_saved">The new task has been saved.</string>
+    <string name="days_go_by">How fast days go by!!!</string>
 
     <string name="the_only_task_with_type">This is the only task of its type</string>
 

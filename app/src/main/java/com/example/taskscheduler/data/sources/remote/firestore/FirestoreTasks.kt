@@ -5,8 +5,8 @@ import com.example.taskscheduler.data.sources.remote.netClases.SimpleFirestoreDo
 import com.example.taskscheduler.data.sources.remote.netClases.TaskDocument
 import com.example.taskscheduler.data.sources.remote.netClases.setDoc
 import com.example.taskscheduler.di.data.FirestoreCollectionForTasks
-import com.example.taskscheduler.util.asFlow
-import com.example.taskscheduler.util.await
+import com.example.taskscheduler.util.coroutines.asFlow
+import com.example.taskscheduler.util.coroutines.await
 import com.example.taskscheduler.util.dataStructures.asOtherTypeList
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot

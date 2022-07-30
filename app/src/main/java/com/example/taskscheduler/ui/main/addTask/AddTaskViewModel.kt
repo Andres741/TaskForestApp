@@ -6,6 +6,7 @@ import com.example.taskscheduler.di.util.AppDateFormatProvider
 import com.example.taskscheduler.domain.CreateValidTaskUseCase
 import com.example.taskscheduler.domain.SaveNewTaskUseCase
 import com.example.taskscheduler.util.FirstToSecond
+import com.example.taskscheduler.util.SimpleTimeDate
 import com.example.taskscheduler.util.observable.EventTrigger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -51,8 +52,8 @@ class AddTaskViewModel @Inject constructor(
         "AddTaskViewModel created".log()
     }
 
-    fun setAdviseDate(year: Int, month: Int, day: Int) {
-        adviseDate.value = GregorianCalendar(year, month, day,22,0,0).time.time
+    fun setAdviseDate(timeDate: SimpleTimeDate) {
+        adviseDate.value = timeDate.toCalendar().timeInMillis
     }
 
     /** Called in fragment xml */

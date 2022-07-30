@@ -26,5 +26,5 @@ data class AppDateAndHourFormatProvider(
 )
 
 data class AppDateFormatProvider(
-    val value: SimpleDateFormat = SimpleDateFormat("EEE, dd/MM/yyyy")
+    val value: SimpleDateFormat = SimpleDateFormat("EEE, dd/MM/yyyy - HH:mm")
 )
