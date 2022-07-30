@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/drawable/loading.xml" value="0.194" />
         <entry key="app/src/main/res/drawable/loading_animated.xml" value="0.194" />
         <entry key="app/src/main/res/drawable/not_internet.xml" value="0.1825" />
+        <entry key="app/src/main/res/drawable/not_internet_dt.xml" value="0.1845" />
         <entry key="app/src/main/res/drawable/plus.xml" value="0.259" />
         <entry key="app/src/main/res/drawable/undone.xml" value="0.259" />
         <entry key="app/src/main/res/layout-v28/fragment_tasks.xml" value="0.35625" />

@@ -28,12 +28,12 @@ fun TextView.setTaskTypeItemTextColor(isSelected: Boolean) {
     val context = context ?: return
 
     setTextColor(
-        if (isSelected) context.getColorFromAttr(R.attr.selectedCardTextColor)
+        if (isSelected) context.getColorFromAttr(R.attr.overColorPrimary)
         else context.getColorFromAttr(R.attr.normalTextColor)
     )
 }
 
-fun TaskTypeItemBinding.setSelected(isSelected: Boolean) {
+fun TaskTypeItemBinding.setIsSelected(isSelected: Boolean) {
     cardRoot.setTaskTypeItemColor(isSelected)
     type.setTaskTypeItemTextColor(isSelected)
 }

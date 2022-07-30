@@ -16,13 +16,12 @@
         <!-- Customize your theme here. -->
         <item name="normalTextColor">@color/clear_gray</item>
         <item name="android:textColor">?attr/normalTextColor</item>
-
         <item name="textAccent">@color/white</item>
 
-        <item name="cardBackgroundColor">@color/dark_gray</item>
+        <item name="cardBackgroundColor">@color/very_dark_gray</item>
         <item name="selectedCardBackgroundColor">?attr/colorPrimary</item>
-        <item name="selectedCardTextColor">@color/dark_gray</item>
-
+        <item name="overColorPrimary">@color/very_dark_gray</item>
+        <item name="overColorPrimarySoft">@color/dark_gray</item>
 
     </style>
 </resources>

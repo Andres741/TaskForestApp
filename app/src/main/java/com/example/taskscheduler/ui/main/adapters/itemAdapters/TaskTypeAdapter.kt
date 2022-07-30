@@ -13,7 +13,7 @@ import com.example.taskscheduler.domain.models.TaskTypeModel
 import com.example.taskscheduler.domain.models.ITaskTypeNameOwner
 import com.example.taskscheduler.domain.models.SimpleTaskTypeNameOwner
 import com.example.taskscheduler.domain.models.equalsType
-import com.example.taskscheduler.ui.main.adapters.bindingAdapters.setSelected
+import com.example.taskscheduler.ui.main.adapters.bindingAdapters.setIsSelected
 import com.example.taskscheduler.util.OnClickType
 
 class TaskTypeAdapter (
@@ -61,7 +61,7 @@ class TaskTypeViewHolder private constructor(
 
         fun removeSelected() {
             selectedTaskType = null
-            selectedViewHolder?.apply { binding.setSelected(false) }
+            selectedViewHolder?.apply { binding.setIsSelected(false) }
             selectedViewHolder = null
         }
 
@@ -94,17 +94,17 @@ class TaskTypeViewHolder private constructor(
     }
 
     fun unselect() {
-        binding.setSelected(false)
+        binding.setIsSelected(false)
     }
 
     fun setIsSelected() {
         if (isSelected) {
             selectedViewHolder?.unselect()
-            binding.setSelected(true)
+            binding.setIsSelected(true)
             selectedViewHolder = this
             return
         }
-        binding.setSelected(false)
+        binding.setIsSelected(false)
     }
 
 

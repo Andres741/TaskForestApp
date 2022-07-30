@@ -3,5 +3,6 @@
     <attr format="color" name="normalTextColor"/>
     <attr format="color" name="textAccent"/>
     <attr format="color" name="selectedCardBackgroundColor"/>
-    <attr format="color" name="selectedCardTextColor"/>
+    <attr format="color" name="overColorPrimary"/>
+    <attr format="color" name="overColorPrimarySoft"/>
 </resources>

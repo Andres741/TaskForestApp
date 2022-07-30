@@ -12,14 +12,16 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
 
+
         <!-- Customize your theme here. -->
-        <item name="normalTextColor">@color/gray</item>
+        <item name="normalTextColor">@color/dark_gray</item>
         <item name="android:textColor">?attr/normalTextColor</item>
         <item name="textAccent">@color/black</item>
 
         <item name="cardBackgroundColor">@color/very_clear_gray</item>
         <item name="selectedCardBackgroundColor">?attr/colorPrimary</item>
-        <item name="selectedCardTextColor">@color/very_clear_gray</item>
+        <item name="overColorPrimary">@color/very_clear_gray</item>
+        <item name="overColorPrimarySoft">@color/gray</item>
 
     </style>
 

@@ -10,7 +10,7 @@
         <variable
             name="taskType"
             type="com.example.taskscheduler.domain.models.TaskTypeModel"
-        />
+            />
     </data>
 
     <androidx.cardview.widget.CardView

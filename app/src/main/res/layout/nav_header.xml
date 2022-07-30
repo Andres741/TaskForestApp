@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/app_name"
-        android:textColor="@color/gray"
+        android:textColor="@color/dark_gray"
 
         android:autoSizeTextType="uniform"
         android:lines="1"
