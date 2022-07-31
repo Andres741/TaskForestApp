@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/login_out_in_process"
+            android:text="@string/log_out_in_process"
 
             app:layout_anchorGravity="center|bottom"
             app:layout_anchor="@id/progress_bar"

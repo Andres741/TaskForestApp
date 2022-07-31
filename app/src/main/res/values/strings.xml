@@ -1,21 +1,13 @@
 <resources>
-    <string name="mucho_texto_1">My task consist in create this application, I can do it because I am the best.\nI do not know what to put extra here, but I need a long text.</string>
-    <string name="mucho_texto">Object oriented programming (OOP):\nIs a programming paradigm based on the concept of objects, which can contain data and code: data in data in the form of fields (often known as attributes or properties), and code, in the form of procedures (often known as methods).</string>
-    <string name="no_mucho_texto">Object oriented programming (OOP)</string>
-    <string name="nada_texto">.</string>
+
+    <string name="app_name">Task forest</string>
 
 
-    <string name="app_name">Task scheduler</string>
     <string name="log_out">Log out</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="fragment_tasks_label">Task Fragment</string>
-    <string name="fragment_task_detail_label">Task detail Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -41,9 +33,6 @@
     <string name="add_new_task">Add new task</string>
     <string name="your_tasks">Your tasks</string>
     <string name="task_detail">Task detail</string>
-
-    <string name="attribute_value_format">%1s: %2s</string><!--This will work with Int ?-->
-    <string name="attribute_amount_format">%1s: %2d</string>
 
     <plurals name="subtask_s">
         <item quantity="zero">
@@ -100,12 +89,9 @@
     <string name="new_value">New value:</string>
     <string name="old_value">Old value:</string>
 
-    <string name="navigation_drawer_open">navigation drawer open</string>
-    <string name="navigation_drawer_close">navigation drawer close</string>
-
 
     <string name="save_in_hierarchy">save in this hierarchy of tasks</string>
-    <string name="login_out_in_process">Login out in process</string>
+    <string name="log_out_in_process">Log out in process</string>
     <string name="all_children">All children</string>
     <string name="active">undone</string>
     <string name="completed_tasks">done</string>
@@ -122,10 +108,7 @@
     <string name="signing_in_cancelled">Signing in cancelled</string>
     <string name="log_in">Log in</string>
     <string name="home">Home</string>
-    <string name="title_activity_log_in">Home</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="home_fragment_label">Home</string>
-    <string name="log_in_fragment_label">Log In</string>
     <string name="enter_without_log_in">Enter without log in</string>
     <string name="tasks_app">Tasks app</string>
     <string name="exit">Exit</string>
@@ -137,9 +120,6 @@
     <string name="advise_date_key">Advise date:</string>
     <string name="creation_date">Creation date:</string>
 
-    <string name="channel_name">Advise date</string>
-    <string name="channel_description">This channel emits notifications related to the advise date of a task.</string>
-    <string name="CHANNEL_ID">0</string>
 
     <string name="value_saved">Value already saved</string>
     <string name="impossible_save_value">Impossible to save the value</string>
@@ -149,4 +129,30 @@
     <string name="sync_in_process">sync in process</string>
     <string name="sync_done">sync done</string>
     <string name="sync_impossible">sync impossible</string>
+
+
+    <!--No translatable-->
+    <string name="CHANNEL_ID" translatable="false">0</string>
+
+    <string name="title_activity_log_in" translatable="false">log in activity</string>
+    <string name="channel_name" translatable="false">Advise date</string>
+    <string name="channel_description" translatable="false">This channel emits notifications related to the advise date of a task.</string>
+    <string name="home_fragment_label" translatable="false">Home</string>
+    <string name="log_in_fragment_label" translatable="false">Log In</string>
+    <string name="navigation_drawer_open" translatable="false">navigation drawer open</string>
+    <string name="navigation_drawer_close" translatable="false">navigation drawer close</string>
+    <string name="attribute_value_format" translatable="false">%1s: %2s</string>
+    <string name="attribute_amount_format" translatable="false">%1s: %2d</string>
+    <string name="hello_first_fragment" translatable="false">Hello first fragment</string>
+    <string name="hello_second_fragment" translatable="false">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_login" translatable="false">LoginActivity</string>
+    <string name="fragment_tasks_label" translatable="false">Task Fragment</string>
+    <string name="fragment_task_detail_label" translatable="false">Task detail Fragment</string>
+
+
+    <string name="mucho_texto_1" translatable="false">My task consist in create this application, I can do it because I am the best.\nI do not know what to put extra here, but I need a long text.</string>
+    <string name="mucho_texto" translatable="false">Object oriented programming (OOP):\nIs a programming paradigm based on the concept of objects, which can contain data and code: data in data in the form of fields (often known as attributes or properties), and code, in the form of procedures (often known as methods).</string>
+    <string name="no_mucho_texto" translatable="false">Object oriented programming (OOP)</string>
+    <string name="nada_texto" translatable="false">.</string>
+
 </resources>

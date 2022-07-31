@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Bosque de tareas</string>
+
+
+    <string name="log_out">Cerrar sesión</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Siguiente</string>
+    <string name="previous">Anterior</string>
+
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Inicia sesión o regítrate</string>
+    <string name="action_sign_in_short">Inicia sesión</string>
+    <string name="welcome">"Bienvenido!"</string>
+    <string name="invalid_username">No es un nombre de usuario correcto</string>
+    <string name="invalid_password">La contraseña debe ser > 5 caracteres</string>
+    <string name="login_failed">"Inicio de sesión fallido"</string>
+
+    <plurals name="go_to_sub_task_s">
+        <item quantity="one">
+            @string/go_to_subtask
+        </item>
+
+        <item quantity="other">
+            @string/go_to_subtasks
+        </item>
+    </plurals>
+
+    <string name="go_to_subtask">ir a\nnsubtarea</string>
+    <string name="go_to_subtasks">ir a\nsubtareas</string>
+
+    <string name="add_new_task">Añadir nueva tarea</string>
+    <string name="your_tasks">Tus tareas</string>
+    <string name="task_detail">Detalle de tarea</string>
+
+    <plurals name="subtask_s">
+        <item quantity="zero">
+            Sin subtareas
+        </item>
+        <item quantity="one">
+            Una subtarea
+        </item>
+        <item quantity="other">
+            Sub tareas: %d
+        </item>
+    </plurals>
+
+    <string name="type_att">Tipo:</string>
+    <string name="done">Hecho:</string>
+    <string name="description_att">Descripción:</string>
+    <string name="title_att">Título:</string>
+
+    <string name="status_att">Estatus:</string>
+    <string name="completed">completado</string>
+    <string name="uncompleted">no completado</string>
+    <string name="change_status">Cambiar estatus</string>
+    <string name="add_subtask">añadir subtarea</string>
+
+    <string name="enter_your_x_here">Introduce tu %s aquí</string>
+
+    <string name="enter_your_title_here">Introduce tu título aquí</string>
+    <string name="enter_your_description_here">Introduce tu descripción aquí</string>
+    <string name="enter_your_type_here">Introduce tu tipo aquí</string>
+
+
+    <string name="title">título</string>
+    <string name="description">descripción</string>
+    <string name="type">tipo</string>
+    <string name="advise_date">momento de aviso</string>
+    <string name="add_task">Añadir tarea</string>
+    <string name="save">guardar</string>
+    <string name="super_task">Super tarea:</string>
+    <string name="doesn_t_have">no tiene</string>
+
+    <string name="new_task_error">La nueva tarea debe tener nombre y tipo.</string>
+    <string name="new_task_wrong_title">La nueva tarea un titulo invalido.</string>
+    <string name="new_task_wrong_super_task">La nueva tarea una super tarea invalida.</string>
+    <string name="new_task_wrong_type">La nueva tarea un tipo invalido.</string>
+    <string name="new_task_saved">La nueva tarea ha sido guardada.</string>
+    <string name="days_go_by">¡Qué rápido pasan los días!</string>
+    <string name="try_date_again">Intenta poner la fecha otra vez.</string>
+
+    <string name="the_only_task_with_type">Esta es la única tarea de su tipo</string>
+
+    <string name="bye">¡Adiós!</string>
+    <string name="discard">descartar</string>
+    <string name="save_change">guardar</string>
+    <string name="new_value">Nuevo valor:</string>
+    <string name="old_value">Anterior valor:</string>
+
+    <string name="save_in_hierarchy">guardar en esta jerarquía de tareas</string>
+    <string name="log_out_in_process">Cierre de sesión en proceso</string>
+    <string name="all_children">Todos los hijos</string>
+    <string name="active">no hecho</string>
+    <string name="completed_tasks">hecho</string>
+    <string name="only_super_tasks">Solo super tareas</string>
+    <string name="immediate_children">Hijos inmediatos</string>
+    <string name="filter_by_done">filtrar por hecho</string>
+    <string name="all">Todo</string>
+    <string name="delete_task">borrar tarea</string>
+    <string name="only_this">Solo este</string>
+    <string name="also_sub_tasks">También sub tareas</string>
+    <string name="house_icon">Icono de casa</string>
+    <string name="login">Inicio de sesión</string>
+    <string name="error_signing_in">Hubo un error registrandose</string>
+    <string name="signing_in_cancelled">Registro cancelado</string>
+    <string name="log_in">Inicio de sesion</string>
+    <string name="home">casa</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="enter_without_log_in">Entrar sin iniciar sesión</string>
+    <string name="tasks_app">App de tareas</string>
+    <string name="exit">Salir</string>
+    <string name="tasks">Tareas</string>
+    <string name="date">Fecha:</string>
+    <string name="quit">Quitar</string>
+
+    <string name="must_select_future_date">Dabes seleccionar una fecha futura</string>
+    <string name="advise_date_key">Momento de aviso:</string>
+    <string name="creation_date">Momento de creación:</string>
+
+    <string name="value_saved">El valor ya está guardado</string>
+    <string name="impossible_save_value">Imposible guardar el valor</string>
+    <string name="loading">cargando</string>
+    <string name="loaded">cargado</string>
+    <string name="impossible_load">imposible guardar</string>
+    <string name="sync_in_process">sincronización en proceso</string>
+    <string name="sync_done">sincronización terminada</string>
+    <string name="sync_impossible">sincronización imposible</string>
+</resources>
