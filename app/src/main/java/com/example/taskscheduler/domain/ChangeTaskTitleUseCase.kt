@@ -24,7 +24,7 @@ class ChangeTaskTitleUseCase @Inject constructor(
         val isSaved = taskRepository.changeTaskTitle(task, validTitle)
         if (isSaved) {
             adviseDateNotification.delete(task)
-            taskRepository.getTaskByTitleStatic(newValue).apply(adviseDateNotification::set)
+            taskRepository.getTaskByTitleStatic(validTitle).apply(adviseDateNotification::set)
         } else null
     }
 }

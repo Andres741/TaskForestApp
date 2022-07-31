@@ -16,7 +16,7 @@ class ChangeAdviseDateUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(task: ITaskTitleOwner, newValue: Long?) = withWriteTaskContext context@{
         val validNewValue = createValidTaskUseCase.run {
-            newValue?.formatDate()
+            newValue?.formatAdviseTimeDate()
         }
         taskRepository.changeAdviseDate(task.taskTitle, validNewValue).ifTrue {
             val updatedTask = taskRepository.getTaskByTitleStatic(task.taskTitle)

@@ -56,7 +56,7 @@ class AddTaskViewModel @Inject constructor(
         adviseDate.value = timeDate.toCalendar().timeInMillis
     }
 
-    /** Called in fragment xml */
+
     fun save() {
         viewModelScope.launch {
             "Save task coroutine starts".log()

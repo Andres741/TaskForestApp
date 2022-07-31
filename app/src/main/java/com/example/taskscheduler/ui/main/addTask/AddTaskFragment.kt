@@ -69,7 +69,10 @@ class AddTaskFragment : Fragment() {
                     is WrongSuperTask -> throw IllegalStateException (
                         "The super task for some reason does not exists."
                     )
-                    is WrongAdviseDate -> R.string.days_go_by
+                    is WrongAdviseDate -> {
+                        adviseDate.value = null
+                        R.string.try_date_again
+                    }
                     is WrongTitle -> R.string.new_task_wrong_title
                     is WrongType -> R.string.new_task_wrong_type
                 }

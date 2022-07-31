@@ -169,7 +169,7 @@ class TaskDetailFragment: Fragment() {
                             oldValueText = viewModel.task.value!!.title, newValueText = viewModel.title.value!!,
                             onSavePressed = viewModel::saveNewTitle, onDiscardPressed = viewModel::restoreTitle
                         )
-                        null
+                        return@onClick
                     }
                     is TaskDetailViewModel.SavedStatus.Saved -> {
                         R.string.value_saved
@@ -179,7 +179,6 @@ class TaskDetailFragment: Fragment() {
                         R.string.impossible_save_value
                     }
                 }
-                msj ?: return@onClick
                 Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
             it.taskType.setOnClickListener onClick@ {
@@ -190,7 +189,7 @@ class TaskDetailFragment: Fragment() {
                             onSavePressed = viewModel::saveNewType, onDiscardPressed = viewModel::restoreType,
                             optional = viewModel::saveNewTypeInTaskHierarchy to saveInHierMsj
                         )
-                        null
+                        return@onClick
                     }
                     is TaskDetailViewModel.SavedStatus.Saved -> {
                         R.string.value_saved
@@ -200,7 +199,6 @@ class TaskDetailFragment: Fragment() {
                         R.string.impossible_save_value
                     }
                 }
-                msj ?: return@onClick
                 Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
             it.taskDescription.setOnClickListener onClick@ {
@@ -210,7 +208,7 @@ class TaskDetailFragment: Fragment() {
                             oldValueText = viewModel.task.value!!.description, newValueText = viewModel.description.value!!,
                             onSavePressed = viewModel::saveNewDescription, onDiscardPressed = viewModel::restoreDescription
                         )
-                        null
+                        return@onClick
                     }
                     is TaskDetailViewModel.SavedStatus.Saved -> R.string.value_saved
                     is TaskDetailViewModel.SavedStatus.NotSavable -> {
@@ -218,7 +216,6 @@ class TaskDetailFragment: Fragment() {
                         R.string.impossible_save_value
                     }
                 }
-                msj ?: return@onClick
                 Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
             it.taskAdviseDate.setOnClickListener onClick@ {
@@ -233,14 +230,13 @@ class TaskDetailFragment: Fragment() {
                             oldValueText = oldValue ?: doesNotHaveStr.value, newValueText = newValue ?: doesNotHaveStr.value,
                             onSavePressed = viewModel::saveNewAdviseDate, onDiscardPressed = viewModel::restoreAdviseDate
                         )
-                        null
+                        return@onClick
                     }
                     is TaskDetailViewModel.SavedStatus.Saved -> R.string.value_saved
                     is TaskDetailViewModel.SavedStatus.NotSavable -> throw IllegalStateException(
                         "New advise date should not be wrong"
                     )
                 }
-                msj ?: return@onClick
                 Toast.makeText(context, msj, Toast.LENGTH_SHORT).show()
             }
         }

@@ -44,7 +44,7 @@ class CreateValidTaskUseCase @Inject constructor(
             (superTask.validateSuperTask() ?: return@res Response.WrongSuperTask) to taskRepository.getTaskTypeByTitleStatic(superTask)
         }
 
-        val newAdviseDate = adviseDate?.formatDate()
+        val newAdviseDate = adviseDate?.formatAdviseTimeDate()
 
         val newDescription = description?.formatDescription() ?: ""
 
@@ -58,13 +58,13 @@ class CreateValidTaskUseCase @Inject constructor(
 
 
     suspend fun String.validateTitle(): String? = validateField()?.let { newTitle ->
-        if(existsTaskWithTitleUseCase(newTitle)) null else this
+        if(existsTaskWithTitleUseCase(newTitle)) null else newTitle
     }
 
     fun String.validateType() = validateField()
 
     private suspend fun String.validateSuperTask(): String? = validateField()?.let { newSuperTask ->
-        if(existsTaskWithTitleUseCase(newSuperTask)) this else return null
+        if(existsTaskWithTitleUseCase(newSuperTask)) newSuperTask else return null
     } ?: ""
 
     fun String.formatDescription(): String {
@@ -98,12 +98,11 @@ class CreateValidTaskUseCase @Inject constructor(
 //                nowDay < day
 //    }
 
-    fun Long.formatDate(): Long {
-        val nowTimeDate = Calendar.getInstance().toSimpleTimeDate()
-        val timeDate = Calendar.getInstance().also { it.timeInMillis = this }.toSimpleTimeDate()
+    fun Long.formatAdviseTimeDate(): Long {
+        val inAMinuteTimeDate = Calendar.getInstance().apply { add(Calendar.MINUTE, 1) }
+        val timeDate = Calendar.getInstance().also { it.timeInMillis = this }
 
-        return (timeDate.takeIf { it >= nowTimeDate }?.toCalendar() ?:
-            Calendar.getInstance().also { it.add(Calendar.MINUTE, 1) }).timeInMillis
+        return maxOf(inAMinuteTimeDate, timeDate).timeInMillis
     }
 
     sealed class Response {

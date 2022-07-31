@@ -21,7 +21,7 @@ class FirestoreSynchronizedTaskRepository(
     private val local: ILocalTaskRepository,
     private val firestoreTasks: FirestoreTasks,
 ): ITaskRepository by local {
-    //TODO: check when write methods of firestoreTasks fails.
+
     val easyFiresoreSynchronization = lazy { EasyFiresoreSynchronization() }
 
     //Create
