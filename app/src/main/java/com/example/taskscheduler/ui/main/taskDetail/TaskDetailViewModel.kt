@@ -14,8 +14,11 @@ import com.example.taskscheduler.util.NoMoreWithTaskDeletedType
 import com.example.taskscheduler.util.TypeChange
 import com.example.taskscheduler.util.ifNotNull
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -69,6 +72,27 @@ class TaskDetailViewModel @Inject constructor(
         else SavedStatus.Savable
     }
 
+    init {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                try {
+                    adviseDate.asFlow().collectLatest { newValue ->
+                        if (newValue == null || saveAdviseDateStatus.value == SavedStatus.Saved) {
+                            updateMinuteScopeProvider.cancel()
+                            return@collectLatest
+                        }
+                        updateMinuteScopeProvider.newScope.launch {
+                            delay(newValue - System.currentTimeMillis())
+                            adviseDate.postValue(newValue + 60_000)
+                        }
+                    }
+                } catch (e: Exception) { //If coroutine is cancelled
+                    updateMinuteScopeProvider.cancel()
+                }
+            }
+        }
+    }
+
     private val _taskTitleChangedEvent = MutableLiveData<ITaskTitleOwner>()
     val taskTitleChangedEvent: LiveData<ITaskTitleOwner> = _taskTitleChangedEvent
 
@@ -77,7 +101,8 @@ class TaskDetailViewModel @Inject constructor(
 
     val taskDeletedEvent = DataEventTrigger<NoMoreWithTaskDeletedType>()
 
-    private val scopeProvider = OneScopeAtOnceProvider()
+    private val collectTaskScopeProvider = OneScopeAtOnceProvider()
+    private val updateMinuteScopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
 
     val creationDateFormat: SimpleDateFormat = dateAndHourFormatProvider.value
     val adviseDateFormat: SimpleDateFormat = dateFormatProvider.value
@@ -92,10 +117,11 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     fun onSetUp(task: ITaskTitleOwner) {
-        scopeProvider.newScope.launch {
+        collectTaskScopeProvider.newScope.launch {
             var latestCollectedTask: TaskModel? = null
             try {
                 getTaskByTitle(task.taskTitle).collectLatest { latestTask ->
+                    updateMinuteScopeProvider.cancel()
                     _task.value = latestTask
                     val previousTask = latestCollectedTask
 
@@ -132,7 +158,7 @@ class TaskDetailViewModel @Inject constructor(
 
         viewModelScope.launch {
             changeTitle(task, newTitle)?.also { newTitle ->
-                scopeProvider.cancel()
+                collectTaskScopeProvider.cancel()
                 _taskTitleChangedEvent.value = newTitle
             }
         }
@@ -195,7 +221,7 @@ class TaskDetailViewModel @Inject constructor(
         val task = _task.value ?: return
         viewModelScope.launch {
             deleteTask(task).ifTrue {
-                scopeProvider.cancel()
+                collectTaskScopeProvider.cancel()
                 taskDeletedEvent.triggerEvent(existsTaskWithType(task.type))
             }
         }
@@ -205,14 +231,14 @@ class TaskDetailViewModel @Inject constructor(
         val task = _task.value ?: return
         viewModelScope.launch {
             deleteTask.alsoChildren(task).ifNotNull {
-                scopeProvider.cancel()
+                collectTaskScopeProvider.cancel()
                 taskDeletedEvent.triggerEvent(existsTaskWithType(task.type))
             }
         }
     }
 
     override fun onCleared() {
-        scopeProvider.cancel()
+        collectTaskScopeProvider.cancel()
         super.onCleared()
     }
 

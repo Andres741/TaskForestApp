@@ -13,7 +13,6 @@ class AdviseDateNotificationUseCase @Inject constructor(
     fun add(task: TaskModel): Boolean {
 //        task.adviseDate ?: throw NullPointerException("notification of task without task.adviseDate added")
         val adviseDateDelay = (task.adviseDate ?: return false) - System.currentTimeMillis()
-        if (adviseDateDelay <= 0) return false
         val taskTitle = task.taskTitle
 
         adviseDateNotificationFactory.sendNotification(
@@ -31,7 +30,6 @@ class AdviseDateNotificationUseCase @Inject constructor(
 
     fun set(task: TaskModel): Boolean {
         delete(task)
-        task.adviseDate ?: return false
         return add(task)
     }
 }

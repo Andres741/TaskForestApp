@@ -7,10 +7,11 @@ import com.example.taskscheduler.domain.CreateValidTaskUseCase
 import com.example.taskscheduler.domain.SaveNewTaskUseCase
 import com.example.taskscheduler.util.FirstToSecond
 import com.example.taskscheduler.util.SimpleTimeDate
+import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.observable.EventTrigger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import java.util.*
+import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,6 +24,29 @@ class AddTaskViewModel @Inject constructor(
     val type = MutableLiveData<String>()
     val adviseDate = MutableLiveData<Long?>(null)
     val description = MutableLiveData<String>()
+
+    init {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                val scopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
+                try {
+                    adviseDate.asFlow().collectLatest { newValue ->
+                        if (newValue == null) {
+                            scopeProvider.cancel()
+                            return@collectLatest
+                        }
+                        scopeProvider.newScope.launch {
+                            val timeToUpdateMinute = newValue - System.currentTimeMillis()
+                            delay(timeToUpdateMinute)
+                            adviseDate.postValue(newValue + 60_000)
+                        }
+                    }
+                } catch (e: Exception) { //If coroutine is cancelled
+                    scopeProvider.cancel()
+                }
+            }
+        }
+    }
 
     private val dateFormat = dateFormatProvider.value
 

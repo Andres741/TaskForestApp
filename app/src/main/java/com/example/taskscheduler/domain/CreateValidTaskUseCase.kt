@@ -5,7 +5,6 @@ import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
 import com.example.taskscheduler.util.remove
-import com.example.taskscheduler.util.toSimpleTimeDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -99,17 +98,15 @@ class CreateValidTaskUseCase @Inject constructor(
 //    }
 
     fun Long.formatAdviseTimeDate(): Long {
-        val inAMinuteTimeDate = Calendar.getInstance().apply { add(Calendar.MINUTE, 1) }
-        val timeDate = Calendar.getInstance().also { it.timeInMillis = this }
+        val inAMinuteTime = Calendar.getInstance().apply { add(Calendar.MINUTE, 1) }.timeInMillis
 
-        return maxOf(inAMinuteTimeDate, timeDate).timeInMillis
+        return maxOf(inAMinuteTime, this)
     }
 
     sealed class Response {
         open class ValidTask(val task: TaskModel): Response()
         object WrongTitle: Response()
         object WrongType: Response()
-        object WrongAdviseDate: Response()
         object WrongSuperTask: Response()
     }
     private fun<T> T.log(msj: String? = null) = apply {
@@ -120,5 +117,4 @@ class CreateValidTaskUseCase @Inject constructor(
 typealias ValidTask = CreateValidTaskUseCase.Response.ValidTask
 typealias WrongTitle = CreateValidTaskUseCase.Response.WrongTitle
 typealias WrongType = CreateValidTaskUseCase.Response.WrongType
-typealias WrongAdviseDate = CreateValidTaskUseCase.Response.WrongAdviseDate
 typealias WrongSuperTask = CreateValidTaskUseCase.Response.WrongSuperTask
