@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.taskscheduler.data.sources.remote.netClases.IFirestoreDocument
 import com.example.taskscheduler.data.sources.remote.netClases.TaskDocument
 import com.example.taskscheduler.domain.models.toDocument
-import com.example.taskscheduler.util.await
+import com.example.taskscheduler.util.coroutines.await
 import com.example.taskscheduler.util.lazy.AsyncLazy
 import com.example.taskscheduler.util.taskModelTree
 import com.example.taskscheduler.util.taskModelTree_c

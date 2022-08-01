@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Bosque de tareas</string>
+    <string name="app_name">Bosque de Tareas</string>
 
 
     <string name="log_out">Cerrar sesión</string>

@@ -132,7 +132,7 @@ value class SimpleTaskTitleOwner constructor(
         }
     }
 }
-fun String.toTaskTitle() = SimpleTaskTitleOwner(this)  //TODO: delete?
+fun String.toTaskTitle() = SimpleTaskTitleOwner(this)
 
 fun Iterable<String>.toTaskTitle() = map(String::toTaskTitle)
 

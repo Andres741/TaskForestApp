@@ -14,8 +14,10 @@ import com.example.taskscheduler.util.lazy.AsyncLazy
 import com.example.taskscheduler.util.taskModelTree
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +29,7 @@ class TaskDaoTest {
 
     private val taskModels by AsyncLazy { taskModelTree }
 
-    private val taskEntities by lazy { taskModels.toTaskEntities() }
+    private val taskEntities by AsyncLazy { taskModels.toTaskEntities() }
 
     private lateinit var db: LocalDataBase
     private val taskDao get() = db.taskDao
@@ -47,20 +49,26 @@ class TaskDaoTest {
 
     private fun setUpTasks() = runBlocking {
         taskAndSubTaskDao.insertAllPairs(taskEntities)
-
-        listDBTasks = mutableListOf()
     }
 
-
-    @Before
-    fun onBefore() {
-        "\n/-----------------------------------------\\\n".log()
+    private fun prepareDB() {
         createDb()
         setUpTasks()
     }
 
     private fun closeDb() {
         db.close()
+    }
+
+    private fun resetDB() {
+        closeDb()
+        prepareDB()
+    }
+
+    @Before
+    fun onBefore() {
+        "\n/-----------------------------------------\\\n".log()
+        prepareDB()
     }
 
     @After
@@ -171,6 +179,82 @@ class TaskDaoTest {
         }
         showAllFromDB()
         time.log("Time")
+    }
+
+    @Test
+    fun changeTaskTypeAsyncChannels_test(): Unit = runBlocking {
+        val taskToNewTypeList = listOf(
+            "a" to "A",
+            "bbb" to "B",
+            "ccccc" to "C",
+            "x" to "X",
+            "z" to "Z",
+        )
+
+        delay(100)
+        val timeSync = measureTimeMillis {
+            taskToNewTypeList.forEach { (task, newType) ->
+                taskAndSubTaskDao.changeTaskType(task, newType).log("$newType count")
+            }
+        }
+        val allDoneSync = showAllFromDB()
+
+        resetDB()
+
+        val timeAsync = withTimeout(1000) {
+            delay(100)
+            measureTimeMillis {
+                taskToNewTypeList.forEach { (task, newType) ->
+                    taskAndSubTaskDao.changeTaskTypeAsyncChannels(task, newType).log("$newType count")
+                }
+            }
+        }
+
+        val allDoneAsync = showAllFromDB()
+
+        "timeSync: $timeSync,  timeAsync: $timeAsync".log()
+        "${timeSync - timeAsync}".log("Absolute time improvement")
+        "${timeSync.toDouble() / timeAsync}".log("Relative time improvement")
+
+        assertEquals(allDoneSync, allDoneAsync)
+    }
+
+    @Test
+    fun changeTaskTypeAsync_test(): Unit = runBlocking {
+        val taskToNewTypeList = listOf(
+            "a" to "A",
+            "bbb" to "B",
+            "ccccc" to "C",
+            "x" to "X",
+            "z" to "Z",
+        )
+
+        delay(200)
+        val timeSync = measureTimeMillis {
+            taskToNewTypeList.forEach { (task, newType) ->
+                taskAndSubTaskDao.changeTaskType(task, newType).log("$newType count")
+            }
+        }
+        val allDoneSync = showAllFromDB()
+
+        resetDB()
+
+        val timeAsync = withTimeout(1000) {
+            delay(200)
+            measureTimeMillis {
+                taskToNewTypeList.forEach { (task, newType) ->
+                    taskAndSubTaskDao.changeTaskTypeAsync(task, newType).log("$newType count")
+                }
+            }
+        }
+
+        val allDoneAsync = showAllFromDB()
+
+        "timeSync: $timeSync,  timeAsync: $timeAsync".log()
+        "${timeSync - timeAsync}".log("Absolute time improvement")
+        "${timeSync.toDouble() / timeAsync}".log("Relative time improvement")
+
+        assertEquals(allDoneSync, allDoneAsync)
     }
 
     @Test

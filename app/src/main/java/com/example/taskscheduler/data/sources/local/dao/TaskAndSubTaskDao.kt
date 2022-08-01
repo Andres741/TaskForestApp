@@ -4,11 +4,12 @@ import androidx.room.*
 import com.example.taskscheduler.data.sources.local.dao.SubTaskDao.Companion.GET_TOP_SUPER_TASK_OF_TASK
 import com.example.taskscheduler.data.sources.local.entities.taskEntity.*
 import com.example.taskscheduler.util.dataStructures.wrapperUnzip
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.consumeAsFlow
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * This dao contains the UPDATE and INSERT queries that implies taskTable and subTaskTable at the
@@ -51,6 +52,8 @@ abstract class TaskAndSubTaskDao {
             "DELETE FROM $SUBTASK_TABLE WHERE $SUB_TASK_ID IN (:subTasks)"
         const val DELETE_SUPER =
             "DELETE FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask"
+
+        private const val CHANNEL_CAPACITY = Channel.RENDEZVOUS
     }
 
     @Query(SubTaskDao.GET_SUB_TASKS_OF_SUPER_TASK)
@@ -149,19 +152,85 @@ abstract class TaskAndSubTaskDao {
             sum + changeTaskTypeHelper(child, newValue)
         }
     }
-    private suspend fun changeTaskTypeHelperAsync(task: String, newValue: String, channel: Channel<Int>) {
+
+    /**Slower than changeTaskType, but faster than changeTaskTypeAsyncChannels*/
+    @Transaction
+    open suspend fun changeTaskTypeAsync(task: String, newValue: String): Int {
+        val topSuperTask = getTopSuperTaskOfTask(task)
+        val counter = AtomicInteger()
+
         withContext(Dispatchers.Default) {
+            changeTaskTypeHelperAsync(topSuperTask, newValue, counter)
+        }
+
+        return counter.get()
+    }
+
+    private suspend fun changeTaskTypeHelperAsync(task: String, newValue: String, counter: AtomicInteger) {
+        coroutineScope {
             launch {
                 val numChanged = updateOneTaskType(task, newValue)
-                channel.send(numChanged)
+                counter.getAndAdd(numChanged)
             }
+
             val childTitlesList = getSubTasksOfSuperTask(task)
+
             childTitlesList.forEach { child ->
                 launch {
-                    changeTaskTypeHelperAsync(child, newValue, channel)
+                    changeTaskTypeHelperAsync(child, newValue, counter)
                 }
             }
         }
+    }
+
+    /**Works like changeTaskType, is fancier but slower.*/
+    @Transaction
+    open suspend fun changeTaskTypeAsyncChannels(task: String, newValue: String): Int {
+        val topSuperTask = getTopSuperTaskOfTask(task)
+        val channel = Channel<Int>(CHANNEL_CAPACITY)
+
+        var res = 0
+
+        withContext(Dispatchers.Default) {
+            launch {
+                channel.consumeAsFlow().collect { numChanged ->
+                    res += numChanged
+                }
+            }
+            changeTaskTypeHelperAsyncChannels(topSuperTask, newValue, channel)
+            channel.close()
+        }
+
+        return res
+    }
+
+    private suspend fun changeTaskTypeHelperAsyncChannels(task: String, newValue: String, fatherChannel: SendChannel<Int>) {
+        var res = 0
+
+        coroutineScope {
+            val nodeChannel = Channel<Int>(CHANNEL_CAPACITY)
+            val childTitlesList = getSubTasksOfSuperTask(task)
+
+            launch {
+                nodeChannel.consumeEach { numChanged ->
+                    res += numChanged
+                }
+            }
+
+            coroutineScope {
+                launch {
+                    res += updateOneTaskType(task, newValue)
+                }
+
+                childTitlesList.forEach { child ->
+                    launch {
+                        changeTaskTypeHelperAsyncChannels(child, newValue, nodeChannel)
+                    }
+                }
+            }
+            nodeChannel.close()
+        }
+        fatherChannel.send(res)
     }
 
     @Query(DELETE_TASK)

@@ -61,6 +61,27 @@ class LogInFragment : Fragment() {
         }
     }
 
+    private fun goToSignIn() {
+        "goToSignIn".logd()
+
+        val providers = listOf(
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.EmailBuilder().build(),
+        )
+        // Sign in with FirebaseUI, see docs for more details:
+        // https://firebase.google.com/docs/auth/android/firebaseui
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setLogo(R.mipmap.ic_launcher)
+            .setAvailableProviders(providers)
+            .build()
+
+        val signIn: ActivityResultLauncher<Intent> =
+            registerForActivityResult(FirebaseAuthUIActivityResultContract(), this::onSignInResult)
+
+        signIn.launch(signInIntent)
+    }
+
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         "onSignInResult".logd()
         if (result.resultCode == AppCompatActivity.RESULT_OK) {
@@ -90,27 +111,6 @@ class LogInFragment : Fragment() {
         ).show()
 
         binding.root.findNavController().popBackStack()
-    }
-
-    private fun goToSignIn() {
-        "goToSignIn".logd()
-
-        val providers = listOf(
-            AuthUI.IdpConfig.GoogleBuilder().build(),
-            AuthUI.IdpConfig.EmailBuilder().build(),
-        )
-        // Sign in with FirebaseUI, see docs for more details:
-        // https://firebase.google.com/docs/auth/android/firebaseui
-        val signInIntent = AuthUI.getInstance()
-            .createSignInIntentBuilder()
-            .setLogo(R.mipmap.ic_launcher)
-            .setAvailableProviders(providers)
-            .build()
-
-        val signIn: ActivityResultLauncher<Intent> =
-            registerForActivityResult(FirebaseAuthUIActivityResultContract(), this::onSignInResult)
-
-        signIn.launch(signInIntent)
     }
 
     private fun<T> T.log(msj: String? = null) = apply {
