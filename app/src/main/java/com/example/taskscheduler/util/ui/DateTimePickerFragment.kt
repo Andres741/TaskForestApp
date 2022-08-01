@@ -17,6 +17,7 @@ class DateTimePickerFragment(
 ) {
     fun show(manager: FragmentManager, tag: String?) {
         val datePickerFragment = DatePickerFragment(calendar(), minDate?.invoke(), maxDate?.invoke()) {  _, year, month, day ->
+
             val timePicker = TimePickerFragment(calendar().toSimpleTime(), is24HourView) { _, hour, minute ->
 
                 val time = SimpleTimeDate(year, month, day, hour, minute)
