@@ -15,6 +15,8 @@ class SynchronizeFromFirestoreUseCase constructor(
     suspend operator fun invoke() = withWriteTaskContext {
         taskRepository.mergeLists().onEach { addedTaskTitle ->
             val addedTask = taskRepository.getTaskByTitleStatic(addedTaskTitle)
+
+            if ( kotlin.run { (addedTask.adviseDate ?: return@run true) > System.currentTimeMillis() })
             adviseDateNotification.set(addedTask)
         }
     }

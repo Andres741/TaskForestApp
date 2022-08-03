@@ -233,9 +233,7 @@ class FirestoreSynchronizedTaskRepository(
     }
 
     private suspend fun cleanDeleted() {
-        withTimeout(TIMEOUT) {
-            getAllDeletedFromFirebase()
-        }.forEach { deleted ->
+        getAllDeletedFromFirebase().forEach { deleted ->
             local.deleteSingleTask(deleted.toTaskTitle())
         }
     }
@@ -244,9 +242,7 @@ class FirestoreSynchronizedTaskRepository(
         val allFromFirebaseDef = async {
             val res: List<TaskModel>
             val time = measureTimeMillis {
-                withTimeout(TIMEOUT) {
-                    res = getAllFromFirebase()
-                }
+                res = getAllFromFirebase()
             }
             "Getting from firebase took $time millis".log()
             res
@@ -254,23 +250,33 @@ class FirestoreSynchronizedTaskRepository(
 
         cleanDeleted()
 
-        val allFromLocal = local.getAllTasksStatic()
+        val allFromLocalDef = async { local.getAllTasksStatic() }
 
-        val forest = TaskForest(allFromLocal)
+        val allFromFirebase = allFromFirebaseDef.await()
+        val forest = TaskForest(allFromFirebase)
 
-        val addToLocal = forest.addAll(allFromFirebaseDef.await())
+        val allFromLocal = allFromLocalDef.await()
+        val addToRemote = forest.addAll(allFromLocal)
 
         CoroutineScope(Dispatchers.Default).launch {
-            val addToRemote = forest.taskMap.keys.asSequence().filter(addToLocal::notContains).asIterable()
             saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
         }
+
+        val addToLocal = forest.taskMap.keys.asSequence().filter(addToRemote::notContains).toSet()
         saveOnlyInLocal(forest.getAllIn(addToLocal))
 
         return@coroutineScope addToLocal
-    }
-
-    private companion object {
-        const val TIMEOUT = 12000L
+//        val forest = TaskForest(allFromLocal)
+//
+//        val addToLocal = forest.addAll(allFromFirebaseDef.await())
+//
+//        CoroutineScope(Dispatchers.Default).launch {
+//            val addToRemote = forest.taskMap.keys.asSequence().filter(addToLocal::notContains).asIterable()
+//            saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
+//        }
+//        saveOnlyInLocal(forest.getAllIn(addToLocal))
+//
+//        return@coroutineScope addToLocal
     }
 
 
