@@ -43,7 +43,7 @@ class FirestoreSynchronizedTaskRepository(
         if (tasks.iterator().hasNext().not()) return
 
         CoroutineScope(Dispatchers.IO).launch {
-            firestoreTasks.deleteAll(oldTaskTitlesInFirestore)
+            firestoreTasks.setAllAsDeleted(oldTaskTitlesInFirestore)
             firestoreTasks.saveAll(tasks.asDocumentSeq().asIterable())
         }
         local.saveAll(tasks)
@@ -80,7 +80,7 @@ class FirestoreSynchronizedTaskRepository(
                 }
             }
             CoroutineScope(Dispatchers.IO).launch {
-                firestoreTasks.delete(previousTaskTitle)
+                firestoreTasks.setAsDeleted(previousTaskTitle)
                 firestoreTasks.save(changedTask.toDocument())
             }
             CoroutineScope(Dispatchers.IO).launch {
@@ -139,7 +139,7 @@ class FirestoreSynchronizedTaskRepository(
                 }
             }
             CoroutineScope(Dispatchers.IO).launch {
-                firestoreTasks.delete(deletedTaskTitle)
+                firestoreTasks.setAsDeleted(deletedTaskTitle)
             }
             CoroutineScope(Dispatchers.IO).launch {
                 firestoreTasks.removeSubTask(
@@ -158,7 +158,7 @@ class FirestoreSynchronizedTaskRepository(
 
         return coroutineScope {
             CoroutineScope(Dispatchers.IO).launch {
-                firestoreTasks.delete(task.taskTitle)
+                firestoreTasks.setAsDeleted(task.taskTitle)
             }
 
             val superTaskTitle = async {
@@ -189,7 +189,7 @@ class FirestoreSynchronizedTaskRepository(
                 CoroutineScope(Dispatchers.Default).launch {
                     forEach { subtaskTitle ->
                         launch(Dispatchers.IO) {
-                            firestoreTasks.delete(subtaskTitle)
+                            firestoreTasks.setAsDeleted(subtaskTitle)
                         }
                     }
                 }
@@ -201,7 +201,7 @@ class FirestoreSynchronizedTaskRepository(
     override suspend fun deleteAll(): Boolean {
         val titles = local.getAllTasksTitlesStatic().takeIf(List<*>::isNotEmpty) ?: return false
         CoroutineScope(Dispatchers.IO).launch {
-            firestoreTasks.deleteAll(titles)
+            firestoreTasks.setAllAsDeleted(titles)
         }
         local.deleteAll()
         return true
@@ -218,24 +218,42 @@ class FirestoreSynchronizedTaskRepository(
         local.saveAll(tasks)
     }
 
-    suspend fun getAllFromFirebase() = firestoreTasks.getAllTasks(Source.SERVER).fold({ documents ->
+    private suspend fun getAllFromFirebase() = firestoreTasks.getAllTasksQueryByIsDeleted(Source.SERVER, false).fold({ documents ->
         documents.toModel()
     }) { t ->
         t.log("Not possible to connect with firestore because")
         throw IOException("Firestore does not respond", t)
     }
 
+    private suspend fun getAllDeletedFromFirebase() = firestoreTasks.getAllTasksQueryByIsDeleted(Source.SERVER, true).fold({ documents ->
+        documents.mapNotNull { it.title }
+    }) { t ->
+        t.log("Not possible to connect with firestore because")
+        throw IOException("Firestore does not respond", t)
+    }
+
+    private suspend fun cleanDeleted() {
+        withTimeout(TIMEOUT) {
+            getAllDeletedFromFirebase()
+        }.forEach { deleted ->
+            local.deleteSingleTask(deleted.toTaskTitle())
+        }
+    }
+
     suspend fun mergeLists(): Set<String> = coroutineScope {
         val allFromFirebaseDef = async {
-            withTimeout(12000){
-                val res: List<TaskModel>
-                val time = measureTimeMillis {
+            val res: List<TaskModel>
+            val time = measureTimeMillis {
+                withTimeout(TIMEOUT) {
                     res = getAllFromFirebase()
                 }
-                "Getting from firebase took $time millis".log()
-                res
             }
+            "Getting from firebase took $time millis".log()
+            res
         }
+
+        cleanDeleted()
+
         val allFromLocal = local.getAllTasksStatic()
 
         val forest = TaskForest(allFromLocal)
@@ -249,6 +267,10 @@ class FirestoreSynchronizedTaskRepository(
         saveOnlyInLocal(forest.getAllIn(addToLocal))
 
         return@coroutineScope addToLocal
+    }
+
+    private companion object {
+        const val TIMEOUT = 12000L
     }
 
 

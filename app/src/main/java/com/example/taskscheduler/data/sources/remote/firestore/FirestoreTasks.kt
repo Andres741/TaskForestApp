@@ -14,6 +14,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -25,6 +27,14 @@ class FirestoreTasks(
     val tasksCollection: CollectionReference
 ) {
     val firestore = tasksCollection.firestore
+
+    init {
+        CoroutineScope(Dispatchers.Default).launch {
+            tasksCollection.get().await().forEach { doc ->
+                doc.reference.get().await().reference
+            }
+        }
+    }
 
     suspend fun save(task: TaskDocument) = kotlin.runCatching {
         tasksCollection.setDoc(task).await()
@@ -76,9 +86,16 @@ class FirestoreTasks(
     suspend fun getTasksQuery(source: Source = Source.DEFAULT) = kotlin.runCatching {
         tasksCollection.get(source).await()
     }
+    suspend fun getTasksQueryByIsDeleted(source: Source = Source.DEFAULT, isDeleted: Boolean) = kotlin.runCatching {
+        tasksCollection.whereEqualTo("deleted", isDeleted).get(source).await()
+    }
     suspend fun getAllTasks(source: Source = Source.DEFAULT) = getTasksQuery(source).mapCatching { query ->
         query.toObjects<TaskDocument>()
     }
+    suspend fun getAllTasksQueryByIsDeleted(source: Source = Source.DEFAULT, isDeleted: Boolean) =
+        getTasksQueryByIsDeleted(source, isDeleted).mapCatching { query ->
+            query.toObjects<TaskDocument>()
+        }
     suspend fun getAllTasksTitle() = getTasksQuery().mapCatching { query ->
         query.documents
             .asSequence()
@@ -121,6 +138,16 @@ class FirestoreTasks(
         tasksCollection.document(task).update("adviseDate", newValue).await()
     }
 
+    suspend fun setAsDeleted(taskTitle: String) {
+        tasksCollection.document(taskTitle).update("deleted", true).await()
+    }
+    suspend fun setAllAsDeleted(taskTitles: Iterable<String>) {
+        firestore.runBatch { batch ->
+            taskTitles.forEach { title ->
+                batch.update(tasksCollection.document(title), "deleted", true)
+            }
+        }.await()
+    }
 
     suspend fun delete(taskTitle: String) = kotlin.runCatching {
         tasksCollection.document(taskTitle).delete().await()

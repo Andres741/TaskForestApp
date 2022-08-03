@@ -66,6 +66,7 @@ fun DocumentReference.asFlow(): Flow<DocumentSnapshot> = callbackFlow {
     }
 }.flowOn(Dispatchers.IO)
 
+// Query is the super class of CollectionReference
 fun Query.asFlow(): Flow<QuerySnapshot> = callbackFlow {
     addSnapshotListener { query: QuerySnapshot?, e ->
         if (e != null) {
