@@ -88,17 +88,17 @@ class RoomTaskRepository @Inject constructor(
     override suspend fun getAllTasksTitlesStatic(): List<String> =
         taskDao.getAllTitlesStatic()
 
-    override fun getTaskByTitle(title: String): Flow<TaskModel> =
-        taskDao.getTaskWithSuperAndSubTasks(title).map(TaskWithSuperAndSubTasks::toModel)
+    override fun getTaskByTitle(title: ITaskTitleOwner): Flow<TaskModel> =
+        taskDao.getTaskWithSuperAndSubTasks(title.taskTitle).map(TaskWithSuperAndSubTasks::toModel)
 
-    override suspend fun getTaskByTitleStatic(title: String) =
-        taskDao.getTaskWithSuperAndSubTasksStatic(title).toModel()
+    override suspend fun getTaskByTitleStatic(title: ITaskTitleOwner) =
+        taskDao.getTaskWithSuperAndSubTasksStatic(title.taskTitle).toModel()
 
-    override suspend fun getTaskTypeByTitleStatic(title: String): String =
-        taskDao.getTypeStatic(title)
+    override suspend fun getTaskTypeByTitleStatic(title: ITaskTitleOwner): String =
+        taskDao.getTypeStatic(title.taskTitle)
 
-    override suspend fun getTaskTypeFromTask(task: TaskModel) =
-        taskDao.getTypeFromDBByTaskStatic(task.type).toModel()
+    override suspend fun getTaskTypeFromTask(task: ITaskTypeNameOwner) =
+        taskDao.getTypeFromDBByTaskStatic(task.typeName).toModel()
 
     override suspend fun getTasksByTypeStatic(type: String) =
         taskDao.getTasksByTypeStatic(type).toModel()

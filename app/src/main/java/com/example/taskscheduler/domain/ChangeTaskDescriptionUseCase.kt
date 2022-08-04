@@ -18,13 +18,13 @@ class ChangeTaskDescriptionUseCase  @Inject constructor(
     suspend operator fun invoke(task: ITaskTitleOwner, newValue: String) = withWriteTaskContext context@ {
         val validDescription = createValidTaskUseCase.run {
             newValue.formatDescription()
-        } ?: return@context false
+        } //?: return@context false
 
         taskRepository.changeTaskDescription(task, validDescription).ifTrue {
             val addedTask = if (task is TaskModel) {
                 adviseDateNotification.set(task)
                 task
-            } else taskRepository.getTaskByTitleStatic(task.taskTitle)
+            } else taskRepository.getTaskByTitleStatic(task)
 
             adviseDateNotification.set(addedTask)
         }

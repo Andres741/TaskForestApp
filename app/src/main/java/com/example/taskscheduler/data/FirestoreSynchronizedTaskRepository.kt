@@ -67,7 +67,7 @@ class FirestoreSynchronizedTaskRepository(
     override suspend fun changeTaskTitle(task: ITaskTitleOwner, newValue: String): Boolean {
         return local.changeTaskTitle(task, newValue).ifTrue {
             val previousTaskTitle = task.taskTitle
-            val changedTask = local.getTaskByTitleStatic(newValue)
+            val changedTask = local.getTaskByTitleStatic(newValue.toTaskTitle())
 
             CoroutineScope(Dispatchers.Default).launch {
                 changedTask.subTasks.forEach {
@@ -123,7 +123,7 @@ class FirestoreSynchronizedTaskRepository(
     //Delete
     override suspend fun deleteSingleTask(task: ITaskTitleOwner): Boolean {
         val deletedTaskTitle = task.taskTitle
-        val deletedTask = local.getTaskByTitleStatic(deletedTaskTitle)  //Don't move from here
+        val deletedTask = local.getTaskByTitleStatic(task)  //Don't move from here
 
         return local.deleteSingleTask(task).ifTrue {
             CoroutineScope(Dispatchers.Default).launch {

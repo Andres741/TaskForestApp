@@ -27,7 +27,7 @@ class ChangeDoneStatusOfTaskUseCase @Inject constructor(
     suspend operator fun invoke(
         taskTitle: SimpleTaskTitleOwner
     ): TaskModel = withContext(Dispatchers.Default) {
-        val task = getTaskByTitle.static(taskTitle.taskTitle)
+        val task = getTaskByTitle.static(taskTitle)
         invoke(task)
         task
     }

@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 class FirestoreTasks(
     val tasksCollection: CollectionReference
 ) {

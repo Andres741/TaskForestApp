@@ -3,6 +3,7 @@ package com.example.taskscheduler.domain
 import android.util.Log
 import com.example.taskscheduler.data.FirestoreSynchronizedTaskRepository
 import com.example.taskscheduler.data.sources.local.ITaskRepository
+import com.example.taskscheduler.domain.models.toTaskTitle
 import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
 import com.example.taskscheduler.util.ifTrue
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class SynchronizeFromFirestoreUseCase constructor(
 ) {
     suspend operator fun invoke() = withWriteTaskContext {
         taskRepository.mergeLists().onEach { addedTaskTitle ->
-            val addedTask = taskRepository.getTaskByTitleStatic(addedTaskTitle)
+            val addedTask = taskRepository.getTaskByTitleStatic(addedTaskTitle.toTaskTitle())
 
             if ( kotlin.run { (addedTask.adviseDate ?: return@run true) > System.currentTimeMillis() })
             adviseDateNotification.set(addedTask)

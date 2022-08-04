@@ -120,7 +120,7 @@ class TaskDetailViewModel @Inject constructor(
         collectTaskScopeProvider.newScope.launch {
             var latestCollectedTask: TaskModel? = null
             try {
-                getTaskByTitle(task.taskTitle).collectLatest { latestTask ->
+                getTaskByTitle(task).collectLatest { latestTask ->
                     updateMinuteScopeProvider.cancel()
                     _task.value = latestTask
                     val previousTask = latestCollectedTask

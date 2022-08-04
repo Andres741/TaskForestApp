@@ -30,13 +30,13 @@ interface ITaskRepository {
 
     suspend fun getAllTasksTitlesStatic(): List<String>
 
-    fun getTaskByTitle(title: String): Flow<TaskModel>
+    fun getTaskByTitle(title: ITaskTitleOwner): Flow<TaskModel>
 
-    suspend fun getTaskByTitleStatic(title: String): TaskModel
+    suspend fun getTaskByTitleStatic(title: ITaskTitleOwner): TaskModel
 
-    suspend fun getTaskTypeByTitleStatic(title: String): String
+    suspend fun getTaskTypeByTitleStatic(title: ITaskTitleOwner): String
 
-    suspend fun getTaskTypeFromTask(task: TaskModel): TaskTypeModel
+    suspend fun getTaskTypeFromTask(task: ITaskTypeNameOwner): TaskTypeModel
 
     suspend fun getTasksByTypeStatic(type: String): List<TaskModel>
 

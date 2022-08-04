@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.taskscheduler.data.sources.local.ITaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.domain.models.toTaskTitle
 import com.example.taskscheduler.util.remove
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -40,7 +41,8 @@ class CreateValidTaskUseCase @Inject constructor(
         val (newSuperTask, newType) = if (superTask.isNullOrBlank()) { // There is not super task
             "" to (type?.validateType() ?: return@res Response.WrongType)
         } else {
-            (superTask.validateSuperTask() ?: return@res Response.WrongSuperTask) to taskRepository.getTaskTypeByTitleStatic(superTask)
+            (superTask.validateSuperTask() ?: return@res Response.WrongSuperTask) to taskRepository
+                .getTaskTypeByTitleStatic(superTask.toTaskTitle())
         }
 
         val newAdviseDate = adviseDate?.formatAdviseTimeDate()

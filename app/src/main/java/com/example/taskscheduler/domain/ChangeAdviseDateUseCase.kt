@@ -19,7 +19,7 @@ class ChangeAdviseDateUseCase @Inject constructor(
             newValue?.formatAdviseTimeDate()
         }
         taskRepository.changeAdviseDate(task.taskTitle, validNewValue).ifTrue {
-            val updatedTask = taskRepository.getTaskByTitleStatic(task.taskTitle)
+            val updatedTask = taskRepository.getTaskByTitleStatic(task)
             adviseDateNotification.set(updatedTask)
         }
     }
