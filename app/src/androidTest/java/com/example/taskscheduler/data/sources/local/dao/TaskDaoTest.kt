@@ -12,8 +12,10 @@ import com.example.taskscheduler.data.sources.local.entities.taskEntity.toModel
 import com.example.taskscheduler.domain.models.toTaskEntities
 import com.example.taskscheduler.util.lazy.AsyncLazy
 import com.example.taskscheduler.util.taskModelTree
+import com.example.taskscheduler.util.taskModelTree_c
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -161,11 +163,15 @@ class TaskDaoTest {
     @Test
     fun getBySuperTask_test(): Unit = runBlocking  {
         //t0 -> 2; t3 -> 4; t9 -> 3;
-        taskDao.getBySuperTask("t3").first().toModel().forEach { task ->
+        val superTaskTitle = "b"
+        val expectedDef = async {
+            taskModels.filter { it.title != superTaskTitle && it.superTask.taskTitle == superTaskTitle}
+        }
+        val actual = taskDao.getBySuperTask(superTaskTitle).first().toModel().onEach { task ->
             task.log("task")
-            task.superTask.log("super task")
             "\n".log()
         }
+        assertEquals(expectedDef.await(), actual)
     }
 
     @Test

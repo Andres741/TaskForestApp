@@ -14,10 +14,11 @@ interface TaskDao {
             "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID = :key"
         const val GET_BY_SUPER_TASK =
             "SELECT * FROM $TASK_TABLE WHERE $TITLE_ID in (${SubTaskDao.GET_SUB_TASKS_OF_SUPER_TASK})"
-        //Shows the same item the same times as number of items that should show. A SQLite bug?
-//            "SELECT $TASK_TABLE.* FROM $TASK_TABLE INNER JOIN $SUBTASK_TABLE " +
-//                    "ON $TASK_TABLE.$TITLE_ID = $SUBTASK_TABLE.$SUPER_TASKa " +
-//                    "WHERE $TASK_TABLE.$TITLE_ID = :superTask"
+//            """
+//                SELECT $TASK_TABLE.* FROM $TASK_TABLE INNER JOIN $SUBTASK_TABLE
+//                    ON $TASK_TABLE.$TITLE_ID = $SUBTASK_TABLE.$SUB_TASK_ID
+//                    WHERE $SUBTASK_TABLE.$SUPER_TASKa = :superTask
+//            """
         const val GET_BY_TASK_TYPE =
             "SELECT * FROM $TASK_TABLE WHERE $TYPEa = :typeName ORDER BY $TITLE_ID"
         const val GET_TOP_SUPER_TASK_BY_TYPE =
