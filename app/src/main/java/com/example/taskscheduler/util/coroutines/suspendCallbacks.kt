@@ -21,30 +21,36 @@ fun <T> Task<T>.getOrNull(): T? {
 }
 
 suspend fun <T> Task<T>.await(): T {
-    if (isComplete) {
-        val e = exception
-        return if (e == null) {
-            if (isCanceled) {
-                throw CancellationException(
-                    "Task $this was cancelled normally.")
+    try {
+        if (isComplete) {
+            val e = exception
+            return if (e == null) {
+                if (isCanceled) {
+                    throw CancellationException(
+                        "Task $this was cancelled normally.")
+                } else {
+                    result
+                }
             } else {
-                result
+                throw e
             }
-        } else {
-            throw e
         }
-    }
 
-    return withContext(Dispatchers.IO) {
-        suspendCancellableCoroutine { cont: CancellableContinuation<T> ->
-            addOnCanceledListener {
-                cont.cancel()
-            }.addOnSuccessListener {
-                cont.resume(result,null)
-            }.addOnFailureListener { e ->
-                cont.resumeWithException(e)
+        return withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine { cont: CancellableContinuation<T> ->
+                addOnCanceledListener {
+                    cont.cancel()
+                }.addOnSuccessListener {
+                    cont.resume(result) { e ->
+                        cont.resumeWithException(e)
+                    }
+                }.addOnFailureListener { e ->
+                    cont.resumeWithException(e)
+                }
             }
         }
+    } catch (t: Throwable) {
+        throw CancellationException(t)
     }
 }
 

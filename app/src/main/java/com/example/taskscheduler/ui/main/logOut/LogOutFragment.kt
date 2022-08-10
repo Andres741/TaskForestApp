@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.taskscheduler.R
 import com.example.taskscheduler.ui.logIn.LogInActivity
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class LogOutFragment: Fragment() {
 
-//    private val viewModel: LogOutViewModel by viewModels()
+    private val viewModel: LogOutViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,20 +46,23 @@ class LogOutFragment: Fragment() {
     private fun logout() {
         "logout".log()
 
-        val activity = activity!!
         val context = context ?: return
         Toast.makeText(context, R.string.bye, Toast.LENGTH_LONG).show()
 
-
         lifecycleScope.launch {
-            AuthUI.getInstance()
-                .signOut(context)
-                .await()
-
-            Firebase.auth.currentUser.log("Firebase.auth.currentUser")
-            startActivity(Intent(activity, LogInActivity::class.java))
-            activity.finish()
+            Firebase.auth.currentUser.log("currentUser")?.also {
+                viewModel.finishFirebaseSession()
+                AuthUI.getInstance()
+                    .signOut(context)
+                    .await()
+            }
+            goToLoginActivity()
         }
+    }
+
+    private fun goToLoginActivity() {
+        startActivity(Intent(activity, LogInActivity::class.java))
+        activity!!.finish()
     }
 
     private fun <T> T.log(msj: String? = null) = apply {

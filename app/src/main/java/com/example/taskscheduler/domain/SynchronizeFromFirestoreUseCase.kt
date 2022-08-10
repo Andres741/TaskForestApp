@@ -8,7 +8,7 @@ import com.example.taskscheduler.domain.synchronization.WithWriteTaskContext
 import com.example.taskscheduler.util.ifTrue
 import javax.inject.Inject
 
-class SynchronizeFromFirestoreUseCase constructor(
+class SynchronizeFromFirestoreUseCase (
     private val withWriteTaskContext: WithWriteTaskContext,
     private val taskRepository: FirestoreSynchronizedTaskRepository,
     private val adviseDateNotification: AdviseDateNotificationUseCase,

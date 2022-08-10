@@ -56,6 +56,12 @@ class MainActivityViewModel @Inject constructor(
             timeOut.log()
             SyncState.Error
         }
+        catch (e: Exception) {
+            "A exception has occurred".log()
+            e.log()
+            SyncState.Error
+
+        }
     }
 
 

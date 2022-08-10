@@ -24,13 +24,19 @@ class FirestoreSynchronizedTaskRepository(
 
     val easyFiresoreSynchronization = lazy { EasyFiresoreSynchronization() }
 
+    private val firebaseSessionScope = CoroutineScope(Dispatchers.IO)
+
+    fun onSessionFinish() {
+        firebaseSessionScope.cancel()
+    }
+
     //Create
     override suspend fun saveNewTask(newTask: TaskModel) = run {
-        CoroutineScope(Dispatchers.IO).launch {
+        firebaseSessionScope.launch {
             val taskDocument = newTask.toDocument()
             firestoreTasks.save(taskDocument)
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        firebaseSessionScope.launch {
             val taskTitle = newTask.title
             val superTask = newTask.superTaskTitle
             firestoreTasks.addSubTask(taskTitle, superTask)
@@ -42,7 +48,7 @@ class FirestoreSynchronizedTaskRepository(
     suspend fun replaceTasksWithNew(tasks: Iterable<TaskModel>, oldTaskTitlesInFirestore: Iterable<String>) {
         if (tasks.iterator().hasNext().not()) return
 
-        CoroutineScope(Dispatchers.IO).launch {
+        firebaseSessionScope.launch {
             firestoreTasks.setAllAsDeleted(oldTaskTitlesInFirestore)
             firestoreTasks.saveAll(tasks.asDocumentSeq().asIterable())
         }
@@ -51,14 +57,14 @@ class FirestoreSynchronizedTaskRepository(
 
     //Update
     override suspend fun changeDone(task: ITaskTitleOwner, newValue: Boolean) = run {
-        CoroutineScope(Dispatchers.IO).launch {
+        firebaseSessionScope.launch {
             firestoreTasks.setTaskIsDone(task.taskTitle, newValue)
         }
         local.changeDone(task, newValue)
     }
 
     override suspend fun changeTaskDescription(task: ITaskTitleOwner, newValue: String) = run {
-        CoroutineScope(Dispatchers.IO).launch {
+        firebaseSessionScope.launch {
             firestoreTasks.setTaskDescription(task.taskTitle, newValue)
         }
         local.changeTaskDescription(task, newValue)
@@ -69,7 +75,7 @@ class FirestoreSynchronizedTaskRepository(
             val previousTaskTitle = task.taskTitle
             val changedTask = local.getTaskByTitleStatic(newValue.toTaskTitle())
 
-            CoroutineScope(Dispatchers.Default).launch {
+            firebaseSessionScope.launch {
                 changedTask.subTasks.forEach {
                     launch(Dispatchers.IO) {
                         val subTaskTitle = it.taskTitle
@@ -79,11 +85,11 @@ class FirestoreSynchronizedTaskRepository(
                     }
                 }
             }
-            CoroutineScope(Dispatchers.IO).launch {
+            firebaseSessionScope.launch {
                 firestoreTasks.setAsDeleted(previousTaskTitle)
                 firestoreTasks.save(changedTask.toDocument())
             }
-            CoroutineScope(Dispatchers.IO).launch {
+            firebaseSessionScope.launch {
                 firestoreTasks.removeSubTask(
                     subTask = previousTaskTitle, itsSuperTask = changedTask.superTaskTitle
                 )
@@ -97,7 +103,7 @@ class FirestoreSynchronizedTaskRepository(
     override suspend fun changeType(newValue: String, oldValue: String) =
         local.changeType(newValue, oldValue).ifTrue {
             local.getTaskTitlesByTypeStatic(newValue).forEach { modifiedTaskTitle ->
-                CoroutineScope(Dispatchers.IO).launch {
+                firebaseSessionScope.launch {
                     firestoreTasks.setType(newValue, modifiedTaskTitle)
                 }
             }
@@ -106,14 +112,14 @@ class FirestoreSynchronizedTaskRepository(
     override suspend fun changeTypeInTaskHierarchy(task: String, newValue: String) =
         local.changeTypeInTaskHierarchy(task, newValue).ifTrue {
             local.getTitlesOfHierarchyOfTaskByTypeStatic(newValue).forEach { modifiedTaskTitle ->
-                CoroutineScope(Dispatchers.IO).launch {
+                firebaseSessionScope.launch {
                     firestoreTasks.setType(newValue, modifiedTaskTitle)
                 }
             }
         }
 
     override suspend fun changeAdviseDate(task: String, newValue: Long?) = run {
-        CoroutineScope(Dispatchers.IO).launch {
+        firebaseSessionScope.launch {
             firestoreTasks.setAdviseDate(task, newValue)
         }
         local.changeAdviseDate(task, newValue)
@@ -126,7 +132,7 @@ class FirestoreSynchronizedTaskRepository(
         val deletedTask = local.getTaskByTitleStatic(task)  //Don't move from here
 
         return local.deleteSingleTask(task).ifTrue {
-            CoroutineScope(Dispatchers.Default).launch {
+            firebaseSessionScope.launch(Dispatchers.Default) {
                 val superTaskTitle = deletedTask.superTaskTitle
                 deletedTask.subTasks.forEach {
                     val subTaskTitle = it.taskTitle
@@ -138,10 +144,10 @@ class FirestoreSynchronizedTaskRepository(
                     firestoreTasks.addSubTask(subTaskTitle, superTaskTitle)
                 }
             }
-            CoroutineScope(Dispatchers.IO).launch {
+            firebaseSessionScope.launch {
                 firestoreTasks.setAsDeleted(deletedTaskTitle)
             }
-            CoroutineScope(Dispatchers.IO).launch {
+            firebaseSessionScope.launch {
                 firestoreTasks.removeSubTask(
                     subTask = deletedTaskTitle, itsSuperTask = deletedTask.superTaskTitle
                 )
@@ -157,14 +163,14 @@ class FirestoreSynchronizedTaskRepository(
         if (local.existsTitle(task.taskTitle).not()) return emptyList()
 
         return coroutineScope {
-            CoroutineScope(Dispatchers.IO).launch {
+            firebaseSessionScope.launch {
                 firestoreTasks.setAsDeleted(task.taskTitle)
             }
 
             val superTaskTitle = async {
                 local.getSuperTaskTitleStatic(task).takeIf(String::isNotBlank)
             }
-            CoroutineScope(Dispatchers.IO).launch {
+            firebaseSessionScope.launch {
                 firestoreTasks.removeSubTask(
                     task.taskTitle, superTaskTitle.await() ?: return@launch
                 )
@@ -186,7 +192,7 @@ class FirestoreSynchronizedTaskRepository(
             }
 
             allSubTasksTitles?.apply {
-                CoroutineScope(Dispatchers.Default).launch {
+                firebaseSessionScope.launch(Dispatchers.Default) {
                     forEach { subtaskTitle ->
                         launch(Dispatchers.IO) {
                             firestoreTasks.setAsDeleted(subtaskTitle)
@@ -200,7 +206,7 @@ class FirestoreSynchronizedTaskRepository(
 
     override suspend fun deleteAll(): Boolean {
         val titles = local.getAllTasksTitlesStatic().takeIf(List<*>::isNotEmpty) ?: return false
-        CoroutineScope(Dispatchers.IO).launch {
+        firebaseSessionScope.launch {
             firestoreTasks.setAllAsDeleted(titles)
         }
         local.deleteAll()
@@ -239,7 +245,7 @@ class FirestoreSynchronizedTaskRepository(
     }
 
     suspend fun mergeLists(): Set<String> = coroutineScope {
-        val allFromFirebaseDef = async {
+        val allFromFirebaseDef = firebaseSessionScope.async {
             val res: List<TaskModel>
             val time = measureTimeMillis {
                 res = getAllFromFirebase()
@@ -258,7 +264,7 @@ class FirestoreSynchronizedTaskRepository(
         val allFromLocal = allFromLocalDef.await()
         val addToRemote = forest.addAll(allFromLocal)
 
-        CoroutineScope(Dispatchers.Default).launch {
+        firebaseSessionScope.launch {
             saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
         }
 
@@ -266,17 +272,6 @@ class FirestoreSynchronizedTaskRepository(
         saveOnlyInLocal(forest.getAllIn(addToLocal))
 
         return@coroutineScope addToLocal
-//        val forest = TaskForest(allFromLocal)
-//
-//        val addToLocal = forest.addAll(allFromFirebaseDef.await())
-//
-//        CoroutineScope(Dispatchers.Default).launch {
-//            val addToRemote = forest.taskMap.keys.asSequence().filter(addToLocal::notContains).asIterable()
-//            saveAllOnlyInFirebase(forest.getAllIn(addToRemote))
-//        }
-//        saveOnlyInLocal(forest.getAllIn(addToLocal))
-//
-//        return@coroutineScope addToLocal
     }
 
 
