@@ -3,6 +3,7 @@ package com.example.taskscheduler.domain
 import com.example.taskscheduler.data.FirestoreSynchronizedTaskRepository
 import com.example.taskscheduler.domain.models.SimpleTaskTitleOwner
 import com.example.taskscheduler.domain.models.TaskModel
+import com.example.taskscheduler.domain.models.toTaskTitle
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -50,7 +51,7 @@ class CreateValidTaskUseCaseTest {
         val superTask = "t3"
         coEvery { existsTaskWithTitleUseCase(title) } returns false
         coEvery { existsTaskWithTitleUseCase(superTask) } returns true
-        coEvery { firestoreSynchronizedTaskRepository.getTaskTypeByTitleStatic(superTask) } returns type
+        coEvery { firestoreSynchronizedTaskRepository.getTaskTypeByTitleStatic(superTask.toTaskTitle()) } returns type
 
         //When
         val res = createValidTaskUseCase(title, type, description, superTask, null).log()
@@ -78,7 +79,7 @@ class CreateValidTaskUseCaseTest {
         val createdTask = res as? CreateValidTaskUseCase.Response.ValidTask
 
         // Then
-        coVerify(exactly = 0) { firestoreSynchronizedTaskRepository.getTaskTypeByTitleStatic("") }
+        coVerify(exactly = 0) { firestoreSynchronizedTaskRepository.getTaskTypeByTitleStatic("".toTaskTitle()) }
         coVerify(exactly = 0) { existsTaskWithTitleUseCase("") }
         coVerify(exactly = 1) { existsTaskWithTitleUseCase(title) }
         assertNotNull("createValidTaskUseCase response is not Successful", createdTask); createdTask!!
