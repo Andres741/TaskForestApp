@@ -12,6 +12,6 @@ class LogOutViewModel @Inject constructor(
     private val finishFirebaseSession = finishFirebaseSessionUseCaseAuth.value
 
     fun finishFirebaseSession() {
-        finishFirebaseSession?.invoke()
+        finishFirebaseSession?.finish()
     }
 }

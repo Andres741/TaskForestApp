@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.LogInFragmentBinding
@@ -29,7 +30,7 @@ class LogInFragment : Fragment() {
     private var _binding: LogInFragmentBinding? = null
     private val binding get() = _binding!!
 
-//    private val viewModel: LogInViewModel by viewModels()
+    private val viewModel: LogInViewModel by viewModels()
     private val activityViewModel: LogInActivityViewModel by activityViewModels()
 
 
@@ -90,6 +91,7 @@ class LogInFragment : Fragment() {
                 .apply { uid.log("user uid") }
                 .currentUser?.displayName.log("user name")
 
+            viewModel.startFirebaseSession()
             activityViewModel.goToMainActivity()
             return
         }

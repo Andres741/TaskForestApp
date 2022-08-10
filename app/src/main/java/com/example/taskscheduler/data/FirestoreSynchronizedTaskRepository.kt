@@ -24,10 +24,16 @@ class FirestoreSynchronizedTaskRepository(
 
     val easyFiresoreSynchronization = lazy { EasyFiresoreSynchronization() }
 
-    private val firebaseSessionScope = CoroutineScope(Dispatchers.IO)
+    companion object {
+        private val firebaseSessionScopeProvider = OneScopeAtOnceProvider(Dispatchers.IO)
+        private var firebaseSessionScope = firebaseSessionScopeProvider.newScope
+    }
 
     fun onSessionFinish() {
-        firebaseSessionScope.cancel()
+        firebaseSessionScopeProvider.cancel()
+    }
+    fun onSessionStarts() {
+        firebaseSessionScope = firebaseSessionScopeProvider.currentScopeOrNew
     }
 
     //Create
