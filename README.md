@@ -2,7 +2,7 @@
 This app was created by Andrés Conde Rodríguez to practise the most of the technologies and design
 patterns used in android development.
 
-##What the application does.
+## What the application does.
 
 This app lets the user to store tasks with a title, description, type, completion status, the date
 when a notification will be sent, and other attributes.
@@ -87,15 +87,15 @@ If an already authenticated user opens the app goes directly to MainActivity.
 ### Data structures
 The app has tree data structures done from scratch, which are the following:
 
-*MyLinkedList: is a linked list and implements MutableList interface, this data structure is
-useful to use it as a stack or a queue.
+* MyLinkedList: is a linked list and implements MutableList interface, this data structure is
+  useful to use it as a stack or a queue.
 
-*Tree: is a general tree whose children are stored in MyLinkedList and are also Tree. This
-data structure can be traversed in postorder and preorder.
+* Tree: is a general tree whose children are stored in MyLinkedList and are also Tree. This
+  data structure can be traversed in postorder and preorder.
 
-*BDTree: is a subclass of Tree that allows reaching the father tree from a child tree. Is
-possible to reach the top father of the tree using superFather property, whose speed is
-improved due to tail recursively.
+* BDTree: is a subclass of Tree that allows reaching the father tree from a child tree. Is
+  possible to reach the top father of the tree using superFather property, whose speed is
+  improved due to tail recursively.
 
 The main use of this data structure is in the class TaskForest, that at this moment is the
 responsible for merging the data from local and remote data.
@@ -111,15 +111,15 @@ This application has multiple unit test, but are remarkable the test for classes
 dependencies, the two most interesting are FirestoreSynchronizedTaskRepositoryTest and
 CreateValidTaskUseCaseTest.
 
-*FirestoreSynchronizedTaskRepositoryTest: tests FirestoreSynchronizedTaskRepository, which
-uses the design pattern decorator, implements ITaskRepository interface and delegates its
-implementation to its dependency local , whose class is RoomTaskRepository, and only
-overrides the write methods. FirestoreSynchronizedTaskRepository and RoomTaskRepository are
-interchangeable in the application (soLid), therefore this test consists in comparing both.
+* FirestoreSynchronizedTaskRepositoryTest: tests FirestoreSynchronizedTaskRepository, which
+  uses the design pattern decorator, implements ITaskRepository interface and delegates its
+  implementation to its dependency local , whose class is RoomTaskRepository, and only
+  overrides the write methods. FirestoreSynchronizedTaskRepository and RoomTaskRepository are
+  interchangeable in the application (soLid), therefore this test consists in comparing both.
 
-*CreateValidTaskUseCaseTest: is a unit test, and its dependencies are mocked.
-With coEvery function is established the output of the mocked dependencies, and with
-coVerify the number of times a mocked dependency's method should be called.
+* CreateValidTaskUseCaseTest: is a unit test, and its dependencies are mocked.
+  With coEvery function is established the output of the mocked dependencies, and with
+  coVerify the number of times a mocked dependency's method should be called.
 
 ### Coroutines
 Are used in everything related with asynchronous programming, including with Firestore, thanks
@@ -164,5 +164,4 @@ the only entry point to Firestore.
 The app implements clean architecture, the dependencies are provided as explained in the
 dependency injection paragraph and are stored in private properties, but fragments and
 activities does not use dependency injection, but still follows clean architecture principles.
-
 

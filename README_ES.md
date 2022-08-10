@@ -1,6 +1,5 @@
 # Task Forest
-Esta aplicación ha sido creada por Andrés Conde Rodriguez para practicar con la mayoría de 
-tecnologías,y patrones de diseño usados en el desarrollo de aplicaciones android.
+Esta aplicación ha sido creada por Andrés Conde Rodriguez para practicar con la mayoría de tecnologías,y patrones de diseño usados en el desarrollo de aplicaciones android.
 
 
 
@@ -14,7 +13,6 @@ El usuario puede usar la aplicación sin iniciar sesión.
 
 
 
-
 ## Cómo funciona la aplicación.
 Esta aplicación hace uso de un variado grupo de conceptos y tecnologías que voy a dividir en conceptos de programación, SQL, UI, estructuras de datos, testing, expresiones regulares, corrutinas, Workers, Room, Firebase Authentication, Firestore, inyección de dependencias y arquitectura de aplicación.
 
@@ -23,7 +21,7 @@ La aplicación está programada en Kotlin y usa la mayoría de sus funcionalidad
 La app ha sido programada todo lo DRY que ha sido posible.
 
 ### UI
-La UI ha sido creada usando layouts XML. El constrain layout ha sido usado en cada layout con algo de complejidad. Los linearlayout, framelayout o CoordinatorLayout han sido usados para layout con pocos elementos.
+La UI ha sido creada usando layouts XML. El constrain layout ha sido usado en cada layout con algo de complejidad. Los LinearLayout, FrameLayout o CoordinatorLayout han sido usados para layout con pocos elementos.
 En main activity se utiliza un DrawerLayout para navegación, y menús XML para los option menu. y DrawerLayout. Los ScrollView han sido usados para guardar TextView potencialmente muy largos, y los CardView para redondear las esquinas de los elementos que muestran los recycleviews.
 Algunas vistas como los TextView de título de fragmento o los InputText implementan un estilo.
 La app soporta textos en inglés y español, y temas de día y noche.
@@ -56,11 +54,11 @@ Si un usuario ya autenticado abre la app es dirigido directamente a MainActivity
 ### Estructuras de datos
 La app tiene tres estructuras de datos hechas desde cero, las cuales son las siguientes:
 
-*MyLinkedList: es una lista enlazada que implementa la interfaz MutableList. Esta estructura de datos es ideal para utilizarla también como pila o cola.
+* MyLinkedList: es una lista enlazada que implementa la interfaz MutableList. Esta estructura de datos es ideal para utilizarla también como pila o cola.
 
-*Tree: es un árbol general cuyos hijos están almacenados en MyLinkedList y a su vez también son Tree. Esta estructura de datos puede ser recorrida en postorden y preorden.
+* Tree: es un árbol general cuyos hijos están almacenados en MyLinkedList y a su vez también son Tree. Esta estructura de datos puede ser recorrida en postorden y preorden.
 
-*BDTree: es una subclase de Tree que permite a cada nodo alcanzar a su padre. Es posible alcanzar el padre de la cima usando la propiedad superFather, cuyo rendimiento ha sido mejorado gracias a la recursividad de cola.
+* BDTree: es una subclase de Tree que permite a cada nodo alcanzar a su padre. Es posible alcanzar el padre de la cima usando la propiedad superFather, cuyo rendimiento ha sido mejorado gracias a la recursividad de cola.
 
 El principal uso de esta estructura de datos se encuentra en TaskForest, que en este momento es el responsable de unir los datos locales y remotos.
 
@@ -70,11 +68,11 @@ Todas las comparaciones entre los elementos de dos colecciones han sido hechas t
 La  aplicación cuenta con varias pruebas unitarias, pero las más destacables son aquellas que se realizan sobre clases con dependencias. Las dos mas interesantes son FirestoreSynchronizedTaskRepositoryTest y
 CreateValidTaskUseCaseTest.
 
-*FirestoreSynchronizedTaskRepositoryTest: realiza pruebas sobre FirestoreSynchronizedTaskRepository, la cual es una clase que sigue el patrón de diseño decorador, ya que implementa su interfaz ITaskRepository delegando su implementación a su dependencia llamada local, cuya clase es RoomTaskRepository, y solo sobreescribe sus métodos de escritura.
-FirestoreSynchronizedTaskRepository y RoomTaskRepository son intercambiables en la aplicación (soLid), por lo tanto el test consiste en comparar ambos.
+* FirestoreSynchronizedTaskRepositoryTest: realiza pruebas sobre FirestoreSynchronizedTaskRepository, la cual es una clase que sigue el patrón de diseño decorador, ya que implementa su interfaz ITaskRepository delegando su implementación a su dependencia llamada local, cuya clase es RoomTaskRepository, y solo sobreescribe sus métodos de escritura.
+  FirestoreSynchronizedTaskRepository y RoomTaskRepository son intercambiables en la aplicación (soLid), por lo tanto el test consiste en comparar ambos.
 
-*CreateValidTaskUseCaseTest: es una prueba unitaria, y sus dependencias han sido creadas utilizando mock.
-Con la función coEvery se establece la salida de los métodos de las dependencias y con coVerify el número de veces que deberían ser llamados.
+* CreateValidTaskUseCaseTest: es una prueba unitaria, y sus dependencias han sido creadas utilizando mock.
+  Con la función coEvery se establece la salida de los métodos de las dependencias y con coVerify el número de veces que deberían ser llamados.
 
 
 ### Corrutinas
