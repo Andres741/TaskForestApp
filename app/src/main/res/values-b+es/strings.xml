@@ -15,7 +15,7 @@
     <string name="action_sign_in_short">Inicia sesión</string>
     <string name="welcome">"Bienvenido!"</string>
     <string name="invalid_username">No es un nombre de usuario correcto</string>
-    <string name="invalid_password">La contraseña debe ser > 5 caracteres</string>
+    <string name="invalid_password">La contraseña debe ser de más de 5 caracteres</string>
     <string name="login_failed">"Inicio de sesión fallido"</string>
 
     <plurals name="go_to_sub_task_s">
@@ -48,7 +48,7 @@
     </plurals>
 
     <string name="type_att">Tipo:</string>
-    <string name="done">Hecho:</string>
+    <string name="done_att">Hecho:</string>
     <string name="description_att">Descripción:</string>
     <string name="title_att">Título:</string>
 
@@ -117,8 +117,8 @@
     <string name="quit">Quitar</string>
 
     <string name="must_select_future_date">Dabes seleccionar una fecha futura</string>
-    <string name="advise_date_key">Momento de aviso:</string>
-    <string name="creation_date">Momento de creación:</string>
+    <string name="advise_date_key">Notificación:</string>
+    <string name="creation_date">Creación:</string>
 
     <string name="value_saved">El valor ya está guardado</string>
     <string name="impossible_save_value">Imposible guardar el valor</string>
