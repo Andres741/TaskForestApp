@@ -1,5 +1,7 @@
 # Task Forest
 Esta aplicación ha sido creada por Andrés Conde Rodriguez para practicar con la mayoría de tecnologías,y patrones de diseño usados en el desarrollo de aplicaciones android.
+Para ejecutar este proyecto se necesita un archivo google-services.json de un proyecto Firebase que se llame “Task Scheduler”, pero se puede descargar la apk en [este](https://drive.google.com/file/d/1kBOy4CXhOsYAZ_tK07aP6ds_H3lnP_t2/view?usp=sharing "APK link") enlace.
+Existe un proyecto auxiliar a este, y se puede acceder a él a través de [este](https://github.com/Andres741/TaskForestBackedScripts "TaskForestBackedScripts") enlace.
 
 
 
@@ -69,7 +71,7 @@ La  aplicación cuenta con varias pruebas unitarias, pero las más destacables s
 CreateValidTaskUseCaseTest.
 
 * FirestoreSynchronizedTaskRepositoryTest: realiza pruebas sobre FirestoreSynchronizedTaskRepository, la cual es una clase que sigue el patrón de diseño decorador, ya que implementa su interfaz ITaskRepository delegando su implementación a su dependencia llamada local, cuya clase es RoomTaskRepository, y solo sobreescribe sus métodos de escritura.
-  FirestoreSynchronizedTaskRepository y RoomTaskRepository son intercambiables en la aplicación (soLid), por lo tanto el test consiste en comparar ambos.
+  RqFirestoreSynchronizedTaskRepository y RoomTaskRepository son intercambiables en la aplicación (soLid), por lo tanto el test consiste en comparar ambos.
 
 * CreateValidTaskUseCaseTest: es una prueba unitaria, y sus dependencias han sido creadas utilizando mock.
   Con la función coEvery se establece la salida de los métodos de las dependencias y con coVerify el número de veces que deberían ser llamados.
