@@ -1,5 +1,6 @@
 package com.example.taskscheduler.util.coroutines
 
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -12,6 +13,8 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resumeWithException
 
@@ -21,6 +24,7 @@ fun <T> Task<T>.getOrNull(): T? {
 }
 
 suspend fun <T> Task<T>.await(): T {
+    var executor: ExecutorService? = null
     try {
         if (isComplete) {
             val e = exception
@@ -36,20 +40,24 @@ suspend fun <T> Task<T>.await(): T {
             }
         }
 
+        executor = Executors.newFixedThreadPool(1)
+
         return withContext(Dispatchers.IO) {
             suspendCancellableCoroutine { cont: CancellableContinuation<T> ->
-                addOnCanceledListener {
+                addOnCanceledListener(executor) {
                     cont.cancel()
-                }.addOnSuccessListener {
+                }.addOnSuccessListener(executor) {
                     cont.resume(result) { e ->
                         cont.resumeWithException(e)
                     }
-                }.addOnFailureListener { e ->
+                }.addOnFailureListener(executor) { e ->
                     cont.resumeWithException(e)
                 }
             }
         }
     } catch (t: Throwable) {
+        executor?.shutdown()
+        t.log()
         throw CancellationException(t)
     }
 }
@@ -91,3 +99,6 @@ fun Query.asFlow(): Flow<QuerySnapshot> = callbackFlow {
     }
 }.flowOn(Dispatchers.IO)
 
+private fun<T> T.log(msj: Any? = null) = apply {
+    Log.i("suspendCallbacks", "${if (msj != null) "$msj: " else ""}${toString()}")
+}
