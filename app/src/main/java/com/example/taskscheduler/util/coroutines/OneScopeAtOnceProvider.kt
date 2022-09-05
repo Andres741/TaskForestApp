@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 class OneScopeAtOnceProvider (
-    private val coroutineContext: CoroutineContext = Dispatchers.Main
+    private val coroutineContextFactory: () -> CoroutineContext = { Dispatchers.Main }
 ) {
 
     var currentScope: CoroutineScope? = null
@@ -13,10 +13,13 @@ class OneScopeAtOnceProvider (
     val newScope: CoroutineScope
         get() {
             currentScope?.cancel()
-            return CoroutineScope(coroutineContext).also { currentScope = it }//(::currentScope.setter) does not work due to private set
+            return CoroutineScope(coroutineContextFactory()).also { currentScope = it }//(::currentScope.setter) does not work due to private set
         }
 
-    val currentScopeOrNew get() = currentScope ?: newScope
+    val currentScopeOrNew: CoroutineScope
+        get() = currentScope?.run {
+            if (isActive) this else newScope
+        } ?: newScope
 
     val newScopeNotCancelCurrentOrNull get() = if (currentScope == null) newScope else null
 

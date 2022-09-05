@@ -42,17 +42,15 @@ suspend fun <T> Task<T>.await(): T {
 
         executor = Executors.newFixedThreadPool(1)
 
-        return withContext(Dispatchers.IO) {
-            suspendCancellableCoroutine { cont: CancellableContinuation<T> ->
-                addOnCanceledListener(executor) {
-                    cont.cancel()
-                }.addOnSuccessListener(executor) {
-                    cont.resume(result) { e ->
-                        cont.resumeWithException(e)
-                    }
-                }.addOnFailureListener(executor) { e ->
+        return suspendCancellableCoroutine { cont: CancellableContinuation<T> ->
+            addOnCanceledListener(executor) {
+                cont.cancel()
+            }.addOnSuccessListener(executor) {
+                cont.resume(result) { e ->
                     cont.resumeWithException(e)
                 }
+            }.addOnFailureListener(executor) { e ->
+                cont.resumeWithException(e)
             }
         }
     } catch (t: Throwable) {

@@ -60,7 +60,6 @@ class MainActivityViewModel @Inject constructor(
             "A exception has occurred".log()
             e.log()
             SyncState.Error
-
         }
     }
 

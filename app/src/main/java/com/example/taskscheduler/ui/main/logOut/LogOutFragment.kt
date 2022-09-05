@@ -51,11 +51,11 @@ class LogOutFragment: Fragment() {
 
         lifecycleScope.launch {
             Firebase.auth.currentUser.log("currentUser")?.also {
-                viewModel.finishFirebaseSession()
                 AuthUI.getInstance()
                     .signOut(context)
                     .await()
             }
+            viewModel.finishFirebaseSession()
             goToLoginActivity()
         }
     }

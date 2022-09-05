@@ -25,7 +25,7 @@ class FirestoreSynchronizedTaskRepository(
     val easyFiresoreSynchronization = lazy { EasyFiresoreSynchronization() }
 
     companion object {
-        private val firebaseSessionScopeProvider = OneScopeAtOnceProvider(Dispatchers.IO + SupervisorJob())
+        private val firebaseSessionScopeProvider = OneScopeAtOnceProvider { Dispatchers.IO + SupervisorJob() }
         private var firebaseSessionScope = firebaseSessionScopeProvider.newScope
     }
 
@@ -282,7 +282,7 @@ class FirestoreSynchronizedTaskRepository(
 
 
     inner class EasyFiresoreSynchronization {
-        private val easyFiresoreSynchronizationScopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
+        private val easyFiresoreSynchronizationScopeProvider = OneScopeAtOnceProvider { Dispatchers.Default }
         val isEasyFireSoreSynchronizationWorking get() = easyFiresoreSynchronizationScopeProvider.currentScope != null
 
         fun initEasyFiresoreSynchronization(): Boolean {

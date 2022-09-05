@@ -28,7 +28,7 @@ class AddTaskViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                val scopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
+                val scopeProvider = OneScopeAtOnceProvider { Dispatchers.Default }
                 try {
                     adviseDate.asFlow().collectLatest { newValue ->
                         if (newValue == null) {

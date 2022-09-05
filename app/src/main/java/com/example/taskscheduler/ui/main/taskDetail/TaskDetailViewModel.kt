@@ -102,7 +102,7 @@ class TaskDetailViewModel @Inject constructor(
     val taskDeletedEvent = DataEventTrigger<NoMoreWithTaskDeletedType>()
 
     private val collectTaskScopeProvider = OneScopeAtOnceProvider()
-    private val updateMinuteScopeProvider = OneScopeAtOnceProvider(Dispatchers.Default)
+    private val updateMinuteScopeProvider = OneScopeAtOnceProvider { Dispatchers.Default }
 
     val creationDateFormat: SimpleDateFormat = dateAndHourFormatProvider.value
     val adviseDateFormat: SimpleDateFormat = dateFormatProvider.value
