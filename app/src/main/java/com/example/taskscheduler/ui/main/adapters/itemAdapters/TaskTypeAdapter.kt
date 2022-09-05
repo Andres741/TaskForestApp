@@ -84,12 +84,13 @@ class TaskTypeViewHolder private constructor(
 
     private fun setCallBacks(onClickCallBack: OnClickType) = apply {
         binding.root.setOnClickListener onClick@ {
-            val taskType = taskTypeInBinding ?: return@onClick
-            if (selectedViewHolder?.taskTypeInBinding == taskType) {
+            val clickedTaskType = taskTypeInBinding ?: return@onClick
+
+            if (selectedTaskType?.typeName == clickedTaskType.typeName) {
                 onClickCallBack(null)
                 return@onClick
             }
-            onClickCallBack(taskType)
+            onClickCallBack(clickedTaskType)
         }
     }
 
