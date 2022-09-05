@@ -53,7 +53,7 @@ abstract class TaskAndSubTaskDao {
         const val DELETE_SUPER =
             "DELETE FROM $SUBTASK_TABLE WHERE $SUPER_TASKa = :superTask"
 
-        private const val CHANNEL_CAPACITY = Channel.RENDEZVOUS
+        private const val CHANNEL_CAPACITY = Channel.BUFFERED
     }
 
     @Query(SubTaskDao.GET_SUB_TASKS_OF_SUPER_TASK)

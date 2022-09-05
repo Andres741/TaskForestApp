@@ -1,7 +1,7 @@
 # Task Forest
 This app was created by Andrés Conde Rodríguez to practise the most of the technologies and design
 patterns used in android development.
-To execute the project is needed a google-services.json file from a Firebase project called “Task Scheduler”, but the APK can be downloaded in [this](https://drive.google.com/file/d/1kBOy4CXhOsYAZ_tK07aP6ds_H3lnP_t2/view?usp=sharing "APK link") link.
+To execute the project is needed a google-services.json file from a Firebase project called “Task scheduler”, but the APK can be downloaded in [this](https://drive.google.com/file/d/1kBOy4CXhOsYAZ_tK07aP6ds_H3lnP_t2/view?usp=sharing "APK link") link.
 The auxiliary project is in [this](https://github.com/Andres741/TaskForestBackedScripts "TaskForestBackedScripts") link.
 
 ## What the application does.

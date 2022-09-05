@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.taskscheduler.R
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.taskscheduler.databinding.FragmentTaskDetailBinding
@@ -132,7 +134,8 @@ class TaskDetailFragment: Fragment() {
             /** Introduces the data into the adapter.*/
             tasksDataFlow.observe(viewLifecycleOwner) { flow ->
                 collectPagingDataScopeProvider.newScope.launch {
-                    flow.collectLatest(adapter::submitData)
+                    flow.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                        .collectLatest(adapter::submitData)
                 }
             }
 

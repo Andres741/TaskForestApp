@@ -7,6 +7,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -69,7 +71,9 @@ class TasksFragment: Fragment() {
     private fun observeViewModel() {
         viewModel.apply {
             lifecycleScope.launch {
-                taskTypeDataFlow.collectLatest(taskTypeAdapter::submitData)
+                taskTypeDataFlow
+                    .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                    .collectLatest(taskTypeAdapter::submitData)
             }
             isShowingOnlyTopSuperTask.observe(viewLifecycleOwner) { onlyTopSuperTasks ->
                 if (onlyTopSuperTasks) tasksAdapterViewModel.onlySuperTasksInTaskSource()
@@ -91,7 +95,8 @@ class TasksFragment: Fragment() {
             /** Introduces the data into the adapter.*/
             tasksDataFlow.observe(viewLifecycleOwner) { flow ->
                 collectPagingDataScopeProvider.newScope.launch {
-                    flow.collectLatest(tasksAdapter::submitData)
+                    flow.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                        .collectLatest(tasksAdapter::submitData)
                 }
             }
             selectedTaskTypeName.observe(viewLifecycleOwner) { typeName ->

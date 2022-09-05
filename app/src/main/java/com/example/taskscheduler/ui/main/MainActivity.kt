@@ -8,7 +8,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.contains
 import androidx.core.view.forEach
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.taskscheduler.R
@@ -61,12 +63,14 @@ class MainActivity: AppCompatActivity() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            viewModel.syncStateFlow.collect { state ->
-                statusMenu = when (state) {
-                    is MainActivityViewModel.SyncState.Done -> R.menu.sync_done
-                    is MainActivityViewModel.SyncState.InProcess -> R.menu.sync_in_process
-                    is MainActivityViewModel.SyncState.Error -> R.menu.sync_impossible
-                    is MainActivityViewModel.SyncState.NotAuth -> R.menu.empty
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.syncStateFlow.collect { state ->
+                    statusMenu = when (state) {
+                        is MainActivityViewModel.SyncState.Done -> R.menu.sync_done
+                        is MainActivityViewModel.SyncState.InProcess -> R.menu.sync_in_process
+                        is MainActivityViewModel.SyncState.Error -> R.menu.sync_impossible
+                        is MainActivityViewModel.SyncState.NotAuth -> R.menu.empty
+                    }
                 }
             }
         }
