@@ -26,7 +26,7 @@ class TasksAdapterViewModel @Inject constructor(
      * If this stack is empty TasksFragment must be shown, else TaskDetailFragment must show
      * the top task of this stack.
      */
-    val taskTitleStack: LiveData<ITaskTitleOwner> = _taskTitleStack
+    val taskTitleStack: LiveData<ITaskTitleOwner?> = _taskTitleStack
 
     private val pagingDataScopeProvider = OneScopeAtOnceProvider()
 
@@ -34,15 +34,13 @@ class TasksAdapterViewModel @Inject constructor(
         getTaskPager().cachedIn(pagingDataScopeProvider.newScope)
     )
 
-    var filters = TaskFilters()
+    val filters = TaskFilters()
 
-    private val filteredDataFlow = _tasksDataFlow.map { taskDataFlow ->
+    val tasksDataFlow: LiveData<TaskDataFlow> = _tasksDataFlow.map { taskDataFlow ->
         taskDataFlow.map { pagingData ->
             pagingData.filter(filters::andAll)
         }
     }
-
-    val tasksDataFlow: LiveData<TaskDataFlow> = filteredDataFlow
 
     val selectedTaskTypeName = MutableLiveData<ITaskTypeNameOwner?>()
 
@@ -128,8 +126,8 @@ class TasksAdapterViewModel @Inject constructor(
                 if (field == value) return
                 field = value
                 doneFilter = when(value) {
-                    true -> { task -> task.isDone }
-                    false -> { task -> task.isDone.not() }
+                    true -> TaskModel::isDone
+                    false -> TaskModel::isNotDone
                     null -> defaultTaskFilter
                 }
             }
@@ -156,7 +154,7 @@ class TasksAdapterViewModel @Inject constructor(
                 _tasksDataFlow.observeAgain()
             }
 
-        fun andAll(task: TaskModel) = doneFilter(task) && typeFilter(task) //&& dateFilter(task)
+        fun andAll(task: TaskModel) = doneFilter(task) && typeFilter(task)
     }
     private companion object {
         val defaultTaskFilter = { _ :TaskModel -> true }

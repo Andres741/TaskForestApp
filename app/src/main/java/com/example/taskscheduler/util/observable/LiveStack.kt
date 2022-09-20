@@ -9,7 +9,7 @@ import com.example.taskscheduler.util.dataStructures.MyLinkedList
  */
 open class LiveStack<T> private constructor(
     private val stack: MyLinkedList<T>
-): LiveData<T>(), List<T> by stack {
+): LiveData<T?>(), List<T> by stack {
 
     constructor(): this( MyLinkedList() )
 

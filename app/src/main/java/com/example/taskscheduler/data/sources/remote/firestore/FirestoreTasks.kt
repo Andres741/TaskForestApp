@@ -27,14 +27,6 @@ class FirestoreTasks(
 ) {
     val firestore = tasksCollection.firestore
 
-    init {
-        CoroutineScope(Dispatchers.Default).launch {
-            tasksCollection.get().await().forEach { doc ->
-                doc.reference.get().await().reference
-            }
-        }
-    }
-
     suspend fun save(task: TaskDocument) = kotlin.runCatching {
         tasksCollection.setDoc(task).await()
     }

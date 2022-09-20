@@ -31,7 +31,7 @@ abstract class LocalDataBase: RoomDatabase() {
             },
             Migration(3, 4) { db ->
                 db.execSQL("ALTER TABLE $TASK_TABLE ADD COLUMN $ADVISE_DATEa INTEGER DEFAULT NULL")
-            }
+            },
         ).build()
     }
 }

@@ -18,14 +18,12 @@ class NotificationWorker(
         val channelId = inputData.getString(CHANNEL_ID) ?: return Result.failure()
         val notificationId = inputData.getString(NOTIFICATION_ID)?.toIntOrNull() ?: return Result.failure()
 
-        val notification = NotificationCompat.Builder(context, channelId).run {
+        val notification = NotificationCompat.Builder(context, channelId).apply {
             setSmallIcon(R.mipmap.ic_launcher_round)
             setContentTitle(title)
             setContentText(text)
             priority = NotificationCompat.PRIORITY_DEFAULT
-
-            build()
-        }
+        }.build()
 
         NotificationManagerCompat.from(context).run {
             notify(notificationId, notification)
@@ -42,14 +40,12 @@ class NotificationWorker(
 
         fun crateData(
             title: String, text: String, channelId: String, notificationId: Int
-        ) = Data.Builder().run {
+        ) = Data.Builder().apply {
             putString(TITLE, title)
             putString(TEXT, text)
             putString(CHANNEL_ID, channelId)
             putString(NOTIFICATION_ID, notificationId.toString())
-
-            build()
-        }
+        }.build()
 
         fun sendOneNotification (
             title: String, text: String, channelId: String, notificationId: Int,
@@ -58,16 +54,14 @@ class NotificationWorker(
             val data = crateData(title, text, channelId, notificationId)
 
             val notificationWorkRequest: OneTimeWorkRequest =
-                OneTimeWorkRequestBuilder<NotificationWorker>().run {
+                OneTimeWorkRequestBuilder<NotificationWorker>().apply {
                     setInputData(data)
 
                     delayMillis?.takeIf { it > 0 }?.also {
                         setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
                     }
                     workTag?.also { addTag(workTag) }
-
-                    build()
-                }
+                }.build()
 
             WorkManager
                 .getInstance(context)

@@ -19,19 +19,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resumeWithException
 
-fun<T> Iterable<T>.toUnitHashMap(): HashMap<T, Unit> {
-    if (this is Collection<T>) return toUnitHashMap()
-
-    val list: MyLinkedList<T> = MyLinkedList(this)
-    val map = HashMap<T, Unit>(list.size)
-
-    list.normalIterator().forEach { item ->
-        map[item] = Unit
-    }
-    return map
-}
-
-fun<T> Collection<T>.toUnitHashMap() = HashMap<T, Unit>(size).also { map ->
+fun<T> Iterable<T>.toUnitHashMap() = HashMap<T, Unit>().also { map ->
     forEach { item: T ->
         map[item] = Unit
     }

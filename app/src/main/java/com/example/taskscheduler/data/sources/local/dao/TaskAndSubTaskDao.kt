@@ -9,6 +9,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.fold
+import kotlinx.coroutines.flow.reduce
+import kotlinx.coroutines.flow.toList
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -189,37 +192,33 @@ abstract class TaskAndSubTaskDao {
         val topSuperTask = getTopSuperTaskOfTask(task)
         val channel = Channel<Int>(CHANNEL_CAPACITY)
 
-        var res = 0
 
-        withContext(Dispatchers.Default) {
-            launch {
-                channel.consumeAsFlow().collect { numChanged ->
-                    res += numChanged
-                }
+        return withContext(Dispatchers.Default) {
+            val res = async {
+                channel.consumeAsFlow().fold(0, Int::plus)
             }
             changeTaskTypeHelperAsyncChannels(topSuperTask, newValue, channel)
             channel.close()
-        }
 
-        return res
+            res.await()
+        }
     }
 
     private suspend fun changeTaskTypeHelperAsyncChannels(task: String, newValue: String, fatherChannel: SendChannel<Int>) {
-        var res = 0
+        val res = AtomicInteger()
 
         coroutineScope {
             val nodeChannel = Channel<Int>(CHANNEL_CAPACITY)
             val childTitlesList = getSubTasksOfSuperTask(task)
 
             launch {
-                nodeChannel.consumeEach { numChanged ->
-                    res += numChanged
-                }
+                nodeChannel.consumeAsFlow().fold(0, Int::plus).also(res::addAndGet)
             }
 
             coroutineScope {
                 launch {
-                    res += updateOneTaskType(task, newValue)
+                    val updated =  updateOneTaskType(task, newValue)
+                    res.addAndGet(updated)
                 }
 
                 childTitlesList.forEach { child ->
@@ -230,7 +229,7 @@ abstract class TaskAndSubTaskDao {
             }
             nodeChannel.close()
         }
-        fatherChannel.send(res)
+        fatherChannel.send(res.get())
     }
 
     @Query(DELETE_TASK)

@@ -6,8 +6,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.contains
-import androidx.core.view.forEach
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -98,16 +96,18 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId.let { it == R.id.sync_done || it == R.id.sync_impossible }) {
-            lifecycleScope.launch {
-                viewModel.intentChannel.send(MainActivityViewModel.Intent.Synchronize)
-            }
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = if (
+        item.itemId.let { it == R.id.sync_done || it == R.id.sync_impossible }
+    ) {
+        lifecycleScope.launch {
+            viewModel.intentChannel.send(MainActivityViewModel.Intent.Synchronize)
+            viewModel.intentChannel.trySend(MainActivityViewModel.Intent.Synchronize)
         }
+        true
+    } else {
+        super.onOptionsItemSelected(item)
     }
+
 
 //    override fun onDestroy() {
 //        (tasksAdapterViewModel.taskRepository as? TaskRepository)?.finishEasyFireSoreSynchronization()

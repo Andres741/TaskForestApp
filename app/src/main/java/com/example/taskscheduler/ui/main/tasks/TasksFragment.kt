@@ -161,10 +161,10 @@ class TasksFragment: Fragment() {
             menuInflater.inflate(R.menu.filter_by_done_menu, menu)
 
             setOnMenuItemClickListener setMenu@ {
-                when (it.itemId) {
-                    R.id.all_by_done -> tasksAdapterViewModel.filters.doneFilterCriteria = null
-                    R.id.completed -> tasksAdapterViewModel.filters.doneFilterCriteria = true
-                    R.id.active -> tasksAdapterViewModel.filters.doneFilterCriteria = false
+                tasksAdapterViewModel.filters.doneFilterCriteria = when (it.itemId) {
+                    R.id.all_by_done -> null
+                    R.id.completed -> true
+                    R.id.active -> false
                     else -> return@setMenu false
                 }
                 true

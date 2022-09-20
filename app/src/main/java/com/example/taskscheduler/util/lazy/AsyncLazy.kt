@@ -4,11 +4,11 @@ import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 class AsyncLazy<T: Any>(
-    context: CoroutineContext = Dispatchers.Default,
+    context: () -> CoroutineContext = { Dispatchers.Default },
     initializer: () -> T
 ): Lazy<T> {
 
-    private var deferred: Deferred<T>? = CoroutineScope(context + NonCancellable).async {
+    private var deferred: Deferred<T>? = CoroutineScope(context() + NonCancellable).async {
 //        "pre delay".log()
 //        delay(100)  //delay + await = blocked thread, not possible to suspend
 //        "post delay".log()

@@ -16,10 +16,13 @@ class NotificationsModule {
     @Singleton
     @Provides
     fun provideAdviseDateNotificationFactory(@ApplicationContext context: Context) =
-        object : AdviseDateNotificationFactory {
-            override val context: Context = context
-            override val channelId: String = context.getString(R.string.CHANNEL_ID)
-        }
+        AdviseDateNotificationFactory (
+            context,
+            context.getString(R.string.CHANNEL_ID)
+        )
 }
 
-interface AdviseDateNotificationFactory: NotificationFactory
+class AdviseDateNotificationFactory(
+    override val context: Context,
+    override val channelId: String,
+): NotificationFactory
