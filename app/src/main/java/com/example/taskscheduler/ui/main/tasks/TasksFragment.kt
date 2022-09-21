@@ -17,6 +17,7 @@ import com.example.taskscheduler.databinding.FragmentTasksBinding
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TaskTypeAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapter
 import com.example.taskscheduler.ui.main.adapters.itemAdapters.TasksAdapterViewModel
+import com.example.taskscheduler.util.collectOnUI
 import com.example.taskscheduler.util.coroutines.OneScopeAtOnceProvider
 import com.example.taskscheduler.util.ui.DateTimePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,7 +52,6 @@ class TasksFragment: Fragment() {
 
         return FragmentTasksBinding.bind(root).let {
             _binding = it
-//            it.viewmodel = viewModel
             it.tasksAdapterViewModel = tasksAdapterViewModel
             it.lifecycleOwner = viewLifecycleOwner
             it.tasksRcy.adapter = tasksAdapter
@@ -71,9 +71,7 @@ class TasksFragment: Fragment() {
     private fun observeViewModel() {
         viewModel.apply {
             lifecycleScope.launch {
-                taskTypeDataFlow
-                    .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                    .collectLatest(taskTypeAdapter::submitData)
+                taskTypeDataFlow.collectOnUI(viewLifecycleOwner, taskTypeAdapter::submitData)
             }
             isShowingOnlyTopSuperTask.observe(viewLifecycleOwner) { onlyTopSuperTasks ->
                 if (onlyTopSuperTasks) tasksAdapterViewModel.onlySuperTasksInTaskSource()
@@ -117,19 +115,6 @@ class TasksFragment: Fragment() {
                     TasksFragmentDirections.actionFragmentTasksToAddTaskFragment(null)
                 )
             }
-
-//            it.deleteMe.setOnClickListener {
-//                DateTimePickerFragment(
-//                    { Calendar.getInstance() },
-//                    minDate = { Calendar.getInstance().apply { add(Calendar.MINUTE, 1) } },
-//                    //maxDate = { Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 3) }},
-//                    is24HourView = true
-//                ) { (date, time) ->
-//                    val (year, month, day) = date
-//                    val (hour, min) = time
-//                    "year: $year, month: $month, day: $day, hour: $hour, min: $min".log()
-//                }.show(activity!!.supportFragmentManager, "dateTimePicker")
-//            }
         }
     }
 
@@ -137,15 +122,7 @@ class TasksFragment: Fragment() {
         inflater.inflate(R.menu.filter_tasks_options, menu)
     }
 
-//    override fun onPrepareOptionsMenu(menu: Menu) {  //WTF
-//        activity?.apply {
-//            invalidateOptionsMenu()  //Better, but not good
-//            menuInflater.inflate(R.menu.filter_tasks_options, menu)
-//        }
-//    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        activity?.invalidateOptionsMenu()  //useless
         when (item.itemId) {
             R.id.filter_by_done -> filterByDoneMenu.show()
             R.id.all -> viewModel.isShowingOnlyTopSuperTask.value = false

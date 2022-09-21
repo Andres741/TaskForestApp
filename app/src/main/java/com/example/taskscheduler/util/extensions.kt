@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import androidx.lifecycle.MutableLiveData
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.*
 import com.example.taskscheduler.R
 import com.example.taskscheduler.util.dataStructures.MyLinkedList
 import com.google.android.gms.tasks.Task
@@ -15,6 +16,7 @@ import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.coroutines.resumeWithException
@@ -47,4 +49,17 @@ fun Context.getColorFromAttr(
     it.data
 }
 
-//fun Callendar.
+inline val Fragment.viewLifecycle get() = viewLifecycleOwner.lifecycle
+inline val Fragment.viewCoroutineScope get() = viewLifecycle.coroutineScope
+
+fun <T> Flow<T>.collectOnUI(lifecycle: Lifecycle, action: suspend (value: T) -> Unit): Job =
+    lifecycle.coroutineScope.launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            collectLatest(action)
+        }
+    }
+
+fun <T> Flow<T>.collectOnUI(owner: LifecycleOwner, action: suspend (value: T) -> Unit): Job =
+    collectOnUI(owner.lifecycle, action)
+
+

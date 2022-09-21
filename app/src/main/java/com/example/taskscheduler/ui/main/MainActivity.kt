@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.taskscheduler.R
 import com.example.taskscheduler.databinding.ActivityMainBinding
+import com.example.taskscheduler.util.collectOnUI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -60,16 +61,12 @@ class MainActivity: AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.syncStateFlow.collect { state ->
-                    statusMenu = when (state) {
-                        is MainActivityViewModel.SyncState.Done -> R.menu.sync_done
-                        is MainActivityViewModel.SyncState.InProcess -> R.menu.sync_in_process
-                        is MainActivityViewModel.SyncState.Error -> R.menu.sync_impossible
-                        is MainActivityViewModel.SyncState.NotAuth -> R.menu.empty
-                    }
-                }
+        viewModel.syncStateFlow.collectOnUI(this) { state ->
+            statusMenu = when (state) {
+                is MainActivityViewModel.SyncState.Done -> R.menu.sync_done
+                is MainActivityViewModel.SyncState.InProcess -> R.menu.sync_in_process
+                is MainActivityViewModel.SyncState.Error -> R.menu.sync_impossible
+                is MainActivityViewModel.SyncState.NotAuth -> R.menu.empty
             }
         }
     }
